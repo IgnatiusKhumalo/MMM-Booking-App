@@ -1,3 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MMM Booking App</string>
+
+    <!-- Screen 2 - Welcome Screen -->
+    <string name="welcome_heading">MMM Social Workers</string>
+    <string name="welcome_subheading">&amp; Associates</string>
+    <string name="welcome_tagline">Helping You Find Hope Again.</string>
+    <string name="btn_register">New here?  Register</string>
+    <string name="btn_login">Already registered?  Log In</string>
 </resources>

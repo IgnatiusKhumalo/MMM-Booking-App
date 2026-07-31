@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Backgrounds -->
+    <color name="color_background">#181818</color>
+    <color name="color_surface">#282828</color>
+
+    <!-- Brand colours (green stays identical - same brand colour, works on dark too) -->
+    <color name="color_primary">#1F6F63</color>
+    <color name="color_highlight">#78C8D2</color>
+
+    <!-- Text (inverted for readability on dark backgrounds) -->
+    <color name="color_text_primary">#FFFFFF</color>
+    <color name="color_text_heading">#FFFFFF</color>
+    <color name="color_text_on_primary">#FFFFFF</color>
+
+    <!-- Structure -->
+    <color name="color_border">#464646</color>
+
+    <!-- Status badges (kept same as light mode - already readable on dark) -->
+    <color name="color_status_pending">#E0A800</color>
+    <color name="color_status_confirmed">#1F6F63</color>
+    <color name="color_status_completed">#AAAAAA</color>
+    <color name="color_error">#CF6679</color>
+</resources>

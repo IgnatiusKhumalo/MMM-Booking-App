@@ -1,9 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MMMBookingApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Theme.MMMBookingApp" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorOnPrimary">@color/color_text_on_primary</item>
+        <item name="android:colorBackground">@color/color_background</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorSecondary">@color/color_highlight</item>
+        <item name="android:textColorPrimary">@color/color_text_primary</item>
+        <item name="android:statusBarColor">@color/color_primary</item>
     </style>
-
-    <style name="Theme.MMMBookingApp" parent="Base.Theme.MMMBookingApp" />
 </resources>
