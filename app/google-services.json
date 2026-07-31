@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1006084425387",
+    "project_id": "mmm-booking-app",
+    "storage_bucket": "mmm-booking-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006084425387:android:1c67dc8ad759fe63ab99ee",
+        "android_client_info": {
+          "package_name": "com.mmm.bookingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgN8J9718HWuRfUfoeGltM-9zB5fx5CXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
