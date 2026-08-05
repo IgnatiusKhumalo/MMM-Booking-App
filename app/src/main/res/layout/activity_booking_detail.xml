@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/color_primary"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="@color/color_text_on_primary"
+                android:contentDescription="@string/btn_ok" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/booking_detail_title"
+                android:textColor="@color/color_text_on_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="40dp"
+                android:layout_height="1dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tvStatusBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/color_text_on_primary"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginBottom="20dp" />
+
+            <TextView style="@style/DetailLabel" android:text="@string/label_client_name" />
+            <TextView android:id="@+id/tvClientName" style="@style/DetailValue" />
+
+            <TextView style="@style/DetailLabel" android:text="@string/label_client_contact" />
+            <TextView android:id="@+id/tvClientContact" style="@style/DetailValue" />
+
+            <TextView style="@style/DetailLabel" android:text="@string/label_service" />
+            <TextView android:id="@+id/tvServiceValue" style="@style/DetailValue" />
+
+            <TextView style="@style/DetailLabel" android:text="@string/label_type_location" />
+            <TextView android:id="@+id/tvTypeLocationValue" style="@style/DetailValue" />
+
+            <TextView style="@style/DetailLabel" android:text="@string/label_date_time" />
+            <TextView android:id="@+id/tvDateTimeValue" style="@style/DetailValue" />
+
+            <TextView style="@style/DetailLabel" android:text="@string/label_additional_info" />
+            <TextView android:id="@+id/tvAdditionalInfoValue" style="@style/DetailValue" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@color/color_surface"
+                android:padding="14dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="24dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_paid"
+                    android:textColor="@color/color_text_primary" />
+
+                <Switch
+                    android:id="@+id/switchPaid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnConfirmBooking"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="@string/btn_confirm_booking"
+                android:textColor="@color/color_text_on_primary"
+                android:backgroundTint="@color/color_status_confirmed"
+                android:layout_marginBottom="10dp" />
+
+            <Button
+                android:id="@+id/btnDeclineBooking"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/btn_decline_booking"
+                android:textColor="@color/color_error"
+                android:backgroundTint="@color/color_background"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_marginBottom="10dp" />
+
+            <Button
+                android:id="@+id/btnMarkCompleted"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/btn_mark_completed"
+                android:textColor="@color/color_primary"
+                android:backgroundTint="@color/color_background"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

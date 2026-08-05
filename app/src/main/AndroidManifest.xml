@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
+        android:name=".MMMApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,16 +25,30 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".auth.WelcomeActivity"
-            android:exported="false" />
+        <activity android:name=".auth.WelcomeActivity" android:exported="false" />
+        <activity android:name=".auth.RegisterActivity" android:exported="false" />
+        <activity android:name=".auth.LoginActivity" android:exported="false" />
+        <activity android:name=".auth.ForgotPasswordActivity" android:exported="false" />
+        <activity android:name=".client.HomeActivity" android:exported="false" />
+        <activity android:name=".admin.AdminDashboardActivity" android:exported="false" />
+        <activity android:name=".client.ServicesActivity" android:exported="false" />
+        <activity android:name=".client.ContactActivity" android:exported="false" />
+        <activity android:name=".client.BookAppointmentActivity" android:exported="false" />
+        <activity android:name=".client.MyBookingsActivity" android:exported="false" />
+        <activity android:name=".settings.SettingsActivity" android:exported="false" />
+        <activity android:name=".client.BookingConfirmationActivity" android:exported="false" />
 
-        <activity
-            android:name=".auth.RegisterActivity"
-            android:exported="false" />
+        <activity android:name=".settings.ChangePasswordActivity" android:exported="false" />
+        <activity android:name=".settings.AboutActivity" android:exported="false" />
+        <activity android:name=".settings.PrivacyPolicyActivity" android:exported="false" />
+        <activity android:name=".settings.TermsActivity" android:exported="false" />
+        <activity android:name=".settings.FAQActivity" android:exported="false" />
 
-        <activity
-            android:name=".auth.LoginActivity"
+        <activity android:name=".admin.BookingDetailActivity" android:exported="false" />
+        <activity android:name=".admin.PracticeInfoActivity" android:exported="false" />
+
+        <receiver
+            android:name=".utils.ReminderBroadcastReceiver"
             android:exported="false" />
 
     </application>

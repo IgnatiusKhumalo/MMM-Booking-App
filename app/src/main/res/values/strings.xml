@@ -2,10 +2,262 @@
 <resources>
     <string name="app_name">MMM Booking App</string>
 
+    <!-- Screen 1 - Splash Screen -->
+    <string name="splash_loading">Loading...</string>
+
     <!-- Screen 2 - Welcome Screen -->
     <string name="welcome_heading">MMM Social Workers</string>
     <string name="welcome_subheading">&amp; Associates</string>
     <string name="welcome_tagline">Helping You Find Hope Again.</string>
     <string name="btn_register">New here?  Register</string>
     <string name="btn_login">Already registered?  Log In</string>
+
+    <!-- Screen 3 - Register Screen -->
+    <string name="register_title">Register</string>
+    <string name="hint_full_name">Full Name</string>
+    <string name="hint_email">Email Address</string>
+    <string name="hint_phone">Phone Number</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="phone_prefix">+27</string>
+    <string name="password_requirements">8+ chars, 1 uppercase, 1 lowercase, 1 number, 1 special character</string>
+    <string name="btn_submit">Submit</string>
+    <string name="error_full_name">Enter your full name (at least 2 words, 2+ letters each)</string>
+    <string name="error_email">Enter a valid email address</string>
+    <string name="error_phone">Enter a valid 9-digit number after +27</string>
+    <string name="error_password">Password does not meet the requirements</string>
+    <string name="error_confirm_password">Passwords do not match</string>
+    <string name="error_registration_failed">Registration failed: %1$s</string>
+    <string name="registration_success_title">You\'re Registered!</string>
+    <string name="registration_success_message">Please check your email to verify your account, then follow the instructions to activate your login.</string>
+    <string name="btn_ok">OK</string>
+
+    <!-- Screen 4 - Login Screen -->
+    <string name="login_title">Log In</string>
+    <string name="btn_login_submit">Log In</string>
+    <string name="link_forgot_password">Forgot Password?</string>
+    <string name="error_login_failed">Login failed: %1$s</string>
+    <string name="error_email_not_verified">Please verify your email before logging in. Check your inbox, or tap below to resend the verification email.</string>
+    <string name="btn_resend_verification">Resend Verification Email</string>
+    <string name="verification_email_resent">Verification email sent</string>
+    <string name="error_user_record_missing">Account error: your profile could not be found. Please contact support.</string>
+
+    <!-- Screen 5 - Forgot Password Screen -->
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="forgot_password_instructions">Enter your email address and we\'ll send you a link to reset your password.</string>
+    <string name="btn_send_reset_link">Send Reset Link</string>
+    <string name="reset_link_sent_message">If an account exists for this email, a reset link has been sent.</string>
+
+    <!-- Screen 6 - Home Screen -->
+    <string name="home_welcome_default">Welcome</string>
+    <string name="btn_book_appointment">Book Appointment</string>
+    <string name="btn_services">Services</string>
+    <string name="btn_my_bookings">My Bookings</string>
+    <string name="btn_contact">Contact</string>
+    <string name="btn_settings">Settings</string>
+
+    <!-- Screen 7 - Services Screen -->
+    <string name="services_title">Services</string>
+    <string-array name="services_list">
+        <item>Trauma Counselling</item>
+        <item>Child, Family &amp; Disability Counselling</item>
+        <item>Occupational Therapy</item>
+        <item>Substance Abuse &amp; Addiction Counselling</item>
+        <item>Mediation &amp; Divorce Support</item>
+        <item>Bereavement Counselling</item>
+        <item>Employee Wellness Support</item>
+    </string-array>
+
+    <!-- Screen 11 - Contact Screen -->
+    <string name="contact_title">Contact / Help</string>
+    <string name="contact_call_us">Call Us</string>
+    <string name="contact_email_us">Email Us</string>
+    <string name="contact_whatsapp_us">WhatsApp Us</string>
+    <string name="contact_locations_label">Locations</string>
+    <string name="contact_hours_label">Operating Hours</string>
+    <string name="contact_how_to_book_title">How to Book</string>
+    <string name="contact_how_to_book_text">Tap \"Book Appointment\" from the Home screen, choose a service, consultation type, and your preferred date and time, then submit your request. Our team will contact you to confirm.</string>
+    <string name="contact_no_email_app">No email app found on this device</string>
+    <string name="contact_no_whatsapp">WhatsApp is not installed on this device</string>
+
+    <!-- Screen 8 - Book Appointment Screen -->
+    <string name="book_appointment_title">Book Appointment</string>
+    <string name="label_select_service">Select Service</string>
+    <string name="label_consultation_type">Consultation Type</string>
+    <string name="label_select_location">Select Location</string>
+    <string name="label_duration">Duration</string>
+    <string name="label_preferred_date">Preferred Date</string>
+    <string name="label_preferred_time">Preferred Time</string>
+    <string name="hint_additional_info">Additional Information (optional)</string>
+    <string name="fee_note">Session fees vary by service. Our team will contact you with a quotation before your appointment is confirmed.</string>
+    <string name="online_note">Online consultations available depending on your needs.</string>
+    <string name="btn_submit_booking">Submit Booking Request</string>
+    <string name="tap_to_select_date">Tap to select a date</string>
+    <string name="tap_to_select_time">Tap to select a time</string>
+    <string-array name="consultation_types">
+        <item>Online</item>
+        <item>In-Person</item>
+    </string-array>
+    <string-array name="physical_locations">
+        <item>Midrand</item>
+        <item>Johannesburg</item>
+        <item>Centurion</item>
+    </string-array>
+    <string-array name="durations_display">
+        <item>30 min</item>
+        <item>45 min</item>
+        <item>1 hour</item>
+    </string-array>
+    <string name="error_select_date">Please select a preferred date</string>
+    <string name="error_select_time">Please select a preferred time</string>
+    <string name="error_weekend_date">The practice is only open Monday to Friday - please choose a weekday</string>
+    <string name="error_outside_hours">Please choose a time within operating hours (%1$s - %2$s)</string>
+    <string name="error_own_overlap">You already have a booking that overlaps with this time</string>
+    <string name="error_slot_taken">Sorry, that slot has just been booked by someone else. Please choose a different time</string>
+    <string name="error_booking_failed">Booking failed: %1$s</string>
+    <string name="submitting_booking">Submitting your booking...</string>
+
+    <!-- Screen 9 - Booking Confirmation Screen -->
+    <string name="confirmation_title">Booking Confirmation</string>
+    <string name="confirmation_heading">Your booking request has been submitted</string>
+    <string name="confirmation_status_label">Status:</string>
+    <string name="status_pending">PENDING</string>
+    <string name="btn_back_to_home">Back to Home</string>
+
+    <!-- Screen 10 - My Bookings Screen -->
+    <string name="my_bookings_title">My Bookings</string>
+    <string name="status_confirmed">CONFIRMED</string>
+    <string name="status_cancelled">CANCELLED</string>
+    <string name="status_completed">COMPLETED</string>
+    <string name="btn_cancel_booking">Cancel</string>
+    <string name="cancellation_policy_note">You may cancel this booking at any time. If you need to reschedule instead, please contact the practice directly.</string>
+    <string name="empty_bookings_message">You have no bookings yet.</string>
+    <string name="dialog_cancel_title">Cancel this booking?</string>
+    <string name="dialog_cancel_message">This action is permanent. If you change your mind, you will need to make a brand new booking from the start - this appointment cannot be restored or reactivated.</string>
+    <string name="btn_keep_booking">Keep Booking</string>
+    <string name="btn_yes_cancel">Yes, Cancel</string>
+    <string name="booking_cancelled_message">Booking cancelled</string>
+    <string name="error_cancel_failed">Could not cancel booking: %1$s</string>
+
+    <!-- Screen 12 - Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="section_account">Account</string>
+    <string name="section_security">Security</string>
+    <string name="section_notifications">Notifications</string>
+    <string name="section_app">App</string>
+    <string name="section_support">Support</string>
+    <string name="label_language">Language</string>
+    <string name="language_value">English</string>
+    <string name="btn_save_changes">Save Changes</string>
+    <string name="account_updated_message">Account details updated</string>
+    <string name="error_update_failed">Could not update: %1$s</string>
+    <string name="btn_delete_account">Delete My Account</string>
+    <string name="delete_account_instructions">To delete your account and all associated data, please contact us. We will confirm once your data has been removed.</string>
+    <string name="delete_account_email_subject">Account Deletion Request</string>
+    <string name="btn_change_password">Change Password</string>
+    <string name="btn_logout">Logout</string>
+    <string name="label_booking_reminders">Booking Reminders</string>
+    <string name="label_dark_mode">Dark Mode</string>
+    <string name="label_app_version">App Version</string>
+    <string name="btn_about">About MMM Social Workers &amp; Associates</string>
+    <string name="btn_privacy_policy">Privacy Policy</string>
+    <string name="btn_terms">Terms and Conditions</string>
+    <string name="btn_contact_us">Contact Us</string>
+    <string name="btn_faq">Frequently Asked Questions (FAQ)</string>
+
+    <!-- Screen 12 (admin section) -->
+    <string name="section_practice_admin">Practice Administration</string>
+    <string name="btn_practice_info">Practice Information</string>
+
+    <!-- Screen 13 - Change Password Screen -->
+    <string name="change_password_title">Change Password</string>
+    <string name="hint_current_password">Current Password</string>
+    <string name="hint_new_password">New Password</string>
+    <string name="hint_confirm_new_password">Confirm New Password</string>
+    <string name="password_changed_message">Password changed successfully</string>
+    <string name="error_current_password_wrong">Current password is incorrect</string>
+    <string name="error_change_password_failed">Could not change password: %1$s</string>
+
+    <!-- Screen 14 - About Screen -->
+    <string name="about_title">About Us</string>
+    <string name="about_body">MMM Social Workers &amp; Associates provides compassionate, confidential and evidence-based counselling services for individuals, families, couples and organisations across Midrand, Johannesburg, Centurion, and online.\n\nOur Mission: To empower individuals, families and communities through compassionate, ethical and evidence-based social work services.\n\nOur Vision: To become a trusted leader in professional social work by promoting wellbeing, resilience and positive social change.\n\nOur Values: Integrity, compassion, respect, confidentiality and professionalism guide everything we do.</string>
+
+    <!-- Screen 15 - Privacy Policy Screen -->
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="privacy_policy_body">MMM Social Workers &amp; Associates is committed to protecting your personal information in accordance with the Protection of Personal Information Act 4 of 2013 (POPIA).\n\nInformation collected through this app (your name, email, phone number, and booking details) is used solely to manage your appointments with the practice, and is not shared with third parties beyond what is necessary to provide this service.\n\nYou may request access to, correction of, or deletion of your personal information at any time via the Settings screen or by contacting the practice directly.</string>
+
+    <!-- Screen 16 - Terms and Conditions Screen -->
+    <string name="terms_title">Terms and Conditions</string>
+    <string name="terms_body">By using this application, you agree to provide accurate information when registering and booking appointments.\n\nBookings submitted through this app are requests and are subject to confirmation by MMM Social Workers &amp; Associates. Session fees will be confirmed by our team before your appointment is finalised.\n\nCancellations made through the app are permanent. To reschedule, please contact the practice directly.\n\nThis application does not process payments and does not generate video consultation links; both are arranged directly with the practice.</string>
+
+    <!-- Screen 17 - FAQ Screen -->
+    <string name="faq_title">Frequently Asked Questions</string>
+
+    <!-- Screen 18 - Admin Dashboard -->
+    <string name="admin_dashboard_title">Admin Dashboard</string>
+    <string name="summary_pending">Pending</string>
+    <string name="summary_confirmed">Confirmed</string>
+    <string name="summary_completed">Completed</string>
+    <string name="summary_cancelled">Cancelled</string>
+    <string name="filter_status_label">Status</string>
+    <string name="filter_location_label">Location</string>
+    <string name="filter_date_label">Date</string>
+    <string name="btn_clear_filters">Clear Filters</string>
+    <string-array name="status_filter_options">
+        <item>All</item>
+        <item>Pending</item>
+        <item>Confirmed</item>
+        <item>Cancelled</item>
+        <item>Completed</item>
+    </string-array>
+    <string-array name="location_filter_options">
+        <item>All</item>
+        <item>Midrand</item>
+        <item>Johannesburg</item>
+        <item>Centurion</item>
+        <item>Online</item>
+    </string-array>
+    <string name="empty_admin_bookings_message">No bookings match the current filters.</string>
+
+    <!-- Screen 19 - Booking Detail (Admin) -->
+    <string name="booking_detail_title">Booking Detail</string>
+    <string name="label_client_name">Client</string>
+    <string name="label_client_contact">Contact</string>
+    <string name="label_service">Service</string>
+    <string name="label_type_location">Type / Location</string>
+    <string name="label_date_time">Date &amp; Time</string>
+    <string name="label_additional_info">Additional Information</string>
+    <string name="label_status">Status</string>
+    <string name="label_paid">Paid</string>
+    <string name="btn_confirm_booking">Confirm</string>
+    <string name="btn_decline_booking">Decline</string>
+    <string name="btn_mark_completed">Mark as Completed</string>
+    <string name="booking_confirmed_message">Booking confirmed</string>
+    <string name="booking_declined_message">Booking declined</string>
+    <string name="booking_completed_message">Booking marked as completed</string>
+    <string name="paid_status_updated">Paid status updated</string>
+    <string name="error_action_failed">Action failed: %1$s</string>
+    <string name="no_additional_info">None provided</string>
+
+    <!-- Screen 20 - Practice Information (Admin) -->
+    <string name="practice_info_title">Practice Information</string>
+    <string name="label_practice_phone">Phone</string>
+    <string name="label_practice_email">Email</string>
+    <string name="label_whatsapp_link">WhatsApp Link</string>
+    <string name="label_operating_days">Operating Days</string>
+    <string name="label_hours_start">Opening Time (HH:mm)</string>
+    <string name="label_hours_end">Closing Time (HH:mm)</string>
+    <string name="label_crisis_note">Crisis Line Note</string>
+    <string name="label_locations_readonly">Locations (fixed, not editable here)</string>
+    <string name="practice_info_updated_message">Practice information updated</string>
+    <string name="error_practice_info_failed">Could not update: %1$s</string>
+
+    <!-- admin_analytics_title -->
+    <string name="admin_analytics_title">Booking Overview</string>
+
+    <!-- logout -->
+    <string name="btn_logout_top">Logout</string>
+
+    <!-- Offline indicator - Innovation Feature -->
+    <string name="offline_banner_text">You\'re offline — changes will sync once you\'re back online</string>
 </resources>
