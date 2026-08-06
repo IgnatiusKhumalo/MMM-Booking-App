@@ -90,7 +90,7 @@
     <string name="label_preferred_time">Preferred Time</string>
     <string name="hint_additional_info">Additional Information (optional)</string>
     <string name="fee_note">Session fees vary by service. Our team will contact you with a quotation before your appointment is confirmed.</string>
-    <string name="online_note">Online consultations available depending on your needs.</string>
+    <string name="online_note">Location is not required — this appointment will be conducted online, so no physical address applies.</string>
     <string name="btn_submit_booking">Submit Booking Request</string>
     <string name="tap_to_select_date">Tap to select a date</string>
     <string name="tap_to_select_time">Tap to select a time</string>
