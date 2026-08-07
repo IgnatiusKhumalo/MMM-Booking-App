@@ -17,6 +17,7 @@ import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.admin.AdminDashboardActivity;
 import com.mmm.bookingapp.client.HomeActivity;
 import com.mmm.bookingapp.utils.FirebaseRefs;
+import com.mmm.bookingapp.utils.NetworkStatusHelper;
 
 /**
  * Screen 4 - Login Screen (shared, role-aware).
@@ -26,6 +27,14 @@ import com.mmm.bookingapp.utils.FirebaseRefs;
  * email-verification check, this reads the user's "role" field from
  * Firestore and routes to HomeActivity (client) or AdminDashboardActivity
  * (admin) accordingly.
+ *
+ * Fresh sign-in ALWAYS requires connectivity - there is no way to verify
+ * a password offline, in any app. Connectivity is checked before
+ * attempting sign-in, so the user gets a clear explanation instead of
+ * Firebase's raw network error text. Note this only applies to a fresh
+ * login attempt; a user who is already signed in from a previous session
+ * is routed straight past this screen by MainActivity's cached-session
+ * check, without needing connectivity.
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -63,6 +72,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
+        // Checked first, before any field validation, so offline users get
+        // this specific explanation rather than filling in the form only
+        // to see a confusing network error afterwards.
+        if (!NetworkStatusHelper.isOnline(this)) {
+            Toast.makeText(this, R.string.error_offline_login, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString();
 
@@ -97,9 +114,15 @@ public class LoginActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     setLoading(false);
-                    Toast.makeText(this,
-                            getString(R.string.error_login_failed, e.getMessage()),
-                            Toast.LENGTH_LONG).show();
+                    if (!NetworkStatusHelper.isOnline(this)) {
+                        // Connectivity dropped between the initial check and
+                        // now - same honest message rather than raw error text.
+                        Toast.makeText(this, R.string.error_offline_login, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this,
+                                getString(R.string.error_login_failed, e.getMessage()),
+                                Toast.LENGTH_LONG).show();
+                    }
                 });
     }
 

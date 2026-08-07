@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.adapters.BookingListAdapter;
 import com.mmm.bookingapp.models.Booking;
 import com.mmm.bookingapp.utils.FirebaseRefs;
+import com.mmm.bookingapp.utils.NetworkStatusHelper;
 import com.mmm.bookingapp.utils.NotificationHelper;
 
 import java.util.ArrayList;
@@ -29,11 +31,20 @@ import java.util.List;
  * else's data even if attempted). Cancel requires confirming the custom
  * permanent-action dialog before anything is written, and also cancels
  * that booking's scheduled reminder notification.
+ *
+ * Offline behaviour, precisely: Firestore's offline cache only holds data
+ * that was already loaded at least once while online. If this screen has
+ * never successfully loaded before on this device, opening it offline
+ * will genuinely show nothing to load - not a bug, but a real limit of
+ * what "offline" can mean (it preserves what was already seen, it cannot
+ * retrieve data it never received). The banner below makes this explicit
+ * rather than leaving an unexplained empty or failed state.
  */
 public class MyBookingsActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
     private RecyclerView recyclerBookings;
     private View tvEmptyState;
+    private TextView tvOfflineBanner;
     private final List<Booking> bookingList = new ArrayList<>();
     private BookingListAdapter adapter;
 
@@ -47,6 +58,7 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
 
         recyclerBookings = findViewById(R.id.recyclerBookings);
         tvEmptyState = findViewById(R.id.tvEmptyState);
+        tvOfflineBanner = findViewById(R.id.tvOfflineBanner);
         recyclerBookings.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new BookingListAdapter(bookingList, false, this);
@@ -65,6 +77,9 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
         String uid = FirebaseRefs.getAuth().getUid();
         if (uid == null) return;
 
+        boolean online = NetworkStatusHelper.isOnline(this);
+        tvOfflineBanner.setVisibility(online ? View.GONE : View.VISIBLE);
+
         FirebaseRefs.bookingsCollection()
                 .whereEqualTo("clientId", uid)
                 .get()
@@ -79,13 +94,28 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
                     tvEmptyState.setVisibility(bookingList.isEmpty() ? View.VISIBLE : View.GONE);
                     recyclerBookings.setVisibility(bookingList.isEmpty() ? View.GONE : View.VISIBLE);
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, getString(R.string.error_cancel_failed, e.getMessage()), Toast.LENGTH_LONG).show()
-                );
+                .addOnFailureListener(e -> {
+                    // No cache existed to fall back on (nothing was ever
+                    // loaded on this device while online) - show the empty
+                    // state rather than a raw error, since the offline
+                    // banner above already explains why.
+                    if (!NetworkStatusHelper.isOnline(this)) {
+                        bookingList.clear();
+                        adapter.notifyDataSetChanged();
+                        tvEmptyState.setVisibility(View.VISIBLE);
+                        recyclerBookings.setVisibility(View.GONE);
+                    } else {
+                        Toast.makeText(this, getString(R.string.error_cancel_failed, e.getMessage()), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     @Override
     public void onCancelClick(Booking booking) {
+        if (!NetworkStatusHelper.isOnline(this)) {
+            Toast.makeText(this, R.string.error_offline_booking, Toast.LENGTH_LONG).show();
+            return;
+        }
         showCancelConfirmationDialog(booking);
     }
 

@@ -46,9 +46,15 @@ import java.util.Locale;
  *    (see NotificationHelper for the full explanation of why admin-action
  *    notifications are NOT implemented here).
  * 6. A live offline banner (Innovation Feature) - Firestore's built-in
- *    offline persistence means a booking submitted without connectivity
- *    is not lost, it queues locally and syncs automatically once back
- *    online; this banner is the documented UI indicator of that state.
+ *    offline persistence means most app functions (viewing bookings,
+ *    Contact, Settings) keep working offline. Booking SUBMISSION is the
+ *    one deliberate exception: it uses a Firestore transaction to check
+ *    bookedSlots and prevent double-booking, and Firestore transactions
+ *    require live connectivity by design - they cannot be queued offline,
+ *    since their entire guarantee depends on reading the server's current
+ *    state before committing. This is a genuine Firestore constraint, not
+ *    a bug - submission is blocked with a clear explanation while offline,
+ *    rather than allowed to fail with a raw network error.
  */
 public class BookAppointmentActivity extends AppCompatActivity {
 
@@ -188,6 +194,16 @@ public class BookAppointmentActivity extends AppCompatActivity {
     }
 
     private void attemptSubmit() {
+        // Booking submission requires connectivity - see class-level comment
+        // for why (Firestore transactions cannot run offline). Checked
+        // first, before any field validation, so the user gets this
+        // specific explanation rather than a confusing network error
+        // after filling in the whole form.
+        if (!NetworkStatusHelper.isOnline(this)) {
+            Toast.makeText(this, R.string.error_offline_booking, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if (selectedDate == null) {
             Toast.makeText(this, R.string.error_select_date, Toast.LENGTH_SHORT).show();
             return;
@@ -273,6 +289,8 @@ public class BookAppointmentActivity extends AppCompatActivity {
      * happen inside one transaction, there is no window where two clients
      * could both pass the "slot is free" check for the same slot - this is
      * exactly the mechanism documented in the Blueprint's Section 6 fix.
+     * Requires connectivity - already checked in attemptSubmit() before
+     * reaching here.
      */
     private void submitBookingTransaction(String uid, String service, String consultationType,
                                           String location, int duration, String additionalInfo) {
@@ -310,6 +328,11 @@ public class BookAppointmentActivity extends AppCompatActivity {
             setLoading(false);
             if ("SLOT_TAKEN".equals(e.getMessage())) {
                 Toast.makeText(this, R.string.error_slot_taken, Toast.LENGTH_LONG).show();
+            } else if (!NetworkStatusHelper.isOnline(this)) {
+                // Connectivity dropped mid-submission (e.g. between the
+                // initial check and now) - same honest explanation rather
+                // than the raw Firestore error message.
+                Toast.makeText(this, R.string.error_offline_booking, Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(this, getString(R.string.error_booking_failed, e.getMessage()), Toast.LENGTH_LONG).show();
             }

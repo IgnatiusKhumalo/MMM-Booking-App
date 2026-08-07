@@ -255,6 +255,13 @@
     <!-- admin_analytics_title -->
     <string name="admin_analytics_title">Booking Overview</string>
 
+    <!-- offline message -->
+    <string name="error_offline_login">You\'re offline. Logging in requires an internet connection to verify your credentials. Please connect and try again.</string>
+    <string name="offline_bookings_cached_message">You\'re offline — showing your last-loaded bookings. This list may not include recent changes.</string>
+
+    <!-- error_offline_booking -->
+    <string name="error_offline_booking">You\'re offline. Booking requires an internet connection so we can check real-time availability and prevent double-booking. Please try again once you\'re back online — your other information (My Bookings, Contact, Settings) will still work offline.</string>
+
     <!-- logout -->
     <string name="btn_logout_top">Logout</string>
 

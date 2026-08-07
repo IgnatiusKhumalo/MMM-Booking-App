@@ -40,6 +40,19 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tvOfflineBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_status_pending"
+        android:text="@string/offline_bookings_cached_message"
+        android:textColor="@color/color_text_on_primary"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="10dp"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/tvEmptyState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
