@@ -5,6 +5,10 @@ package com.mmm.bookingapp.models;
  * Data Design (Section 4). The "role" field is write-protected at the
  * Firestore Security Rules level (see Section 5) - this class does not
  * enforce that itself, the server-side rules do.
+ *
+ * marketingOptIn added: tracks the OPTIONAL subscribe checkbox on Register
+ * (Screen 3) - distinct from notificationsEnabled, which governs booking
+ * reminders/confirmations, not marketing/news updates.
  */
 public class User {
     private String uid;
@@ -14,12 +18,13 @@ public class User {
     private String role;               // "client" or "admin"
     private boolean emailVerified;
     private boolean notificationsEnabled;
+    private boolean marketingOptIn;
 
     // Required no-argument constructor for Firestore's automatic deserialization.
     public User() {
     }
 
-    public User(String uid, String name, String email, String phone) {
+    public User(String uid, String name, String email, String phone, boolean marketingOptIn) {
         this.uid = uid;
         this.name = name;
         this.email = email;
@@ -28,6 +33,7 @@ public class User {
         // the Blueprint's "no exceptions" rule
         this.emailVerified = false;
         this.notificationsEnabled = true;
+        this.marketingOptIn = marketingOptIn;
     }
 
     public String getUid() { return uid; }
@@ -50,4 +56,7 @@ public class User {
 
     public boolean isNotificationsEnabled() { return notificationsEnabled; }
     public void setNotificationsEnabled(boolean notificationsEnabled) { this.notificationsEnabled = notificationsEnabled; }
+
+    public boolean isMarketingOptIn() { return marketingOptIn; }
+    public void setMarketingOptIn(boolean marketingOptIn) { this.marketingOptIn = marketingOptIn; }
 }

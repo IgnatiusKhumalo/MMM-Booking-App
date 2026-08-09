@@ -262,6 +262,15 @@
     <!-- error_offline_booking -->
     <string name="error_offline_booking">You\'re offline. Booking requires an internet connection so we can check real-time availability and prevent double-booking. Please try again once you\'re back online — your other information (My Bookings, Contact, Settings) will still work offline.</string>
 
+    <!-- register -->
+    <string name="register_agree_prefix">I have read and agree to the</string>
+    <string name="register_agree_about">About</string>
+    <string name="register_agree_privacy">Privacy Policy</string>
+    <string name="register_agree_and">and</string>
+    <string name="register_agree_terms">Terms and Conditions</string>
+    <string name="register_subscribe_label">Subscribe to news and updates from MMM Social Workers &amp; Associates (optional)</string>
+    <string name="error_must_agree_terms">You must agree to the Privacy Policy and Terms and Conditions to register</string>
+
     <!-- logout -->
     <string name="btn_logout_top">Logout</string>
 

@@ -3,10 +3,17 @@ package com.mmm.bookingapp.auth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +25,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.models.User;
+import com.mmm.bookingapp.settings.AboutActivity;
+import com.mmm.bookingapp.settings.PrivacyPolicyActivity;
+import com.mmm.bookingapp.settings.TermsActivity;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.ValidationUtils;
 
@@ -29,14 +39,28 @@ import com.mmm.bookingapp.utils.ValidationUtils;
  * (never user-selectable - the Register screen has no role field at all,
  * matching the documented security requirement), and triggers Firebase's
  * built-in email verification.
+ *
+ * Consent added: a compulsory checkbox linking to the existing About,
+ * Privacy Policy, and Terms and Conditions screens (tappable words within
+ * the sentence, not separate buttons) - registration is blocked until
+ * this is checked. A second, optional checkbox captures marketing opt-in,
+ * stored on the User model but never required for registration to succeed.
+ *
+ * Includes show/hide password toggles (eye icons) on both Password and
+ * Confirm Password fields, independently controllable.
  */
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText etFullName, etEmail, etPhone, etPassword, etConfirmPassword;
     private TextView tvFullNameError, tvEmailError, tvPhoneError, tvConfirmPasswordError;
-    private TextView tvPasswordRequirements;
+    private TextView tvPasswordRequirements, tvAgreeTerms, tvAgreeTermsError;
+    private CheckBox cbAgreeTerms, cbSubscribe;
     private Button btnSubmit;
     private ProgressBar progressBar;
+
+    private ImageButton btnTogglePassword, btnToggleConfirmPassword;
+    private boolean passwordVisible = false;
+    private boolean confirmPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +78,24 @@ public class RegisterActivity extends AppCompatActivity {
         tvPhoneError = findViewById(R.id.tvPhoneError);
         tvConfirmPasswordError = findViewById(R.id.tvConfirmPasswordError);
         tvPasswordRequirements = findViewById(R.id.tvPasswordRequirements);
+        tvAgreeTerms = findViewById(R.id.tvAgreeTerms);
+        tvAgreeTermsError = findViewById(R.id.tvAgreeTermsError);
+
+        cbAgreeTerms = findViewById(R.id.cbAgreeTerms);
+        cbSubscribe = findViewById(R.id.cbSubscribe);
 
         btnSubmit = findViewById(R.id.btnSubmit);
         progressBar = findViewById(R.id.progressBar);
 
+        btnTogglePassword = findViewById(R.id.btnTogglePassword);
+        btnToggleConfirmPassword = findViewById(R.id.btnToggleConfirmPassword);
+
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
+        btnTogglePassword.setOnClickListener(v -> togglePasswordVisibility());
+        btnToggleConfirmPassword.setOnClickListener(v -> toggleConfirmPasswordVisibility());
+
+        setupAgreeTermsLinks();
 
         // Real-time password feedback, per the Walkthrough's documented behaviour
         // ("the app tells her in real time as she types whether she's met each rule").
@@ -74,6 +111,82 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         btnSubmit.setOnClickListener(v -> attemptRegistration());
+    }
+
+    /** Toggles etPassword between hidden and visible, swapping the icon to match. */
+    private void togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
+        if (passwordVisible) {
+            etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            btnTogglePassword.setImageResource(R.drawable.ic_eye_off);
+        } else {
+            etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            btnTogglePassword.setImageResource(R.drawable.ic_eye);
+        }
+        etPassword.setSelection(etPassword.getText().length());
+    }
+
+    /** Toggles etConfirmPassword independently from etPassword above. */
+    private void toggleConfirmPasswordVisibility() {
+        confirmPasswordVisible = !confirmPasswordVisible;
+        if (confirmPasswordVisible) {
+            etConfirmPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            btnToggleConfirmPassword.setImageResource(R.drawable.ic_eye_off);
+        } else {
+            etConfirmPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            btnToggleConfirmPassword.setImageResource(R.drawable.ic_eye);
+        }
+        etConfirmPassword.setSelection(etConfirmPassword.getText().length());
+    }
+
+    /**
+     * Builds the consent sentence as tappable text: "I have read and agree
+     * to the About, Privacy Policy and Terms and Conditions" - each of the
+     * three document names opens its real screen (AboutActivity,
+     * PrivacyPolicyActivity, TermsActivity), so the client can actually
+     * read what they're agreeing to, not just tick a blind box.
+     */
+    private void setupAgreeTermsLinks() {
+        String about = getString(R.string.register_agree_about);
+        String privacy = getString(R.string.register_agree_privacy);
+        String terms = getString(R.string.register_agree_terms);
+
+        String fullText = getString(R.string.register_agree_prefix) + " " + about + ", " + privacy + " "
+                + getString(R.string.register_agree_and) + " " + terms;
+
+        SpannableString spannable = new SpannableString(fullText);
+        int linkColor = getColor(R.color.color_primary);
+
+        addClickableSpan(spannable, fullText, about, linkColor, () ->
+                startActivity(new Intent(this, AboutActivity.class)));
+        addClickableSpan(spannable, fullText, privacy, linkColor, () ->
+                startActivity(new Intent(this, PrivacyPolicyActivity.class)));
+        addClickableSpan(spannable, fullText, terms, linkColor, () ->
+                startActivity(new Intent(this, TermsActivity.class)));
+
+        tvAgreeTerms.setText(spannable);
+        tvAgreeTerms.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    private void addClickableSpan(SpannableString spannable, String fullText, String target,
+                                  int color, Runnable onClick) {
+        int start = fullText.indexOf(target);
+        if (start == -1) return;
+        int end = start + target.length();
+
+        ClickableSpan span = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                onClick.run();
+            }
+            @Override
+            public void updateDrawState(android.text.TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setColor(color);
+                ds.setUnderlineText(true);
+            }
+        };
+        spannable.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     private void attemptRegistration() {
@@ -118,14 +231,23 @@ public class RegisterActivity extends AppCompatActivity {
             tvConfirmPasswordError.setVisibility(View.GONE);
         }
 
+        if (!cbAgreeTerms.isChecked()) {
+            tvAgreeTermsError.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else {
+            tvAgreeTermsError.setVisibility(View.GONE);
+        }
+
         if (!isValid) return;
 
         String fullPhone = "+27" + phoneRemainder;
+        boolean marketingOptIn = cbSubscribe.isChecked();
         setLoading(true);
-        createFirebaseAccount(fullName, email, fullPhone, password);
+        createFirebaseAccount(fullName, email, fullPhone, password, marketingOptIn);
     }
 
-    private void createFirebaseAccount(String fullName, String email, String fullPhone, String password) {
+    private void createFirebaseAccount(String fullName, String email, String fullPhone,
+                                       String password, boolean marketingOptIn) {
         FirebaseAuth auth = FirebaseRefs.getAuth();
 
         auth.createUserWithEmailAndPassword(email, password)
@@ -138,7 +260,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
 
                     String uid = firebaseUser.getUid();
-                    User newUser = new User(uid, fullName, email, fullPhone);
+                    User newUser = new User(uid, fullName, email, fullPhone, marketingOptIn);
                     // role, emailVerified, notificationsEnabled all default correctly
                     // inside the User constructor - see models/User.java
 

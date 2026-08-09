@@ -2,9 +2,11 @@ package com.mmm.bookingapp.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +37,9 @@ import com.mmm.bookingapp.utils.NetworkStatusHelper;
  * login attempt; a user who is already signed in from a previous session
  * is routed straight past this screen by MainActivity's cached-session
  * check, without needing connectivity.
+ *
+ * Includes a show/hide password toggle (eye icon) so the user can
+ * visually confirm what they've typed before submitting.
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -43,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextView tvForgotPassword;
     private View layoutUnverified;
     private ProgressBar progressBar;
+    private ImageButton btnTogglePassword;
+    private boolean passwordVisible = false;
 
     // Held between a failed (unverified) login attempt and a resend tap,
     // so we don't need the user to re-enter their password just to resend.
@@ -60,8 +67,11 @@ public class LoginActivity extends AppCompatActivity {
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         layoutUnverified = findViewById(R.id.layoutUnverified);
         progressBar = findViewById(R.id.progressBar);
+        btnTogglePassword = findViewById(R.id.btnTogglePassword);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
+        btnTogglePassword.setOnClickListener(v -> togglePasswordVisibility());
 
         tvForgotPassword.setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class))
@@ -69,6 +79,23 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLoginSubmit.setOnClickListener(v -> attemptLogin());
         btnResendVerification.setOnClickListener(v -> resendVerificationEmail());
+    }
+
+    /**
+     * Toggles etPassword between hidden (dots) and visible (plain text),
+     * swapping the icon to match, and keeps the cursor at the end of the
+     * text rather than jumping to the start.
+     */
+    private void togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
+        if (passwordVisible) {
+            etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            btnTogglePassword.setImageResource(R.drawable.ic_eye_off);
+        } else {
+            etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            btnTogglePassword.setImageResource(R.drawable.ic_eye);
+        }
+        etPassword.setSelection(etPassword.getText().length());
     }
 
     private void attemptLogin() {

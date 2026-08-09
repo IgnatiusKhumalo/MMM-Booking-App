@@ -59,15 +59,35 @@
                 android:background="@color/color_surface"
                 android:layout_marginBottom="12dp" />
 
-            <EditText
-                android:id="@+id/etPassword"
+            <!-- Password row: EditText + eye toggle icon, same
+                 background container so it still reads as one field -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_password"
-                android:inputType="textPassword"
-                android:padding="14dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:background="@color/color_surface"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp">
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/hint_password"
+                    android:inputType="textPassword"
+                    android:padding="14dp"
+                    android:background="@android:color/transparent" />
+
+                <ImageButton
+                    android:id="@+id/btnTogglePassword"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_eye"
+                    android:contentDescription="@string/hint_password" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvForgotPassword"
