@@ -21,30 +21,34 @@ import com.mmm.bookingapp.utils.NetworkStatusHelper;
 import com.mmm.bookingapp.utils.NotificationHelper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
  * Screen 10 - My Bookings Screen.
  * Loads the logged-in client's own bookings (Firestore Security Rules
  * already enforce that a client can only read their own bookings, per
- * the Blueprint's Section 5 - this query would return nothing for anyone
- * else's data even if attempted). Cancel requires confirming the custom
- * permanent-action dialog before anything is written, and also cancels
- * that booking's scheduled reminder notification.
+ * the Blueprint's Section 5). Cancel requires confirming the custom
+ * permanent-action dialog, and also cancels that booking's scheduled
+ * reminder notification.
  *
  * Offline behaviour, precisely: Firestore's offline cache only holds data
- * that was already loaded at least once while online. If this screen has
- * never successfully loaded before on this device, opening it offline
- * will genuinely show nothing to load - not a bug, but a real limit of
- * what "offline" can mean (it preserves what was already seen, it cannot
- * retrieve data it never received). The banner below makes this explicit
- * rather than leaving an unexplained empty or failed state.
+ * already loaded at least once while online. A first-ever visit to this
+ * screen while offline shows the empty state, not an error.
+ *
+ * Booking history summary (NEW): a simple client-facing count of bookings
+ * made this calendar year, computed entirely from the booking list already
+ * loaded for this screen - no new Firestore read required. Chosen as a
+ * replacement for session-time/login-time tracking, which would have
+ * required new tracking infrastructure and raised privacy considerations
+ * beyond what this app's Privacy Policy currently covers.
  */
 public class MyBookingsActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
     private RecyclerView recyclerBookings;
     private View tvEmptyState;
     private TextView tvOfflineBanner;
+    private TextView tvBookingHistorySummary;
     private final List<Booking> bookingList = new ArrayList<>();
     private BookingListAdapter adapter;
 
@@ -59,6 +63,7 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
         recyclerBookings = findViewById(R.id.recyclerBookings);
         tvEmptyState = findViewById(R.id.tvEmptyState);
         tvOfflineBanner = findViewById(R.id.tvOfflineBanner);
+        tvBookingHistorySummary = findViewById(R.id.tvBookingHistorySummary);
         recyclerBookings.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new BookingListAdapter(bookingList, false, this);
@@ -68,8 +73,6 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
     @Override
     protected void onResume() {
         super.onResume();
-        // Reload every time the screen becomes visible, so a booking made
-        // or cancelled elsewhere is reflected immediately on return.
         loadBookings();
     }
 
@@ -93,21 +96,41 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
                     adapter.notifyDataSetChanged();
                     tvEmptyState.setVisibility(bookingList.isEmpty() ? View.VISIBLE : View.GONE);
                     recyclerBookings.setVisibility(bookingList.isEmpty() ? View.GONE : View.VISIBLE);
+                    updateBookingHistorySummary();
                 })
                 .addOnFailureListener(e -> {
-                    // No cache existed to fall back on (nothing was ever
-                    // loaded on this device while online) - show the empty
-                    // state rather than a raw error, since the offline
-                    // banner above already explains why.
                     if (!NetworkStatusHelper.isOnline(this)) {
                         bookingList.clear();
                         adapter.notifyDataSetChanged();
                         tvEmptyState.setVisibility(View.VISIBLE);
                         recyclerBookings.setVisibility(View.GONE);
+                        tvBookingHistorySummary.setVisibility(View.GONE);
                     } else {
                         Toast.makeText(this, getString(R.string.error_cancel_failed, e.getMessage()), Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    /**
+     * Counts how many of the already-loaded bookings fall within the
+     * current calendar year (by comparing the "yyyy" prefix of each
+     * booking's date string), and displays it as a simple summary line.
+     * No new Firestore read - reuses bookingList already in memory.
+     */
+    private void updateBookingHistorySummary() {
+        if (bookingList.isEmpty()) {
+            tvBookingHistorySummary.setVisibility(View.GONE);
+            return;
+        }
+        String currentYear = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+        int countThisYear = 0;
+        for (Booking b : bookingList) {
+            if (b.getDate() != null && b.getDate().startsWith(currentYear)) {
+                countThisYear++;
+            }
+        }
+        tvBookingHistorySummary.setText(getString(R.string.booking_history_summary, countThisYear));
+        tvBookingHistorySummary.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -138,14 +161,6 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
         dialog.show();
     }
 
-    /**
-     * Sets status to "cancelled" and deletes the matching bookedSlots
-     * document, freeing that slot for other clients - per the Blueprint's
-     * documented cancel behaviour. The slotId is reconstructed using the
-     * exact same format used at booking creation (BookAppointmentActivity),
-     * so both stay in sync. Also cancels the booking's scheduled reminder,
-     * so a cancelled appointment doesn't still trigger a reminder later.
-     */
     private void performCancellation(Booking booking) {
         FirebaseRefs.bookingsCollection().document(booking.getBookingId())
                 .update("status", "cancelled")

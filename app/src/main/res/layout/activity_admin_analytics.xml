@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background"
+    android:scrollbars="vertical"
+    android:scrollbarStyle="outsideOverlay"
+    android:scrollbarThumbVertical="@color/color_primary"
+    android:fadeScrollbars="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/color_primary"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="@color/color_text_on_primary"
+                android:contentDescription="@string/btn_ok" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/analytics_title"
+                android:textColor="@color/color_text_on_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <View android:layout_width="40dp" android:layout_height="1dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Bookings Created card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="14dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/section_bookings_created"
+                    android:textColor="@color/color_text_heading"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="10dp" />
+
+                <!-- Today -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:text="@string/period_today" android:textColor="@color/color_text_primary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvBookingsToday" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/color_text_heading" android:textStyle="bold" android:textSize="15sp" android:layout_marginEnd="10dp" />
+                    <TextView android:id="@+id/tvBookingsTodayChange" android:layout_width="70dp" android:layout_height="wrap_content"
+                        android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- This Week -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:text="@string/period_week" android:textColor="@color/color_text_primary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvBookingsWeek" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/color_text_heading" android:textStyle="bold" android:textSize="15sp" android:layout_marginEnd="10dp" />
+                    <TextView android:id="@+id/tvBookingsWeekChange" android:layout_width="70dp" android:layout_height="wrap_content"
+                        android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- This Month -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:text="@string/period_month" android:textColor="@color/color_text_primary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvBookingsMonth" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/color_text_heading" android:textStyle="bold" android:textSize="15sp" android:layout_marginEnd="10dp" />
+                    <TextView android:id="@+id/tvBookingsMonthChange" android:layout_width="70dp" android:layout_height="wrap_content"
+                        android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- This Year -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:text="@string/period_year" android:textColor="@color/color_text_primary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvBookingsYear" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/color_text_heading" android:textStyle="bold" android:textSize="15sp" android:layout_marginEnd="10dp" />
+                    <TextView android:id="@+id/tvBookingsYearChange" android:layout_width="70dp" android:layout_height="wrap_content"
+                        android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- New Registrations card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="14dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/section_new_registrations"
+                    android:textColor="@color/color_text_heading"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="10dp" />
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:text="@string/period_today" android:textColor="@color/color_text_primary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvRegsToday" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/color_text_heading" android:textStyle="bold" android:textSize="15sp" android:layout_marginEnd="10dp" />
+                    <TextView android:id="@+id/tvRegsTodayChange" android:layout_width="70dp" android:layout_height="wrap_content"
+                        android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:text="@string/period_week" android:textColor="@color/color_text_primary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvRegsWeek" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/color_text_heading" android:textStyle="bold" android:textSize="15sp" android:layout_marginEnd="10dp" />
+                    <TextView android:id="@+id/tvRegsWeekChange" android:layout_width="70dp" android:layout_height="wrap_content"
+                        android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:text="@string/period_month" android:textColor="@color/color_text_primary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvRegsMonth" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/color_text_heading" android:textStyle="bold" android:textSize="15sp" android:layout_marginEnd="10dp" />
+                    <TextView android:id="@+id/tvRegsMonthChange" android:layout_width="70dp" android:layout_height="wrap_content"
+                        android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:text="@string/period_year" android:textColor="@color/color_text_primary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tvRegsYear" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0" android:textColor="@color/color_text_heading" android:textStyle="bold" android:textSize="15sp" android:layout_marginEnd="10dp" />
+                    <TextView android:id="@+id/tvRegsYearChange" android:layout_width="70dp" android:layout_height="wrap_content"
+                        android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Trend projection - explicitly labelled as a simple heuristic -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/color_highlight"
+                android:padding="14dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/trend_section_title"
+                    android:textColor="@color/color_text_heading"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:id="@+id/tvTrendProjection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_text_heading"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/analytics_percent_caveat"
+                android:textColor="@color/color_text_primary"
+                android:textSize="11sp"
+                android:gravity="center" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -6,9 +6,11 @@ package com.mmm.bookingapp.models;
  * Firestore Security Rules level (see Section 5) - this class does not
  * enforce that itself, the server-side rules do.
  *
- * marketingOptIn added: tracks the OPTIONAL subscribe checkbox on Register
- * (Screen 3) - distinct from notificationsEnabled, which governs booking
- * reminders/confirmations, not marketing/news updates.
+ * marketingOptIn: tracks the OPTIONAL subscribe checkbox on Register.
+ * createdAt (NEW): epoch milliseconds at registration, used by the Admin
+ * Analytics screen's date-bucketed registration counts. Accounts created
+ * before this field existed will not have it, and are correctly excluded
+ * from date-bucketed counts by Firestore's own inequality-query behaviour.
  */
 public class User {
     private String uid;
@@ -19,6 +21,7 @@ public class User {
     private boolean emailVerified;
     private boolean notificationsEnabled;
     private boolean marketingOptIn;
+    private long createdAt;
 
     // Required no-argument constructor for Firestore's automatic deserialization.
     public User() {
@@ -34,6 +37,7 @@ public class User {
         this.emailVerified = false;
         this.notificationsEnabled = true;
         this.marketingOptIn = marketingOptIn;
+        this.createdAt = System.currentTimeMillis();
     }
 
     public String getUid() { return uid; }
@@ -59,4 +63,7 @@ public class User {
 
     public boolean isMarketingOptIn() { return marketingOptIn; }
     public void setMarketingOptIn(boolean marketingOptIn) { this.marketingOptIn = marketingOptIn; }
+
+    public long getCreatedAt() { return createdAt; }
+    public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
 }

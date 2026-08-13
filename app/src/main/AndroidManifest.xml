@@ -46,6 +46,7 @@
 
         <activity android:name=".admin.BookingDetailActivity" android:exported="false" />
         <activity android:name=".admin.PracticeInfoActivity" android:exported="false" />
+        <activity android:name=".admin.AdminAnalyticsActivity" android:exported="false" />
 
         <receiver
             android:name=".utils.ReminderBroadcastReceiver"

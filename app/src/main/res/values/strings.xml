@@ -271,6 +271,21 @@
     <string name="register_subscribe_label">Subscribe to news and updates from MMM Social Workers &amp; Associates (optional)</string>
     <string name="error_must_agree_terms">You must agree to the Privacy Policy and Terms and Conditions to register</string>
 
+    <!-- analytics -->
+    <string name="analytics_title">Analytics &amp; Trends</string>
+    <string name="btn_view_analytics">View Detailed Analytics</string>
+    <string name="section_bookings_created">Bookings Created</string>
+    <string name="section_new_registrations">New Registrations</string>
+    <string name="period_today">Today</string>
+    <string name="period_week">This Week</string>
+    <string name="period_month">This Month</string>
+    <string name="period_year">This Year</string>
+    <string name="trend_section_title">Next Week Estimate (Simple Trend)</string>
+    <string name="trend_projection_text">Based on the most recent week-over-week change, next week is roughly estimated at %1$d booking(s). This is a simple trend calculation based on your own recent data — not AI or machine learning.</string>
+    <string name="trend_insufficient_data">Not enough historical data yet for a trend estimate.</string>
+    <string name="analytics_percent_caveat">Percentages are indicative and can vary significantly at low booking volumes.</string>
+    <string name="booking_history_summary">You\'ve made %1$d booking(s) this year</string>
+
     <!-- logout -->
     <string name="btn_logout_top">Logout</string>
 

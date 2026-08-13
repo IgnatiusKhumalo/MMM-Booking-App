@@ -40,9 +40,9 @@ import java.util.Locale;
  * navigate away just to sign out.
  *
  * Includes a Booking Overview analytics section - a proportional bar
- * chart built entirely from plain Android Views (no charting library,
- * no new dependency), fulfilling the Data Visualisation requirement
- * flagged during Deliverable 3 more visibly than the summary strip alone.
+ * chart built entirely from plain Android Views - plus a link to the
+ * separate Admin Analytics screen (time-bucketed stats with percentage
+ * change and a simple trend projection).
  */
 public class AdminDashboardActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
@@ -98,6 +98,9 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
 
         Button btnLogoutAdmin = findViewById(R.id.btnLogoutAdmin);
         btnLogoutAdmin.setOnClickListener(v -> logout());
+
+        Button btnViewAnalytics = findViewById(R.id.btnViewAnalytics);
+        btnViewAnalytics.setOnClickListener(v -> startActivity(new Intent(this, AdminAnalyticsActivity.class)));
 
         setupFilters();
 
@@ -197,12 +200,6 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         updateAnalyticsBars(pending, confirmed, completed, cancelled);
     }
 
-    /**
-     * Builds a real proportional bar chart from plain Views. Each bar's
-     * weight is set to its own count; each matching filler's weight is
-     * set to (largest count - this count), so the largest category always
-     * fills the full track width and the others scale relative to it.
-     */
     private void updateAnalyticsBars(int pending, int confirmed, int completed, int cancelled) {
         int max = Math.max(1, Math.max(Math.max(pending, confirmed), Math.max(completed, cancelled)));
 

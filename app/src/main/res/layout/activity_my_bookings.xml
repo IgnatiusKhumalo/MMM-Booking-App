@@ -52,6 +52,20 @@
         android:padding="10dp"
         android:visibility="gone" />
 
+    <!-- Simple booking history summary - client-facing, computed from
+         data already loaded on this screen, no new Firestore reads -->
+    <TextView
+        android:id="@+id/tvBookingHistorySummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_surface"
+        android:padding="10dp"
+        android:textColor="@color/color_text_heading"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/tvEmptyState"
         android:layout_width="match_parent"
