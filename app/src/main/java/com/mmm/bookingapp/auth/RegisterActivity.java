@@ -9,6 +9,7 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -33,23 +34,13 @@ import com.mmm.bookingapp.utils.ValidationUtils;
 
 /**
  * Screen 3 - Register Screen.
- * Full implementation per the Blueprint: validates all fields using the
- * shared ValidationUtils rules, creates the Firebase Auth account, writes
- * the matching Firestore "users" document with role hardcoded to "client"
- * (never user-selectable - the Register screen has no role field at all,
- * matching the documented security requirement), and triggers Firebase's
- * built-in email verification.
- *
- * Consent added: a compulsory checkbox linking to the existing About,
- * Privacy Policy, and Terms and Conditions screens (tappable words within
- * the sentence, not separate buttons) - registration is blocked until
- * this is checked. A second, optional checkbox captures marketing opt-in,
- * stored on the User model but never required for registration to succeed.
- *
- * Includes show/hide password toggles (eye icons) on both Password and
- * Confirm Password fields, independently controllable.
+ * Unchanged functionally from the previous revision; Log calls added at
+ * key points (attempt, validation failure summary, success, failure)
+ * for the Logging and Monitoring requirement.
  */
 public class RegisterActivity extends AppCompatActivity {
+
+    private static final String TAG = "RegisterActivity";
 
     private EditText etFullName, etEmail, etPhone, etPassword, etConfirmPassword;
     private TextView tvFullNameError, tvEmailError, tvPhoneError, tvConfirmPasswordError;
@@ -97,8 +88,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         setupAgreeTermsLinks();
 
-        // Real-time password feedback, per the Walkthrough's documented behaviour
-        // ("the app tells her in real time as she types whether she's met each rule").
         etPassword.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void onTextChanged(CharSequence s, int a, int b, int c) {
@@ -113,7 +102,6 @@ public class RegisterActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(v -> attemptRegistration());
     }
 
-    /** Toggles etPassword between hidden and visible, swapping the icon to match. */
     private void togglePasswordVisibility() {
         passwordVisible = !passwordVisible;
         if (passwordVisible) {
@@ -126,7 +114,6 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword.setSelection(etPassword.getText().length());
     }
 
-    /** Toggles etConfirmPassword independently from etPassword above. */
     private void toggleConfirmPasswordVisibility() {
         confirmPasswordVisible = !confirmPasswordVisible;
         if (confirmPasswordVisible) {
@@ -139,13 +126,6 @@ public class RegisterActivity extends AppCompatActivity {
         etConfirmPassword.setSelection(etConfirmPassword.getText().length());
     }
 
-    /**
-     * Builds the consent sentence as tappable text: "I have read and agree
-     * to the About, Privacy Policy and Terms and Conditions" - each of the
-     * three document names opens its real screen (AboutActivity,
-     * PrivacyPolicyActivity, TermsActivity), so the client can actually
-     * read what they're agreeing to, not just tick a blind box.
-     */
     private void setupAgreeTermsLinks() {
         String about = getString(R.string.register_agree_about);
         String privacy = getString(R.string.register_agree_privacy);
@@ -196,6 +176,8 @@ public class RegisterActivity extends AppCompatActivity {
         String password = etPassword.getText().toString();
         String confirmPassword = etConfirmPassword.getText().toString();
 
+        Log.d(TAG, "Registration attempt for: " + email);
+
         boolean isValid = true;
 
         if (!ValidationUtils.isValidFullName(fullName)) {
@@ -238,7 +220,10 @@ public class RegisterActivity extends AppCompatActivity {
             tvAgreeTermsError.setVisibility(View.GONE);
         }
 
-        if (!isValid) return;
+        if (!isValid) {
+            Log.w(TAG, "Registration blocked - validation failed for: " + email);
+            return;
+        }
 
         String fullPhone = "+27" + phoneRemainder;
         boolean marketingOptIn = cbSubscribe.isChecked();
@@ -255,19 +240,22 @@ public class RegisterActivity extends AppCompatActivity {
                     FirebaseUser firebaseUser = authResult.getUser();
                     if (firebaseUser == null) {
                         setLoading(false);
+                        Log.e(TAG, "Firebase user was null after account creation for: " + email);
                         Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     String uid = firebaseUser.getUid();
                     User newUser = new User(uid, fullName, email, fullPhone, marketingOptIn);
-                    // role, emailVerified, notificationsEnabled all default correctly
-                    // inside the User constructor - see models/User.java
 
                     FirebaseRefs.usersCollection().document(uid).set(newUser)
-                            .addOnSuccessListener(unused -> sendVerificationEmail(firebaseUser))
+                            .addOnSuccessListener(unused -> {
+                                Log.i(TAG, "Registration successful for: " + email);
+                                sendVerificationEmail(firebaseUser);
+                            })
                             .addOnFailureListener(e -> {
                                 setLoading(false);
+                                Log.e(TAG, "Failed to write user document for: " + email, e);
                                 Toast.makeText(this,
                                         getString(R.string.error_registration_failed, e.getMessage()),
                                         Toast.LENGTH_LONG).show();
@@ -275,6 +263,7 @@ public class RegisterActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     setLoading(false);
+                    Log.e(TAG, "Firebase account creation failed for: " + email, e);
                     Toast.makeText(this,
                             getString(R.string.error_registration_failed, e.getMessage()),
                             Toast.LENGTH_LONG).show();
@@ -285,6 +274,7 @@ public class RegisterActivity extends AppCompatActivity {
         firebaseUser.sendEmailVerification()
                 .addOnCompleteListener(task -> {
                     setLoading(false);
+                    Log.d(TAG, "Verification email sent: " + task.isSuccessful());
                     showSuccessDialog();
                 });
     }
@@ -295,9 +285,6 @@ public class RegisterActivity extends AppCompatActivity {
                 .setMessage(R.string.registration_success_message)
                 .setCancelable(false)
                 .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
-                    // Sign out immediately - account exists but is unverified;
-                    // routing to Login matches the Walkthrough exactly
-                    // ("she checks her email... returns to app and logs in").
                     FirebaseRefs.getAuth().signOut();
                     Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -3,6 +3,7 @@ package com.mmm.bookingapp.auth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,25 +24,13 @@ import com.mmm.bookingapp.utils.NetworkStatusHelper;
 
 /**
  * Screen 4 - Login Screen (shared, role-aware).
- * One single login flow for both Client and Admin, per the Blueprint -
- * there is no separate admin login screen or admin registration path
- * anywhere in this app. After successful Firebase authentication and an
- * email-verification check, this reads the user's "role" field from
- * Firestore and routes to HomeActivity (client) or AdminDashboardActivity
- * (admin) accordingly.
- *
- * Fresh sign-in ALWAYS requires connectivity - there is no way to verify
- * a password offline, in any app. Connectivity is checked before
- * attempting sign-in, so the user gets a clear explanation instead of
- * Firebase's raw network error text. Note this only applies to a fresh
- * login attempt; a user who is already signed in from a previous session
- * is routed straight past this screen by MainActivity's cached-session
- * check, without needing connectivity.
- *
- * Includes a show/hide password toggle (eye icon) so the user can
- * visually confirm what they've typed before submitting.
+ * Unchanged functionally from the previous revision; Log calls added at
+ * key points (attempt, success, failure, unverified block) for the
+ * Logging and Monitoring requirement.
  */
 public class LoginActivity extends AppCompatActivity {
+
+    private static final String TAG = "LoginActivity";
 
     private EditText etEmail, etPassword;
     private Button btnLoginSubmit, btnResendVerification;
@@ -51,8 +40,6 @@ public class LoginActivity extends AppCompatActivity {
     private ImageButton btnTogglePassword;
     private boolean passwordVisible = false;
 
-    // Held between a failed (unverified) login attempt and a resend tap,
-    // so we don't need the user to re-enter their password just to resend.
     private FirebaseUser pendingUnverifiedUser;
 
     @Override
@@ -81,11 +68,6 @@ public class LoginActivity extends AppCompatActivity {
         btnResendVerification.setOnClickListener(v -> resendVerificationEmail());
     }
 
-    /**
-     * Toggles etPassword between hidden (dots) and visible (plain text),
-     * swapping the icon to match, and keeps the cursor at the end of the
-     * text rather than jumping to the start.
-     */
     private void togglePasswordVisibility() {
         passwordVisible = !passwordVisible;
         if (passwordVisible) {
@@ -99,10 +81,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
-        // Checked first, before any field validation, so offline users get
-        // this specific explanation rather than filling in the form only
-        // to see a confusing network error afterwards.
         if (!NetworkStatusHelper.isOnline(this)) {
+            Log.w(TAG, "Login blocked - device offline");
             Toast.makeText(this, R.string.error_offline_login, Toast.LENGTH_LONG).show();
             return;
         }
@@ -115,6 +95,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        Log.i(TAG, "Login attempt for: " + email);
         layoutUnverified.setVisibility(View.GONE);
         setLoading(true);
 
@@ -126,26 +107,26 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Force-refresh verification status from Firebase's servers,
-                    // rather than trusting a possibly-stale local cache.
                     firebaseUser.reload().addOnCompleteListener(reloadTask -> {
                         if (!firebaseUser.isEmailVerified()) {
+                            Log.w(TAG, "Login blocked - email not verified: " + email);
                             setLoading(false);
                             pendingUnverifiedUser = firebaseUser;
                             layoutUnverified.setVisibility(View.VISIBLE);
                             FirebaseRefs.getAuth().signOut();
                             return;
                         }
+                        Log.i(TAG, "Login successful: " + email);
                         routeByRole(firebaseUser.getUid());
                     });
                 })
                 .addOnFailureListener(e -> {
                     setLoading(false);
                     if (!NetworkStatusHelper.isOnline(this)) {
-                        // Connectivity dropped between the initial check and
-                        // now - same honest message rather than raw error text.
+                        Log.w(TAG, "Login failed - connectivity lost mid-attempt");
                         Toast.makeText(this, R.string.error_offline_login, Toast.LENGTH_LONG).show();
                     } else {
+                        Log.e(TAG, "Login failed for " + email, e);
                         Toast.makeText(this,
                                 getString(R.string.error_login_failed, e.getMessage()),
                                 Toast.LENGTH_LONG).show();
@@ -158,11 +139,13 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnSuccessListener(document -> {
                     setLoading(false);
                     if (!document.exists()) {
+                        Log.e(TAG, "User record missing for uid: " + uid);
                         Toast.makeText(this, R.string.error_user_record_missing, Toast.LENGTH_LONG).show();
                         return;
                     }
 
                     String role = document.getString("role");
+                    Log.d(TAG, "Routing by role: " + role);
                     Intent intent;
                     if ("admin".equals(role)) {
                         intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
@@ -175,6 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     setLoading(false);
+                    Log.e(TAG, "Failed to read user record for role routing", e);
                     Toast.makeText(this, R.string.error_user_record_missing, Toast.LENGTH_LONG).show();
                 });
     }
@@ -182,14 +166,16 @@ public class LoginActivity extends AppCompatActivity {
     private void resendVerificationEmail() {
         if (pendingUnverifiedUser == null) return;
         pendingUnverifiedUser.sendEmailVerification()
-                .addOnSuccessListener(unused ->
-                        Toast.makeText(this, R.string.verification_email_resent, Toast.LENGTH_SHORT).show()
-                )
-                .addOnFailureListener(e ->
-                        Toast.makeText(this,
-                                getString(R.string.error_login_failed, e.getMessage()),
-                                Toast.LENGTH_LONG).show()
-                );
+                .addOnSuccessListener(unused -> {
+                    Log.i(TAG, "Verification email resent");
+                    Toast.makeText(this, R.string.verification_email_resent, Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to resend verification email", e);
+                    Toast.makeText(this,
+                            getString(R.string.error_login_failed, e.getMessage()),
+                            Toast.LENGTH_LONG).show();
+                });
     }
 
     private void setLoading(boolean loading) {

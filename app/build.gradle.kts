@@ -37,6 +37,7 @@ android {
 
 dependencies {
     implementation(libs.activity.ktx)
+    androidTestImplementation("androidx.test:core:1.6.1")
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)

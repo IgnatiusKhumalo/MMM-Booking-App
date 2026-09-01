@@ -289,6 +289,14 @@
     <!-- logout -->
     <string name="btn_logout_top">Logout</string>
 
+    <!-- Search -->
+    <string name="search_hint">Search bookings (service, location, status, notes)</string>
+    <string name="btn_export_csv">Export to CSV</string>
+    <string name="export_success_message">Export ready — choose where to save or share it</string>
+    <string name="export_failed_message">Export failed. Please try again.</string>
+    <string name="error_public_holiday">The practice is closed on this date (South African public holiday) — please choose a different date</string>
+    <string name="holidays_load_failed">Could not check public holidays — date will only be checked against weekday and hour rules</string>
+
     <!-- Offline indicator - Innovation Feature -->
     <string name="offline_banner_text">You\'re offline — changes will sync once you\'re back online</string>
 </resources>

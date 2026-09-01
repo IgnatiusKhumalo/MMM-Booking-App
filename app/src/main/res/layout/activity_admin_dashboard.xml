@@ -100,7 +100,6 @@
             android:textSize="14sp"
             android:layout_marginBottom="10dp" />
 
-        <!-- Pending -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -150,7 +149,6 @@
                 android:gravity="end" />
         </LinearLayout>
 
-        <!-- Confirmed -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -200,7 +198,6 @@
                 android:gravity="end" />
         </LinearLayout>
 
-        <!-- Completed -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -250,7 +247,6 @@
                 android:gravity="end" />
         </LinearLayout>
 
-        <!-- Cancelled -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -313,9 +309,24 @@
         android:backgroundTint="@color/color_background"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
-    <!-- Filter row - each Spinner now has a small label above it
-         ("Status" / "Location") so it's clear what each dropdown filters,
-         rather than just showing the bare selected value. -->
+    <!-- Free-text search - combines with the existing dropdown filters
+         rather than replacing them. Searches service, location,
+         consultation type, status, and additional notes. -->
+    <EditText
+        android:id="@+id/etSearchBookings"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_dropdown_field"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:hint="@string/search_hint"
+        android:inputType="text"
+        android:maxLines="1" />
+
+    <!-- Filter row - each Spinner has a label above it. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -392,17 +403,33 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvClearFilters"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        android:text="@string/btn_clear_filters"
-        android:textColor="@color/color_primary"
-        android:textSize="12sp" />
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/tvClearFilters"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_clear_filters"
+            android:textColor="@color/color_primary"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvExportCsv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_export_csv"
+            android:textColor="@color/color_primary"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvEmptyState"

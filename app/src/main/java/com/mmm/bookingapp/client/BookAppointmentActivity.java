@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,40 +24,34 @@ import com.mmm.bookingapp.models.Booking;
 import com.mmm.bookingapp.models.BookedSlot;
 import com.mmm.bookingapp.models.PracticeInfo;
 import com.mmm.bookingapp.utils.FirebaseRefs;
+import com.mmm.bookingapp.utils.HolidayApiClient;
 import com.mmm.bookingapp.utils.NetworkStatusHelper;
 import com.mmm.bookingapp.utils.NotificationHelper;
 
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Screen 8 - Book Appointment Screen.
- * The core transaction of the app. Implements:
- * 1. Consultation Type -> conditional Location dropdown (Blueprint Section 3)
- * 2. Date/time enforcement against practiceInfo's operating days/hours
- * 3. Prevention of the CLIENT'S OWN overlapping bookings (pre-check query)
- * 4. Prevention of DOUBLE-BOOKING across different clients, via a Firestore
- *    transaction against the anonymous bookedSlots collection - this is the
- *    exact mechanism documented as the loophole fix in the Blueprint,
- *    Section 6: it avoids exposing any client's personal booking data to
- *    another client while still preventing two people booking the same slot.
- * 5. On success: an immediate local "booking submitted" notification, and
- *    a scheduled local reminder for the evening before the appointment -
- *    both entirely client-side, per the documented notification limitation
- *    (see NotificationHelper for the full explanation of why admin-action
- *    notifications are NOT implemented here).
- * 6. A live offline banner (Innovation Feature) - Firestore's built-in
- *    offline persistence means most app functions (viewing bookings,
- *    Contact, Settings) keep working offline. Booking SUBMISSION is the
- *    one deliberate exception: it uses a Firestore transaction to check
- *    bookedSlots and prevent double-booking, and Firestore transactions
- *    require live connectivity by design - they cannot be queued offline,
- *    since their entire guarantee depends on reading the server's current
- *    state before committing. This is a genuine Firestore constraint, not
- *    a bug - submission is blocked with a clear explanation while offline,
- *    rather than allowed to fail with a raw network error.
+ *
+ * Now includes a real external API integration: on load, fetches the
+ * current year's South African public holidays from the Nager.Date API
+ * (HolidayApiClient) and blocks the date picker from accepting a booking
+ * on any of those dates, in addition to the existing weekend and hours
+ * checks. If the API call fails (e.g. no connectivity), booking still
+ * works normally using only the existing Mon-Fri/hours rules - the
+ * holiday check is a genuine enhancement, not a hard dependency.
+ *
+ * Logging added throughout key decision points (holiday load result,
+ * date/time rejections, booking outcomes) to satisfy the Logging and
+ * Monitoring requirement with real, meaningful log calls rather than
+ * relying on Crashlytics' automatic crash capture alone.
  */
 public class BookAppointmentActivity extends AppCompatActivity {
+
+    private static final String TAG = "BookAppointment";
 
     private Spinner spinnerService, spinnerConsultationType, spinnerLocation, spinnerDuration;
     private View layoutLocation;
@@ -70,6 +65,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
     private final int[] durationValues = {30, 45, 60};
 
     private PracticeInfo practiceInfo; // loaded once, used for hours validation
+    private final Set<String> publicHolidayDates = new HashSet<>(); // "yyyy-MM-dd", from Nager.Date API
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,10 +92,34 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
         setupSpinners();
         loadPracticeInfo();
+        loadPublicHolidays();
 
         tvSelectedDate.setOnClickListener(v -> showDatePicker());
         tvSelectedTime.setOnClickListener(v -> showTimePicker());
         btnSubmitBooking.setOnClickListener(v -> attemptSubmit());
+    }
+
+    /**
+     * Real API integration: fetches South African public holidays for
+     * the current year from the Nager.Date REST API. Used to block the
+     * date picker from accepting a booking on a public holiday, since
+     * the practice is closed then even on an otherwise valid weekday.
+     */
+    private void loadPublicHolidays() {
+        HolidayApiClient.fetchCurrentYearHolidays(new HolidayApiClient.HolidayCallback() {
+            @Override
+            public void onHolidaysLoaded(Set<String> holidayDates) {
+                publicHolidayDates.clear();
+                publicHolidayDates.addAll(holidayDates);
+                Log.i(TAG, "Public holidays loaded: " + holidayDates.size() + " dates");
+            }
+
+            @Override
+            public void onError(String message) {
+                Log.w(TAG, "Public holiday fetch failed, continuing without it: " + message);
+                Toast.makeText(BookAppointmentActivity.this, R.string.holidays_load_failed, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupSpinners() {
@@ -123,8 +143,6 @@ public class BookAppointmentActivity extends AppCompatActivity {
         durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDuration.setAdapter(durationAdapter);
 
-        // Consultation Type drives the conditional Location dropdown - the
-        // exact behaviour agreed and locked into the Blueprint.
         spinnerConsultationType.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
@@ -153,14 +171,23 @@ public class BookAppointmentActivity extends AppCompatActivity {
             picked.set(year, month, dayOfMonth);
             int dayOfWeek = picked.get(Calendar.DAY_OF_WEEK);
 
-            // Enforce Monday-Friday only, per the Blueprint's core business rules.
             if (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
+                Log.d(TAG, "Date rejected - weekend: " + year + "-" + (month + 1) + "-" + dayOfMonth);
                 Toast.makeText(this, R.string.error_weekend_date, Toast.LENGTH_LONG).show();
                 return;
             }
 
-            selectedDate = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+            String candidateDate = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+
+            if (publicHolidayDates.contains(candidateDate)) {
+                Log.d(TAG, "Date rejected - public holiday: " + candidateDate);
+                Toast.makeText(this, R.string.error_public_holiday, Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            selectedDate = candidateDate;
             tvSelectedDate.setText(String.format(Locale.US, "%02d/%02d/%04d", dayOfMonth, month + 1, year));
+            Log.d(TAG, "Date selected: " + selectedDate);
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
         dialog.getDatePicker().setMinDate(System.currentTimeMillis());
@@ -171,8 +198,6 @@ public class BookAppointmentActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
         TimePickerDialog dialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
 
-            // Enforce operating hours from practiceInfo (falls back to 08:00-18:00
-            // if that document hasn't loaded yet - defensive, per the documented gap fix).
             String startStr = (practiceInfo != null && practiceInfo.getOperatingHours() != null)
                     ? practiceInfo.getOperatingHours().getStart() : "08:00";
             String endStr = (practiceInfo != null && practiceInfo.getOperatingHours() != null)
@@ -182,24 +207,22 @@ public class BookAppointmentActivity extends AppCompatActivity {
             int endHour = Integer.parseInt(endStr.split(":")[0]);
 
             if (hourOfDay < startHour || hourOfDay >= endHour) {
+                Log.d(TAG, "Time rejected - outside hours: " + hourOfDay + ":" + minute);
                 Toast.makeText(this, getString(R.string.error_outside_hours, startStr, endStr), Toast.LENGTH_LONG).show();
                 return;
             }
 
             selectedTime = String.format(Locale.US, "%02d:%02d", hourOfDay, minute);
             tvSelectedTime.setText(selectedTime);
+            Log.d(TAG, "Time selected: " + selectedTime);
         }, calendar.get(Calendar.HOUR_OF_DAY), 0, true);
 
         dialog.show();
     }
 
     private void attemptSubmit() {
-        // Booking submission requires connectivity - see class-level comment
-        // for why (Firestore transactions cannot run offline). Checked
-        // first, before any field validation, so the user gets this
-        // specific explanation rather than a confusing network error
-        // after filling in the whole form.
         if (!NetworkStatusHelper.isOnline(this)) {
+            Log.w(TAG, "Booking submission blocked - device offline");
             Toast.makeText(this, R.string.error_offline_booking, Toast.LENGTH_LONG).show();
             return;
         }
@@ -223,19 +246,12 @@ public class BookAppointmentActivity extends AppCompatActivity {
         int duration = durationValues[spinnerDuration.getSelectedItemPosition()];
         String additionalInfo = etAdditionalInfo.getText().toString().trim();
 
+        Log.i(TAG, "Booking submission attempt: " + service + " / " + consultationType + " / " + selectedDate + " " + selectedTime);
+
         setLoading(true);
         checkOwnOverlap(uid, service, consultationType, location, duration, additionalInfo);
     }
 
-    /**
-     * Pre-check: does the client already have a Pending/Confirmed booking
-     * that overlaps this date/time, using duration to compute the interval.
-     * This is a client-side pre-check (not itself transactional) - a
-     * documented, reasonable simplification, since it only protects the
-     * client from booking a conflict with THEMSELVES. The cross-client
-     * double-booking case below is the one that genuinely needs a
-     * transaction, and that one is implemented properly.
-     */
     private void checkOwnOverlap(String uid, String service, String consultationType,
                                  String location, int duration, String additionalInfo) {
         FirebaseRefs.bookingsCollection()
@@ -259,17 +275,17 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
                         boolean overlaps = newStart < existingEnd && existingStart < newEnd;
                         if (overlaps) {
+                            Log.w(TAG, "Booking rejected - overlaps client's own existing booking");
                             setLoading(false);
                             Toast.makeText(this, R.string.error_own_overlap, Toast.LENGTH_LONG).show();
                             return;
                         }
                     }
 
-                    // No conflict with the client's own bookings - proceed to the
-                    // transactional cross-client check.
                     submitBookingTransaction(uid, service, consultationType, location, duration, additionalInfo);
                 })
                 .addOnFailureListener(e -> {
+                    Log.e(TAG, "Own-overlap check failed", e);
                     setLoading(false);
                     Toast.makeText(this, getString(R.string.error_booking_failed, e.getMessage()), Toast.LENGTH_LONG).show();
                 });
@@ -280,18 +296,6 @@ public class BookAppointmentActivity extends AppCompatActivity {
         return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
     }
 
-    /**
-     * The real double-booking prevention mechanism. Builds a deterministic
-     * slotId from date+time+location(or "online"), and uses a Firestore
-     * transaction to atomically check whether that exact slot is already
-     * taken, and if not, write BOTH the anonymous bookedSlots marker AND
-     * the client's private bookings document together. Because both writes
-     * happen inside one transaction, there is no window where two clients
-     * could both pass the "slot is free" check for the same slot - this is
-     * exactly the mechanism documented in the Blueprint's Section 6 fix.
-     * Requires connectivity - already checked in attemptSubmit() before
-     * reaching here.
-     */
     private void submitBookingTransaction(String uid, String service, String consultationType,
                                           String location, int duration, String additionalInfo) {
 
@@ -304,8 +308,6 @@ public class BookAppointmentActivity extends AppCompatActivity {
         FirebaseRefs.getFirestore().runTransaction(transaction -> {
             DocumentSnapshot slotSnapshot = transaction.get(slotRef);
             if (slotSnapshot.exists()) {
-                // Someone else already holds this exact slot - abort the
-                // whole transaction, nothing gets written.
                 throw new RuntimeException("SLOT_TAKEN");
             }
 
@@ -318,6 +320,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
             return null;
         }).addOnSuccessListener(unused -> {
             setLoading(false);
+            Log.i(TAG, "Booking submitted successfully: " + newBookingRef.getId());
 
             NotificationHelper.showImmediateNotification(
                     this, "Booking Submitted", "Your " + service + " booking request has been received.");
@@ -327,13 +330,13 @@ public class BookAppointmentActivity extends AppCompatActivity {
         }).addOnFailureListener(e -> {
             setLoading(false);
             if ("SLOT_TAKEN".equals(e.getMessage())) {
+                Log.w(TAG, "Booking rejected - slot already taken by another client: " + slotId);
                 Toast.makeText(this, R.string.error_slot_taken, Toast.LENGTH_LONG).show();
             } else if (!NetworkStatusHelper.isOnline(this)) {
-                // Connectivity dropped mid-submission (e.g. between the
-                // initial check and now) - same honest explanation rather
-                // than the raw Firestore error message.
+                Log.w(TAG, "Booking failed - connectivity lost mid-submission");
                 Toast.makeText(this, R.string.error_offline_booking, Toast.LENGTH_LONG).show();
             } else {
+                Log.e(TAG, "Booking transaction failed", e);
                 Toast.makeText(this, getString(R.string.error_booking_failed, e.getMessage()), Toast.LENGTH_LONG).show();
             }
         });

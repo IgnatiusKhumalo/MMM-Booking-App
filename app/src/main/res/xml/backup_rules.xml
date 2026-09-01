@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
-   See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older than API 31
-   See https://developer.android.com/about/versions/12/backup-restore
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Configured for this app: backs up only the theme preference
+   (mmm_theme_prefs, written by ThemeManager) - the only genuine
+   local-only setting this app stores. All other data (bookings,
+   account details) lives in Firestore and does not need device backup.
+   Note: This file is ignored for devices older than API 31.
 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <include domain="sharedpref" path="mmm_theme_prefs.xml" />
 </full-backup-content>

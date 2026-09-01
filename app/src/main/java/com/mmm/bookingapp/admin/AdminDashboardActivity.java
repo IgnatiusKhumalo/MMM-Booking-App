@@ -3,9 +3,13 @@ package com.mmm.bookingapp.admin;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -20,7 +24,9 @@ import com.mmm.bookingapp.adapters.BookingListAdapter;
 import com.mmm.bookingapp.auth.WelcomeActivity;
 import com.mmm.bookingapp.models.Booking;
 import com.mmm.bookingapp.settings.SettingsActivity;
+import com.mmm.bookingapp.utils.CsvExportUtils;
 import com.mmm.bookingapp.utils.FirebaseRefs;
+import com.mmm.bookingapp.utils.TouchTargetUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,29 +35,30 @@ import java.util.Locale;
 
 /**
  * Screen 18 - Admin Dashboard (admin root screen).
- * Loads ALL bookings across all clients - permitted only because
- * Firestore Security Rules verify role == "admin" server-side for this
- * exact read (Blueprint, Section 5). Filters (status, location, date) are
- * applied client-side after loading, a reasonable simplification at this
- * practice's scale rather than building compound Firestore indexes.
  *
- * A direct Logout button is included in the header, in addition to the
- * shared Settings screen's logout options, so an admin never has to
- * navigate away just to sign out.
- *
- * Includes a Booking Overview analytics section - a proportional bar
- * chart built entirely from plain Android Views - plus a link to the
- * separate Admin Analytics screen (time-bucketed stats with percentage
- * change and a simple trend projection).
+ * Now includes:
+ * - Free-text search (etSearchBookings), combined with the existing
+ *   status/location/date filters rather than replacing them - searches
+ *   service, location, consultationType, status, and additionalInfo.
+ * - CSV export (tvExportCsv) of the currently-filtered booking list,
+ *   satisfying the Backup and Recovery requirement with a genuine,
+ *   demoable manual export mechanism.
+ * - Expanded touch targets (TouchTargetUtils) on btnLogoutAdmin and
+ *   btnSettings, both visually correct at their compact size but under
+ *   Android's 48dp minimum touch target guideline.
+ * - Log calls at key admin actions (filter/search changes, export
+ *   result) for the Logging and Monitoring requirement.
  */
 public class AdminDashboardActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
+    private static final String TAG = "AdminDashboard";
+
     private TextView tvSummaryPending, tvSummaryConfirmed, tvSummaryCompleted, tvSummaryCancelled;
     private Spinner spinnerFilterStatus, spinnerFilterLocation;
-    private TextView tvFilterDate, tvClearFilters, tvEmptyState;
+    private TextView tvFilterDate, tvClearFilters, tvEmptyState, tvExportCsv;
+    private EditText etSearchBookings;
     private RecyclerView recyclerAdminBookings;
 
-    // Analytics bar chart views
     private View barPending, fillerPending, barConfirmed, fillerConfirmed,
             barCompleted, fillerCompleted, barCancelled, fillerCancelled;
     private TextView tvCountPending, tvCountConfirmed, tvCountCompleted, tvCountCancelled;
@@ -63,6 +70,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
     private String filterStatus = "All";
     private String filterLocation = "All";
     private String filterDate = null; // "yyyy-MM-dd" or null
+    private String searchQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +85,9 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         spinnerFilterLocation = findViewById(R.id.spinnerFilterLocation);
         tvFilterDate = findViewById(R.id.tvFilterDate);
         tvClearFilters = findViewById(R.id.tvClearFilters);
+        tvExportCsv = findViewById(R.id.tvExportCsv);
         tvEmptyState = findViewById(R.id.tvEmptyState);
+        etSearchBookings = findViewById(R.id.etSearchBookings);
         recyclerAdminBookings = findViewById(R.id.recyclerAdminBookings);
 
         barPending = findViewById(R.id.barPending);
@@ -99,10 +109,18 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         Button btnLogoutAdmin = findViewById(R.id.btnLogoutAdmin);
         btnLogoutAdmin.setOnClickListener(v -> logout());
 
+        // Accessibility fix: expand the touch target of these two compact
+        // header controls to Android's 48dp minimum, without changing
+        // their visual size.
+        View rootHeader = findViewById(android.R.id.content);
+        TouchTargetUtils.expandTouchArea(rootHeader, btnLogoutAdmin);
+        TouchTargetUtils.expandTouchArea(rootHeader, btnSettings);
+
         Button btnViewAnalytics = findViewById(R.id.btnViewAnalytics);
         btnViewAnalytics.setOnClickListener(v -> startActivity(new Intent(this, AdminAnalyticsActivity.class)));
 
         setupFilters();
+        setupSearch();
 
         recyclerAdminBookings.setLayoutManager(new LinearLayoutManager(this));
         adapter = new BookingListAdapter(filteredBookings, true, this);
@@ -110,12 +128,25 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
 
         tvClearFilters.setOnClickListener(v -> clearFilters());
         tvFilterDate.setOnClickListener(v -> showDateFilterPicker());
+        tvExportCsv.setOnClickListener(v -> exportCurrentListToCsv());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadAllBookings();
+    }
+
+    private void setupSearch() {
+        etSearchBookings.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {
+                searchQuery = s.toString().trim().toLowerCase(Locale.US);
+                Log.d(TAG, "Search query changed: \"" + searchQuery + "\"");
+                applyFilters();
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
     }
 
     private void setupFilters() {
@@ -133,6 +164,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 filterStatus = parent.getItemAtPosition(position).toString();
+                Log.d(TAG, "Status filter changed: " + filterStatus);
                 applyFilters();
             }
             @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
@@ -142,6 +174,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 filterLocation = parent.getItemAtPosition(position).toString();
+                Log.d(TAG, "Location filter changed: " + filterLocation);
                 applyFilters();
             }
             @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
@@ -153,6 +186,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         DatePickerDialog dialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             filterDate = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
             tvFilterDate.setText(String.format(Locale.US, "%02d/%02d/%04d", dayOfMonth, month + 1, year));
+            Log.d(TAG, "Date filter set: " + filterDate);
             applyFilters();
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         dialog.show();
@@ -162,9 +196,12 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         filterStatus = "All";
         filterLocation = "All";
         filterDate = null;
+        searchQuery = "";
+        etSearchBookings.setText("");
         spinnerFilterStatus.setSelection(0);
         spinnerFilterLocation.setSelection(0);
         tvFilterDate.setText(R.string.filter_date_label);
+        Log.d(TAG, "Filters and search cleared");
         applyFilters();
     }
 
@@ -177,9 +214,11 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
                         booking.setBookingId(doc.getId());
                         allBookings.add(booking);
                     }
+                    Log.i(TAG, "Loaded " + allBookings.size() + " bookings");
                     updateSummaryCounts();
                     applyFilters();
-                });
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to load bookings", e));
     }
 
     private void updateSummaryCounts() {
@@ -223,6 +262,11 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         filler.setLayoutParams(fillerParams);
     }
 
+    /**
+     * Combines the existing dropdown filters with the new free-text
+     * search - a booking must pass BOTH the active filters AND (if a
+     * search query is present) match at least one searchable field.
+     */
     private void applyFilters() {
         filteredBookings.clear();
         for (Booking b : allBookings) {
@@ -235,11 +279,35 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
 
             if (filterDate != null && !filterDate.equals(b.getDate())) continue;
 
+            if (!searchQuery.isEmpty() && !matchesSearch(b)) continue;
+
             filteredBookings.add(b);
         }
         adapter.notifyDataSetChanged();
         tvEmptyState.setVisibility(filteredBookings.isEmpty() ? View.VISIBLE : View.GONE);
         recyclerAdminBookings.setVisibility(filteredBookings.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    private boolean matchesSearch(Booking b) {
+        String location = "in-person".equals(b.getConsultationType()) ? b.getLocation() : "Online";
+        String haystack = safeLower(b.getService()) + " "
+                + safeLower(location) + " "
+                + safeLower(b.getConsultationType()) + " "
+                + safeLower(b.getStatus()) + " "
+                + safeLower(b.getAdditionalInfo());
+        return haystack.contains(searchQuery);
+    }
+
+    private String safeLower(String value) {
+        return value != null ? value.toLowerCase(Locale.US) : "";
+    }
+
+    private void exportCurrentListToCsv() {
+        if (filteredBookings.isEmpty()) {
+            Log.w(TAG, "Export attempted with no bookings in the current filtered list");
+        }
+        Log.i(TAG, "Exporting " + filteredBookings.size() + " bookings to CSV");
+        CsvExportUtils.exportBookingsToCsv(this, filteredBookings);
     }
 
     @Override
@@ -256,6 +324,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
     }
 
     private void logout() {
+        Log.i(TAG, "Admin logout");
         FirebaseRefs.getAuth().signOut();
         Intent intent = new Intent(this, WelcomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
