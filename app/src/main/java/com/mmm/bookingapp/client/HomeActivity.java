@@ -2,6 +2,7 @@ package com.mmm.bookingapp.client;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -15,13 +16,17 @@ import com.mmm.bookingapp.utils.NetworkStatusHelper;
 /**
  * Screen 6 - Home Screen (client root screen).
  * Root screen per the Blueprint's navigation rule - no back arrow; the
- * system back button/gesture exits the app from here. Welcome message is
- * personalised using the client's own name from their Firestore "users"
- * document, read once on load. Also observes live connectivity to show
- * the offline banner (Innovation Feature UI indicator).
+ * system back button/gesture exits the app from here.
  *
- * A direct Logout button now sits beside the welcome message, so a client
- * can sign out without navigating into Settings first.
+ * Redesigned visually (header with pill Logout, large primary Book
+ * Appointment button, 2x2 card grid for Services/My Bookings/Contact/
+ * Settings) - navigation destinations and logic are UNCHANGED from the
+ * previous version: the four cards route to the exact same four
+ * Activities the previous outlined buttons did, and each destination
+ * screen keeps its own back arrow exactly as before. No bottom
+ * navigation bar was added, per the documented decision to avoid
+ * duplicating navigation across every screen and risking accidental
+ * data loss on form screens.
  */
 public class HomeActivity extends AppCompatActivity {
 
@@ -38,25 +43,25 @@ public class HomeActivity extends AppCompatActivity {
         loadWelcomeMessage();
 
         Button btnBookAppointment = findViewById(R.id.btnBookAppointment);
-        Button btnServices = findViewById(R.id.btnServices);
-        Button btnMyBookings = findViewById(R.id.btnMyBookings);
-        Button btnContact = findViewById(R.id.btnContact);
-        Button btnSettings = findViewById(R.id.btnSettings);
+        View cardServices = findViewById(R.id.btnServices);
+        View cardMyBookings = findViewById(R.id.btnMyBookings);
+        View cardContact = findViewById(R.id.btnContact);
+        View cardSettings = findViewById(R.id.btnSettings);
         Button btnLogoutHome = findViewById(R.id.btnLogoutHome);
 
         btnBookAppointment.setOnClickListener(v ->
                 startActivity(new Intent(this, BookAppointmentActivity.class)));
 
-        btnServices.setOnClickListener(v ->
+        cardServices.setOnClickListener(v ->
                 startActivity(new Intent(this, ServicesActivity.class)));
 
-        btnMyBookings.setOnClickListener(v ->
+        cardMyBookings.setOnClickListener(v ->
                 startActivity(new Intent(this, MyBookingsActivity.class)));
 
-        btnContact.setOnClickListener(v ->
+        cardContact.setOnClickListener(v ->
                 startActivity(new Intent(this, ContactActivity.class)));
 
-        btnSettings.setOnClickListener(v ->
+        cardSettings.setOnClickListener(v ->
                 startActivity(new Intent(this, com.mmm.bookingapp.settings.SettingsActivity.class)));
 
         btnLogoutHome.setOnClickListener(v -> logout());
@@ -76,8 +81,6 @@ public class HomeActivity extends AppCompatActivity {
                         }
                     }
                 });
-        // No failure handling needed here beyond leaving the default
-        // "Welcome" text already set in the layout - non-critical UI text.
     }
 
     private void logout() {

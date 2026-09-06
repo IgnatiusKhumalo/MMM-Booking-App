@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_background">
+    android:background="@color/color_background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <!-- Header: fixed at top, does not participate in centering -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="24dp">
+            android:background="@color/color_surface"
+            android:padding="24dp">
 
             <TextView
                 android:id="@+id/tvWelcome"
@@ -24,84 +26,257 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/home_welcome_default"
-                android:textSize="22sp"
+                android:textSize="26sp"
                 android:textStyle="bold"
                 android:textColor="@color/color_text_heading" />
 
             <Button
                 android:id="@+id/btnLogoutHome"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="56dp"
                 android:minWidth="0dp"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
+                android:paddingStart="28dp"
+                android:paddingEnd="28dp"
                 android:text="@string/btn_logout_top"
                 android:textColor="@color/color_text_on_primary"
-                android:textSize="12sp"
-                android:backgroundTint="@color/color_error" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/color_error"
+                app:cornerRadius="28dp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvOfflineBanner"
+        <!-- Centering container: centers everything below the header in the
+             remaining vertical space, as one block. Adding the brand row
+             below simply makes that block taller - the centering logic
+             re-balances automatically, no manual offset needed. -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/color_status_pending"
-            android:text="@string/offline_banner_text"
-            android:textColor="@color/color_text_on_primary"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:padding="10dp"
-            android:layout_marginBottom="12dp"
-            android:visibility="gone" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnBookAppointment"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:text="@string/btn_book_appointment"
-            android:textColor="@color/color_text_on_primary"
-            android:backgroundTint="@color/color_primary"
-            android:layout_marginBottom="24dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-        <Button
-            android:id="@+id/btnServices"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="@string/btn_services"
-            android:textColor="@color/color_primary"
-            android:backgroundTint="@color/color_background"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_marginBottom="12dp" />
+                <!-- Offline banner - unchanged -->
+                <TextView
+                    android:id="@+id/tvOfflineBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/color_status_pending"
+                    android:text="@string/offline_banner_text"
+                    android:textColor="@color/color_text_on_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone" />
 
-        <Button
-            android:id="@+id/btnMyBookings"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="@string/btn_my_bookings"
-            android:textColor="@color/color_primary"
-            android:backgroundTint="@color/color_background"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_marginBottom="12dp" />
+                <!-- Compact brand row - logo + practice name, reusing the
+                     same text already used on Splash/Welcome for
+                     consistency, sized smaller here since the user is
+                     already logged in and this isn't the primary focus
+                     of this screen. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="22dp">
 
-        <Button
-            android:id="@+id/btnContact"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="@string/btn_contact"
-            android:textColor="@color/color_primary"
-            android:backgroundTint="@color/color_background"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_marginBottom="12dp" />
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/mmm_logo"
+                        android:contentDescription="@string/app_name" />
 
-        <Button
-            android:id="@+id/btnSettings"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="@string/btn_settings"
-            android:textColor="@color/color_primary"
-            android:backgroundTint="@color/color_background"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/welcome_heading"
+                            android:textColor="@color/color_text_heading"
+                            android:textStyle="bold"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/welcome_subheading"
+                            android:textColor="@color/color_text_heading"
+                            android:textStyle="bold"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Primary action -->
+                <Button
+                    android:id="@+id/btnBookAppointment"
+                    android:layout_width="match_parent"
+                    android:layout_height="88dp"
+                    android:text="@string/btn_book_appointment"
+                    android:textColor="@color/color_text_on_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/color_primary"
+                    android:gravity="center"
+                    app:icon="@android:drawable/ic_menu_agenda"
+                    app:iconTint="@color/color_text_on_primary"
+                    app:iconSize="36dp"
+                    app:iconGravity="textStart"
+                    app:iconPadding="16dp"
+                    app:cornerRadius="16dp"
+                    android:layout_marginBottom="26dp" />
+
+                <!-- 2x2 card grid - unchanged -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="14dp">
+
+                    <LinearLayout
+                        android:id="@+id/btnServices"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="7dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:paddingTop="24dp"
+                        android:paddingBottom="24dp"
+                        android:background="@drawable/bg_card_bordered"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@android:drawable/ic_menu_info_details"
+                            app:tint="@color/color_primary"
+                            android:contentDescription="@string/btn_services" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/btn_services"
+                            android:textColor="@color/color_text_heading"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnMyBookings"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="7dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:paddingTop="24dp"
+                        android:paddingBottom="24dp"
+                        android:background="@drawable/bg_card_bordered"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@android:drawable/ic_menu_recent_history"
+                            app:tint="@color/color_primary"
+                            android:contentDescription="@string/btn_my_bookings" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/btn_my_bookings"
+                            android:textColor="@color/color_text_heading"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/btnContact"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="7dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:paddingTop="24dp"
+                        android:paddingBottom="24dp"
+                        android:background="@drawable/bg_card_bordered"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@android:drawable/ic_menu_call"
+                            app:tint="@color/color_primary"
+                            android:contentDescription="@string/btn_contact" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/btn_contact"
+                            android:textColor="@color/color_text_heading"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnSettings"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="7dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:paddingTop="24dp"
+                        android:paddingBottom="24dp"
+                        android:background="@drawable/bg_card_bordered"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@android:drawable/ic_menu_manage"
+                            app:tint="@color/color_primary"
+                            android:contentDescription="@string/btn_settings" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/btn_settings"
+                            android:textColor="@color/color_text_heading"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
