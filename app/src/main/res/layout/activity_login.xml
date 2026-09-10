@@ -3,148 +3,230 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_background">
+    android:background="@color/color_background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- Back arrow now sits inside the same circular icon-button
+             style as Home's Logout icon, for visual consistency. -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_circle_button"
+            android:padding="11dp"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/color_primary"
+            android:contentDescription="@string/btn_ok" />
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:orientation="horizontal"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center_vertical"
-            android:background="@color/color_primary"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
+            android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_revert"
-                app:tint="@color/color_text_on_primary"
-                android:contentDescription="@string/btn_ok" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/login_title"
-                android:textColor="@color/color_text_on_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <View
-                android:layout_width="40dp"
-                android:layout_height="1dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
-
-            <EditText
-                android:id="@+id/etEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_email"
-                android:inputType="textEmailAddress"
-                android:padding="14dp"
-                android:background="@color/color_surface"
-                android:layout_marginBottom="12dp" />
-
-            <!-- Password row: EditText + eye toggle icon, same
-                 background container so it still reads as one field -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@color/color_surface"
-                android:layout_marginBottom="8dp">
-
-                <EditText
-                    android:id="@+id/etPassword"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/hint_password"
-                    android:inputType="textPassword"
-                    android:padding="14dp"
-                    android:background="@android:color/transparent" />
-
-                <ImageButton
-                    android:id="@+id/btnTogglePassword"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:layout_marginEnd="6dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_eye"
-                    android:contentDescription="@string/hint_password" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvForgotPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:text="@string/link_forgot_password"
-                android:textColor="@color/color_primary"
-                android:textStyle="bold"
-                android:padding="8dp"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Shown only when a login attempt hits an unverified account -->
-            <LinearLayout
-                android:id="@+id/layoutUnverified"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/color_surface"
-                android:padding="14dp"
-                android:visibility="gone"
-                android:layout_marginBottom="16dp">
+                android:gravity="center_horizontal"
+                android:padding="28dp">
+
+                <FrameLayout
+                    android:layout_width="84dp"
+                    android:layout_height="84dp"
+                    android:background="@drawable/bg_logo_circle"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageView
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/mmm_logo"
+                        android:contentDescription="@string/app_name" />
+                </FrameLayout>
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/error_email_not_verified"
-                    android:textColor="@color/color_error"
+                    android:text="@string/app_name"
+                    android:textColor="@color/color_primary"
+                    android:textStyle="bold"
                     android:textSize="13sp"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:layout_marginBottom="28dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_welcome_back_title"
+                    android:textColor="@color/color_text_heading"
+                    android:textStyle="bold"
+                    android:textSize="26sp"
+                    android:maxLines="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_subtitle"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="30dp" />
+
+                <!-- Email field - now uses bg_card_bordered, the same
+                     green-bordered card style as Home's branding card
+                     and feature grid, instead of a separately-styled card. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_card_bordered"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:layout_marginBottom="14dp">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_email"
+                        android:contentDescription="@string/hint_email" />
+
+                    <EditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/hint_email"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/color_text_heading"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <!-- Password field - same bg_card_bordered treatment -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_card_bordered"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="6dp">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_lock"
+                        android:contentDescription="@string/hint_password" />
+
+                    <EditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/hint_password"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:textColor="@color/color_text_heading"
+                        android:textSize="14sp" />
+
+                    <ImageButton
+                        android:id="@+id/btnTogglePassword"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_eye"
+                        android:contentDescription="@string/hint_password" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvForgotPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="@string/link_forgot_password"
+                    android:textColor="@color/color_primary"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:padding="8dp"
+                    android:layout_marginTop="6dp"
                     android:layout_marginBottom="10dp" />
 
-                <Button
-                    android:id="@+id/btnResendVerification"
+                <LinearLayout
+                    android:id="@+id/layoutUnverified"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="@string/btn_resend_verification"
-                    android:textColor="@color/color_primary"
-                    android:backgroundTint="@color/color_background"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card_bordered"
+                    android:padding="14dp"
+                    android:visibility="gone"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/error_email_not_verified"
+                        android:textColor="@color/color_error"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="10dp" />
+
+                    <Button
+                        android:id="@+id/btnResendVerification"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="@string/btn_resend_verification"
+                        android:textColor="@color/color_primary"
+                        android:backgroundTint="@color/color_background"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:layout_marginBottom="12dp" />
+
+                <Button
+                    android:id="@+id/btnLoginSubmit"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="@string/btn_login_submit"
+                    android:textColor="@color/color_text_on_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/color_primary"
+                    app:cornerRadius="28dp"
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_footer_tagline"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="11sp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:layout_marginTop="26dp" />
+
             </LinearLayout>
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:layout_marginBottom="12dp" />
-
-            <Button
-                android:id="@+id/btnLoginSubmit"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="@string/btn_login_submit"
-                android:textColor="@color/color_text_on_primary"
-                android:backgroundTint="@color/color_primary" />
-
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

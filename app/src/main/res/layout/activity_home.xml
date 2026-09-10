@@ -8,17 +8,32 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <!-- Header: fixed at top, does not participate in centering -->
+        <!-- Offline banner - unchanged -->
+        <TextView
+            android:id="@+id/tvOfflineBanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_status_pending"
+            android:text="@string/offline_banner_text"
+            android:textColor="@color/color_text_on_primary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone" />
+
+        <!-- 1. HEADER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:background="@color/color_surface"
-            android:padding="24dp">
+            android:layout_marginBottom="20dp">
 
             <TextView
                 android:id="@+id/tvWelcome"
@@ -26,257 +41,403 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/home_welcome_default"
-                android:textSize="26sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="@color/color_text_heading" />
+                android:textColor="@color/color_text_heading"
+                android:maxLines="1"
+                android:ellipsize="end" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/btnLogoutHome"
-                android:layout_width="wrap_content"
-                android:layout_height="56dp"
-                android:minWidth="0dp"
-                android:paddingStart="28dp"
-                android:paddingEnd="28dp"
-                android:text="@string/btn_logout_top"
-                android:textColor="@color/color_text_on_primary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:backgroundTint="@color/color_error"
-                app:cornerRadius="28dp" />
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_circle_button"
+                android:src="@drawable/ic_logout_arrow"
+                app:tint="@color/color_primary"
+                android:padding="11dp"
+                android:contentDescription="@string/btn_logout" />
         </LinearLayout>
 
-        <!-- Centering container: centers everything below the header in the
-             remaining vertical space, as one block. Adding the brand row
-             below simply makes that block taller - the centering logic
-             re-balances automatically, no manual offset needed. -->
+        <!-- 2. BRANDING CARD - logo shown edge-to-edge, no wrapper/background -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:background="@drawable/bg_card_bordered"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:layout_width="84dp"
+                android:layout_height="84dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/mmm_logo"
+                android:contentDescription="@string/app_name" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/color_text_heading"
+                    android:textStyle="bold"
+                    android:textSize="17sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_brand_subtitle"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="13sp"
+                    android:layout_marginTop="2dp"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 3. NEXT APPOINTMENT CARD -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_bordered"
+            android:layout_marginBottom="16dp">
+
+            <!-- thin accent line -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@color/color_primary" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="18dp">
 
-                <!-- Offline banner - unchanged -->
-                <TextView
-                    android:id="@+id/tvOfflineBanner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/color_status_pending"
-                    android:text="@string/offline_banner_text"
-                    android:textColor="@color/color_text_on_primary"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:layout_marginBottom="16dp"
-                    android:visibility="gone" />
-
-                <!-- Compact brand row - logo + practice name, reusing the
-                     same text already used on Splash/Welcome for
-                     consistency, sized smaller here since the user is
-                     already logged in and this isn't the primary focus
-                     of this screen. -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="22dp">
+                    android:layout_marginBottom="8dp">
 
                     <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/mmm_logo"
-                        android:contentDescription="@string/app_name" />
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_calendar_clock"
+                        app:tint="@color/color_primary" />
 
-                    <LinearLayout
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="10dp"
+                        android:text="@string/home_next_appointment_title"
+                        android:textColor="@color/color_text_heading"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginStart="12dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/welcome_heading"
-                            android:textColor="@color/color_text_heading"
-                            android:textStyle="bold"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/welcome_subheading"
-                            android:textColor="@color/color_text_heading"
-                            android:textStyle="bold"
-                            android:textSize="16sp" />
-                    </LinearLayout>
+                        android:text="@string/home_no_upcoming_bookings"
+                        android:textColor="@color/color_text_primary"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
                 </LinearLayout>
 
-                <!-- Primary action -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_next_appointment_note"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="16dp"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
+
                 <Button
                     android:id="@+id/btnBookAppointment"
                     android:layout_width="match_parent"
-                    android:layout_height="88dp"
+                    android:layout_height="60dp"
                     android:text="@string/btn_book_appointment"
                     android:textColor="@color/color_text_on_primary"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:backgroundTint="@color/color_primary"
                     android:gravity="center"
-                    app:icon="@android:drawable/ic_menu_agenda"
+                    app:icon="@drawable/ic_arrow_right"
                     app:iconTint="@color/color_text_on_primary"
-                    app:iconSize="36dp"
-                    app:iconGravity="textStart"
-                    app:iconPadding="16dp"
-                    app:cornerRadius="16dp"
-                    android:layout_marginBottom="26dp" />
-
-                <!-- 2x2 card grid - unchanged -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="14dp">
-
-                    <LinearLayout
-                        android:id="@+id/btnServices"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="7dp"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:paddingTop="24dp"
-                        android:paddingBottom="24dp"
-                        android:background="@drawable/bg_card_bordered"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:src="@android:drawable/ic_menu_info_details"
-                            app:tint="@color/color_primary"
-                            android:contentDescription="@string/btn_services" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="@string/btn_services"
-                            android:textColor="@color/color_text_heading"
-                            android:textStyle="bold"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btnMyBookings"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="7dp"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:paddingTop="24dp"
-                        android:paddingBottom="24dp"
-                        android:background="@drawable/bg_card_bordered"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:src="@android:drawable/ic_menu_recent_history"
-                            app:tint="@color/color_primary"
-                            android:contentDescription="@string/btn_my_bookings" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="@string/btn_my_bookings"
-                            android:textColor="@color/color_text_heading"
-                            android:textStyle="bold"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:id="@+id/btnContact"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="7dp"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:paddingTop="24dp"
-                        android:paddingBottom="24dp"
-                        android:background="@drawable/bg_card_bordered"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:src="@android:drawable/ic_menu_call"
-                            app:tint="@color/color_primary"
-                            android:contentDescription="@string/btn_contact" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="@string/btn_contact"
-                            android:textColor="@color/color_text_heading"
-                            android:textStyle="bold"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btnSettings"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="7dp"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:paddingTop="24dp"
-                        android:paddingBottom="24dp"
-                        android:background="@drawable/bg_card_bordered"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:src="@android:drawable/ic_menu_manage"
-                            app:tint="@color/color_primary"
-                            android:contentDescription="@string/btn_settings" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="@string/btn_settings"
-                            android:textColor="@color/color_text_heading"
-                            android:textStyle="bold"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-                </LinearLayout>
-
+                    app:iconGravity="end"
+                    app:iconPadding="12dp"
+                    app:cornerRadius="14dp" />
             </LinearLayout>
         </LinearLayout>
+
+        <!-- 4. FEATURES GRID 2x2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnServices"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1.5dp"
+                app:strokeColor="@color/color_primary"
+                app:cardBackgroundColor="@color/color_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="22dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_heart_filled"
+                        app:tint="@color/color_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/btn_services"
+                        android:textColor="@color/color_text_heading"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/home_subtitle_services"
+                        android:textColor="@color/color_text_primary"
+                        android:textSize="11sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnMyBookings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1.5dp"
+                app:strokeColor="@color/color_primary"
+                app:cardBackgroundColor="@color/color_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="22dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_calendar_check"
+                        app:tint="@color/color_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/btn_my_bookings"
+                        android:textColor="@color/color_text_heading"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/home_subtitle_bookings"
+                        android:textColor="@color/color_text_primary"
+                        android:textSize="11sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnContact"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1.5dp"
+                app:strokeColor="@color/color_primary"
+                app:cardBackgroundColor="@color/color_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="22dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_phone_line"
+                        app:tint="@color/color_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/btn_contact"
+                        android:textColor="@color/color_text_heading"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/home_subtitle_contact"
+                        android:textColor="@color/color_text_primary"
+                        android:textSize="11sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnSettings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1.5dp"
+                app:strokeColor="@color/color_primary"
+                app:cardBackgroundColor="@color/color_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="22dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_settings_sliders"
+                        app:tint="@color/color_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/btn_settings"
+                        android:textColor="@color/color_text_heading"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/home_subtitle_settings"
+                        android:textColor="@color/color_text_primary"
+                        android:textSize="11sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- 5. FOOTER SUPPORT BAR -->
+        <LinearLayout
+            android:id="@+id/layoutFooterSupport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_pill_outline"
+            android:padding="16dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_phone_line"
+                app:tint="@color/color_text_primary" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:text="@string/home_footer_support"
+                android:textColor="@color/color_text_primary"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_arrow_right"
+                app:tint="@color/color_text_primary" />
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

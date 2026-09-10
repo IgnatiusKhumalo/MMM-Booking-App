@@ -289,6 +289,22 @@
     <!-- logout -->
     <string name="btn_logout_top">Logout</string>
 
+    <!-- subtitle -->
+    <string name="home_next_appointment_title">Next Appointment</string>
+    <string name="home_no_upcoming_bookings">No upcoming bookings</string>
+    <string name="home_next_appointment_note">Once confirmed, it will appear in My Bookings tab</string>
+    <string name="home_brand_subtitle">Social Workers &amp; Associates</string>
+    <string name="home_subtitle_services">Browse services</string>
+    <string name="home_subtitle_bookings">View &amp; manage</string>
+    <string name="home_subtitle_contact">Get in touch</string>
+    <string name="home_subtitle_settings">App preferences</string>
+
+    <!-- login -->
+    <string name="login_welcome_back_title">Welcome Back</string>
+    <string name="login_subtitle">We\'re here for you. Sign in to continue.</string>
+    <string name="login_footer_tagline">Secure  •  Confidential  •  Compassionate Care</string>
+    <string name="home_footer_support">Need support? Contact us 24/7</string>
+
     <!-- Search -->
     <string name="search_hint">Search bookings (service, location, status, notes)</string>
     <string name="btn_export_csv">Export to CSV</string>
