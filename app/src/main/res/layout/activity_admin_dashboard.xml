@@ -1,457 +1,466 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/color_background">
+    android:background="@color/color_background"
+    android:fillViewport="true"
+    android:scrollbars="vertical"
+    android:scrollbarStyle="outsideOverlay"
+    android:scrollbarThumbVertical="@color/color_primary"
+    android:fadeScrollbars="false">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="@color/color_primary"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/admin_dashboard_title"
-            android:textColor="@color/color_text_on_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/color_primary"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/admin_dashboard_title"
+                android:textColor="@color/color_text_on_primary"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnLogoutAdmin"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:minWidth="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/btn_logout_top"
+                android:textColor="@color/color_text_on_primary"
+                android:textSize="12sp"
+                android:backgroundTint="@color/color_error"
+                android:layout_marginEnd="10dp" />
+
+            <LinearLayout
+                android:id="@+id/btnSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@android:drawable/ic_menu_manage"
+                    app:tint="@color/color_text_on_primary"
+                    android:contentDescription="@string/btn_settings" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="@string/btn_settings"
+                    android:textColor="@color/color_text_on_primary"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/color_primary"
+            android:paddingBottom="16dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp">
+
+            <TextView android:id="@+id/tvSummaryPending" style="@style/SummaryBadge" />
+            <TextView android:id="@+id/tvSummaryConfirmed" style="@style/SummaryBadge" />
+            <TextView android:id="@+id/tvSummaryCompleted" style="@style/SummaryBadge" />
+            <TextView android:id="@+id/tvSummaryCancelled" style="@style/SummaryBadge" />
+        </LinearLayout>
+
+        <!-- Data Analytics section - more breathing room around and inside -->
+        <LinearLayout
+            android:id="@+id/cardAnalytics"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:layout_margin="16dp"
+            android:padding="18dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_analytics_title"
+                android:textColor="@color/color_text_heading"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginBottom="14dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/summary_pending"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="11sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="14dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="@color/color_background"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp">
+
+                    <View
+                        android:id="@+id/barPending"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:background="@color/color_status_pending" />
+
+                    <View
+                        android:id="@+id/fillerPending"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvCountPending"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/color_text_heading"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:gravity="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/summary_confirmed"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="11sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="14dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="@color/color_background"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp">
+
+                    <View
+                        android:id="@+id/barConfirmed"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:background="@color/color_status_confirmed" />
+
+                    <View
+                        android:id="@+id/fillerConfirmed"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvCountConfirmed"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/color_text_heading"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:gravity="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/summary_completed"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="11sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="14dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="@color/color_background"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp">
+
+                    <View
+                        android:id="@+id/barCompleted"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:background="@color/color_status_completed" />
+
+                    <View
+                        android:id="@+id/fillerCompleted"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvCountCompleted"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/color_text_heading"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:gravity="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/summary_cancelled"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="11sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="14dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="@color/color_background"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp">
+
+                    <View
+                        android:id="@+id/barCancelled"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:background="@color/color_error" />
+
+                    <View
+                        android:id="@+id/fillerCancelled"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvCountCancelled"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/color_text_heading"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:gravity="end" />
+            </LinearLayout>
+
+        </LinearLayout>
 
         <Button
-            android:id="@+id/btnLogoutAdmin"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:minWidth="0dp"
+            android:id="@+id/btnViewAnalytics"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="18dp"
+            android:text="@string/btn_view_analytics"
+            android:textColor="@color/color_primary"
+            android:backgroundTint="@color/color_background"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+        <EditText
+            android:id="@+id/etSearchBookings"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="14dp"
+            android:background="@drawable/bg_dropdown_field"
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
-            android:text="@string/btn_logout_top"
-            android:textColor="@color/color_text_on_primary"
-            android:textSize="12sp"
-            android:backgroundTint="@color/color_error"
-            android:layout_marginEnd="8dp" />
+            android:hint="@string/search_hint"
+            android:inputType="text"
+            android:maxLines="1" />
 
         <LinearLayout
-            android:id="@+id/btnSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_manage"
-                app:tint="@color/color_text_on_primary"
-                android:contentDescription="@string/btn_settings" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text="@string/btn_settings"
-                android:textColor="@color/color_text_on_primary"
-                android:textSize="11sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/color_primary"
-        android:paddingBottom="10dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
-
-        <TextView android:id="@+id/tvSummaryPending" style="@style/SummaryBadge" />
-        <TextView android:id="@+id/tvSummaryConfirmed" style="@style/SummaryBadge" />
-        <TextView android:id="@+id/tvSummaryCompleted" style="@style/SummaryBadge" />
-        <TextView android:id="@+id/tvSummaryCancelled" style="@style/SummaryBadge" />
-    </LinearLayout>
-
-    <!-- Data Analytics section - proportional bar chart, plain Views only,
-         no charting library. Bar widths are set programmatically in
-         AdminDashboardActivity based on real booking counts. -->
-    <LinearLayout
-        android:id="@+id/cardAnalytics"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/bg_card"
-        android:layout_margin="12dp"
-        android:padding="14dp">
-
-        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/admin_analytics_title"
-            android:textColor="@color/color_text_heading"
-            android:textStyle="bold"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_status_label"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="10sp"
+                    android:layout_marginBottom="4dp" />
+
+                <Spinner
+                    android:id="@+id/spinnerFilterStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@color/color_surface" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_location_label"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="10sp"
+                    android:layout_marginBottom="4dp" />
+
+                <Spinner
+                    android:id="@+id/spinnerFilterLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@color/color_surface" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_date_label"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="10sp"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvFilterDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:gravity="center"
+                    android:text="@string/filter_date_label"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="12sp"
+                    android:background="@color/color_surface" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/tvClearFilters"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/btn_clear_filters"
+                android:textColor="@color/color_primary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvExportCsv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_export_csv"
+                android:textColor="@color/color_primary"
+                android:textStyle="bold"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_admin_bookings_message"
+            android:textColor="@color/color_text_primary"
             android:textSize="14sp"
-            android:layout_marginBottom="10dp" />
+            android:gravity="center"
+            android:padding="32dp"
+            android:visibility="gone" />
 
-        <LinearLayout
+        <!-- List now scrolls as part of the whole page, not its own
+             separate scroll area - height changed from 0dp/weight=1 to
+             wrap_content, since NestedScrollView needs its child to size
+             to its actual content. -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerAdminBookings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:layout_width="76dp"
-                android:layout_height="wrap_content"
-                android:text="@string/summary_pending"
-                android:textColor="@color/color_text_primary"
-                android:textSize="11sp" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="14dp"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:background="@color/color_background"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp">
-
-                <View
-                    android:id="@+id/barPending"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0"
-                    android:background="@color/color_status_pending" />
-
-                <View
-                    android:id="@+id/fillerPending"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvCountPending"
-                android:layout_width="26dp"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/color_text_heading"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:gravity="end" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:layout_width="76dp"
-                android:layout_height="wrap_content"
-                android:text="@string/summary_confirmed"
-                android:textColor="@color/color_text_primary"
-                android:textSize="11sp" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="14dp"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:background="@color/color_background"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp">
-
-                <View
-                    android:id="@+id/barConfirmed"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0"
-                    android:background="@color/color_status_confirmed" />
-
-                <View
-                    android:id="@+id/fillerConfirmed"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvCountConfirmed"
-                android:layout_width="26dp"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/color_text_heading"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:gravity="end" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:layout_width="76dp"
-                android:layout_height="wrap_content"
-                android:text="@string/summary_completed"
-                android:textColor="@color/color_text_primary"
-                android:textSize="11sp" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="14dp"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:background="@color/color_background"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp">
-
-                <View
-                    android:id="@+id/barCompleted"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0"
-                    android:background="@color/color_status_completed" />
-
-                <View
-                    android:id="@+id/fillerCompleted"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvCountCompleted"
-                android:layout_width="26dp"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/color_text_heading"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:gravity="end" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:layout_width="76dp"
-                android:layout_height="wrap_content"
-                android:text="@string/summary_cancelled"
-                android:textColor="@color/color_text_primary"
-                android:textSize="11sp" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="14dp"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:background="@color/color_background"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp">
-
-                <View
-                    android:id="@+id/barCancelled"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0"
-                    android:background="@color/color_error" />
-
-                <View
-                    android:id="@+id/fillerCancelled"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvCountCancelled"
-                android:layout_width="26dp"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/color_text_heading"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:gravity="end" />
-        </LinearLayout>
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp"
+            android:clipToPadding="false" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btnViewAnalytics"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="12dp"
-        android:text="@string/btn_view_analytics"
-        android:textColor="@color/color_primary"
-        android:backgroundTint="@color/color_background"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-    <!-- Free-text search - combines with the existing dropdown filters
-         rather than replacing them. Searches service, location,
-         consultation type, status, and additional notes. -->
-    <EditText
-        android:id="@+id/etSearchBookings"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/bg_dropdown_field"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:hint="@string/search_hint"
-        android:inputType="text"
-        android:maxLines="1" />
-
-    <!-- Filter row - each Spinner has a label above it. -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginEnd="6dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_status_label"
-                android:textColor="@color/color_text_primary"
-                android:textSize="10sp"
-                android:layout_marginBottom="2dp" />
-
-            <Spinner
-                android:id="@+id/spinnerFilterStatus"
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:background="@color/color_surface" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginEnd="6dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_location_label"
-                android:textColor="@color/color_text_primary"
-                android:textSize="10sp"
-                android:layout_marginBottom="2dp" />
-
-            <Spinner
-                android:id="@+id/spinnerFilterLocation"
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:background="@color/color_surface" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_date_label"
-                android:textColor="@color/color_text_primary"
-                android:textSize="10sp"
-                android:layout_marginBottom="2dp" />
-
-            <TextView
-                android:id="@+id/tvFilterDate"
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:gravity="center"
-                android:text="@string/filter_date_label"
-                android:textColor="@color/color_text_primary"
-                android:textSize="12sp"
-                android:background="@color/color_surface" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="8dp">
-
-        <TextView
-            android:id="@+id/tvClearFilters"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/btn_clear_filters"
-            android:textColor="@color/color_primary"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/tvExportCsv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_export_csv"
-            android:textColor="@color/color_primary"
-            android:textStyle="bold"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvEmptyState"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/empty_admin_bookings_message"
-        android:textColor="@color/color_text_primary"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:padding="32dp"
-        android:visibility="gone" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerAdminBookings"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="16dp"
-        android:clipToPadding="false"
-        android:scrollbars="vertical"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbarThumbVertical="@color/color_primary"
-        android:fadeScrollbars="false" />
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

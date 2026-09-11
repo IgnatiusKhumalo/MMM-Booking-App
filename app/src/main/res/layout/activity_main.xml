@@ -6,15 +6,43 @@
     android:gravity="center"
     android:background="@color/color_background">
 
+    <!-- Logo shown edge-to-edge, no wrapper/background/circle - the logo
+         file is already a complete, fully-designed graphic, same rule
+         already applied consistently on Welcome and Home. -->
     <ImageView
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
         android:src="@drawable/mmm_logo"
-        android:contentDescription="@string/app_name" />
+        android:contentDescription="@string/app_name"
+        android:layout_marginBottom="18dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/welcome_heading"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text_heading"
+        android:gravity="center"
+        android:maxLines="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/welcome_subheading"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text_heading"
+        android:gravity="center"
+        android:maxLines="1"
+        android:layout_marginBottom="40dp" />
 
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp" />
+        android:indeterminateTint="@color/color_primary" />
 
 </LinearLayout>
