@@ -8,8 +8,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -36,18 +34,15 @@ import java.util.Locale;
 /**
  * Screen 18 - Admin Dashboard (admin root screen).
  *
- * Now includes:
- * - Free-text search (etSearchBookings), combined with the existing
- *   status/location/date filters rather than replacing them - searches
- *   service, location, consultationType, status, and additionalInfo.
- * - CSV export (tvExportCsv) of the currently-filtered booking list,
- *   satisfying the Backup and Recovery requirement with a genuine,
- *   demoable manual export mechanism.
- * - Expanded touch targets (TouchTargetUtils) on btnLogoutAdmin and
- *   btnSettings, both visually correct at their compact size but under
- *   Android's 48dp minimum touch target guideline.
- * - Log calls at key admin actions (filter/search changes, export
- *   result) for the Logging and Monitoring requirement.
+ * Redesigned per the detailed mockup spec. Key changes from the previous
+ * version, flagged explicitly:
+ * - Settings and Logout are now circular icon-only buttons (View, not
+ *   LinearLayout/Button) - visual type change only.
+ * - The bar chart is now ONE proportional stacked bar instead of 4
+ *   separate comparison bars. updateAnalyticsBars() now computes each
+ *   segment's weight as its raw share of the total (not relative to the
+ *   largest category), and falls back to a neutral grey full-width bar
+ *   when there is no data at all, so the chart never renders blank.
  */
 public class AdminDashboardActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
@@ -55,12 +50,12 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
 
     private TextView tvSummaryPending, tvSummaryConfirmed, tvSummaryCompleted, tvSummaryCancelled;
     private Spinner spinnerFilterStatus, spinnerFilterLocation;
-    private TextView tvFilterDate, tvClearFilters, tvEmptyState, tvExportCsv;
-    private EditText etSearchBookings;
+    private View tvFilterDate;
+    private TextView tvClearFilters, tvEmptyState, tvExportCsv;
+    private android.widget.EditText etSearchBookings;
     private RecyclerView recyclerAdminBookings;
 
-    private View barPending, fillerPending, barConfirmed, fillerConfirmed,
-            barCompleted, fillerCompleted, barCancelled, fillerCancelled;
+    private View barPending, barConfirmed, barCompleted, barCancelled, barEmptyFallback;
     private TextView tvCountPending, tvCountConfirmed, tvCountCompleted, tvCountCancelled;
 
     private final List<Booking> allBookings = new ArrayList<>();
@@ -69,7 +64,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
 
     private String filterStatus = "All";
     private String filterLocation = "All";
-    private String filterDate = null; // "yyyy-MM-dd" or null
+    private String filterDate = null;
     private String searchQuery = "";
 
     @Override
@@ -91,32 +86,28 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         recyclerAdminBookings = findViewById(R.id.recyclerAdminBookings);
 
         barPending = findViewById(R.id.barPending);
-        fillerPending = findViewById(R.id.fillerPending);
         barConfirmed = findViewById(R.id.barConfirmed);
-        fillerConfirmed = findViewById(R.id.fillerConfirmed);
         barCompleted = findViewById(R.id.barCompleted);
-        fillerCompleted = findViewById(R.id.fillerCompleted);
         barCancelled = findViewById(R.id.barCancelled);
-        fillerCancelled = findViewById(R.id.fillerCancelled);
+        barEmptyFallback = findViewById(R.id.barEmptyFallback);
         tvCountPending = findViewById(R.id.tvCountPending);
         tvCountConfirmed = findViewById(R.id.tvCountConfirmed);
         tvCountCompleted = findViewById(R.id.tvCountCompleted);
         tvCountCancelled = findViewById(R.id.tvCountCancelled);
 
-        LinearLayout btnSettings = findViewById(R.id.btnSettings);
+        // Settings and Logout are now plain circular icon buttons -
+        // looked up as View since their XML type is now ImageButton,
+        // not LinearLayout/Button as before.
+        View btnSettings = findViewById(R.id.btnSettings);
         btnSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
 
-        Button btnLogoutAdmin = findViewById(R.id.btnLogoutAdmin);
+        View btnLogoutAdmin = findViewById(R.id.btnLogoutAdmin);
         btnLogoutAdmin.setOnClickListener(v -> logout());
 
-        // Accessibility fix: expand the touch target of these two compact
-        // header controls to Android's 48dp minimum, without changing
-        // their visual size.
-        View rootHeader = findViewById(android.R.id.content);
-        TouchTargetUtils.expandTouchArea(rootHeader, btnLogoutAdmin);
-        TouchTargetUtils.expandTouchArea(rootHeader, btnSettings);
+        TouchTargetUtils.expandTouchArea(findViewById(android.R.id.content), btnLogoutAdmin);
+        TouchTargetUtils.expandTouchArea(findViewById(android.R.id.content), btnSettings);
 
-        Button btnViewAnalytics = findViewById(R.id.btnViewAnalytics);
+        android.widget.Button btnViewAnalytics = findViewById(R.id.btnViewAnalytics);
         btnViewAnalytics.setOnClickListener(v -> startActivity(new Intent(this, AdminAnalyticsActivity.class)));
 
         setupFilters();
@@ -125,6 +116,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         recyclerAdminBookings.setLayoutManager(new LinearLayoutManager(this));
         adapter = new BookingListAdapter(filteredBookings, true, this);
         recyclerAdminBookings.setAdapter(adapter);
+        recyclerAdminBookings.setNestedScrollingEnabled(false);
 
         tvClearFilters.setOnClickListener(v -> clearFilters());
         tvFilterDate.setOnClickListener(v -> showDateFilterPicker());
@@ -142,7 +134,6 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void onTextChanged(CharSequence s, int a, int b, int c) {
                 searchQuery = s.toString().trim().toLowerCase(Locale.US);
-                Log.d(TAG, "Search query changed: \"" + searchQuery + "\"");
                 applyFilters();
             }
             @Override public void afterTextChanged(Editable s) {}
@@ -164,7 +155,6 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 filterStatus = parent.getItemAtPosition(position).toString();
-                Log.d(TAG, "Status filter changed: " + filterStatus);
                 applyFilters();
             }
             @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
@@ -174,7 +164,6 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 filterLocation = parent.getItemAtPosition(position).toString();
-                Log.d(TAG, "Location filter changed: " + filterLocation);
                 applyFilters();
             }
             @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
@@ -185,8 +174,6 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         Calendar calendar = Calendar.getInstance();
         DatePickerDialog dialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             filterDate = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
-            tvFilterDate.setText(String.format(Locale.US, "%02d/%02d/%04d", dayOfMonth, month + 1, year));
-            Log.d(TAG, "Date filter set: " + filterDate);
             applyFilters();
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         dialog.show();
@@ -200,8 +187,6 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         etSearchBookings.setText("");
         spinnerFilterStatus.setSelection(0);
         spinnerFilterLocation.setSelection(0);
-        tvFilterDate.setText(R.string.filter_date_label);
-        Log.d(TAG, "Filters and search cleared");
         applyFilters();
     }
 
@@ -214,7 +199,6 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
                         booking.setBookingId(doc.getId());
                         allBookings.add(booking);
                     }
-                    Log.i(TAG, "Loaded " + allBookings.size() + " bookings");
                     updateSummaryCounts();
                     applyFilters();
                 })
@@ -231,21 +215,31 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
                 case "cancelled": cancelled++; break;
             }
         }
-        tvSummaryPending.setText(pending + " " + getString(R.string.summary_pending));
-        tvSummaryConfirmed.setText(confirmed + " " + getString(R.string.summary_confirmed));
-        tvSummaryCompleted.setText(completed + " " + getString(R.string.summary_completed));
-        tvSummaryCancelled.setText(cancelled + " " + getString(R.string.summary_cancelled));
+        tvSummaryPending.setText(String.valueOf(pending));
+        tvSummaryConfirmed.setText(String.valueOf(confirmed));
+        tvSummaryCompleted.setText(String.valueOf(completed));
+        tvSummaryCancelled.setText(String.valueOf(cancelled));
 
         updateAnalyticsBars(pending, confirmed, completed, cancelled);
     }
 
+    /**
+     * Renders ONE proportional stacked bar: each segment's weight is set
+     * to its own raw count, so - since all four segments and the fallback
+     * share a single row - Android's weight system alone makes each
+     * segment's width naturally proportional to the total. When the total
+     * is zero, all four real segments collapse to zero width and the
+     * fallback grey segment takes the full row instead, so the bar is
+     * never left blank.
+     */
     private void updateAnalyticsBars(int pending, int confirmed, int completed, int cancelled) {
-        int max = Math.max(1, Math.max(Math.max(pending, confirmed), Math.max(completed, cancelled)));
+        int total = pending + confirmed + completed + cancelled;
 
-        setBarWeight(barPending, fillerPending, pending, max);
-        setBarWeight(barConfirmed, fillerConfirmed, confirmed, max);
-        setBarWeight(barCompleted, fillerCompleted, completed, max);
-        setBarWeight(barCancelled, fillerCancelled, cancelled, max);
+        setWeight(barPending, pending);
+        setWeight(barConfirmed, confirmed);
+        setWeight(barCompleted, completed);
+        setWeight(barCancelled, cancelled);
+        setWeight(barEmptyFallback, total == 0 ? 1 : 0);
 
         tvCountPending.setText(String.valueOf(pending));
         tvCountConfirmed.setText(String.valueOf(confirmed));
@@ -253,20 +247,12 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         tvCountCancelled.setText(String.valueOf(cancelled));
     }
 
-    private void setBarWeight(View bar, View filler, int count, int max) {
-        LinearLayout.LayoutParams barParams = (LinearLayout.LayoutParams) bar.getLayoutParams();
-        LinearLayout.LayoutParams fillerParams = (LinearLayout.LayoutParams) filler.getLayoutParams();
-        barParams.weight = count;
-        fillerParams.weight = Math.max(0, max - count);
-        bar.setLayoutParams(barParams);
-        filler.setLayoutParams(fillerParams);
+    private void setWeight(View bar, int weight) {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) bar.getLayoutParams();
+        params.weight = weight;
+        bar.setLayoutParams(params);
     }
 
-    /**
-     * Combines the existing dropdown filters with the new free-text
-     * search - a booking must pass BOTH the active filters AND (if a
-     * search query is present) match at least one searchable field.
-     */
     private void applyFilters() {
         filteredBookings.clear();
         for (Booking b : allBookings) {
@@ -303,17 +289,13 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
     }
 
     private void exportCurrentListToCsv() {
-        if (filteredBookings.isEmpty()) {
-            Log.w(TAG, "Export attempted with no bookings in the current filtered list");
-        }
         Log.i(TAG, "Exporting " + filteredBookings.size() + " bookings to CSV");
         CsvExportUtils.exportBookingsToCsv(this, filteredBookings);
     }
 
     @Override
     public void onCancelClick(Booking booking) {
-        // Not used in admin mode - Cancel button is hidden entirely here,
-        // per BookingListAdapter's documented adminView behaviour.
+        // Not used in admin mode.
     }
 
     @Override

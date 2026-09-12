@@ -289,6 +289,13 @@
     <!-- logout -->
     <string name="btn_logout_top">Logout</string>
 
+    <!-- Dashboard Admin -->
+    <string name="dashboard_header_title">Bookings</string>
+    <string name="admin_dashboard_subtitle">Admin dashboard</string>
+    <string name="filter_status_all">Status: All</string>
+    <string name="filter_location_all">Location: All</string>
+
+
     <!-- subtitle -->
     <string name="home_next_appointment_title">Next Appointment</string>
     <string name="home_no_upcoming_bookings">No upcoming bookings</string>

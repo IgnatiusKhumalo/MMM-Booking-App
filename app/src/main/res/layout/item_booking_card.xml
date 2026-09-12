@@ -1,62 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/color_surface"
-    android:padding="16dp"
-    android:layout_marginBottom="12dp">
+    android:background="@drawable/bg_card"
+    android:padding="14dp"
+    android:layout_marginBottom="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvServiceName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvServiceName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/color_text_heading"
-                android:textStyle="bold"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tvBookingDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/color_text_primary"
-                android:textSize="12sp"
-                android:layout_marginTop="4dp" />
-        </LinearLayout>
+            android:textColor="@color/color_text_heading"
+            android:textSize="15sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
         <TextView
             android:id="@+id/tvStatusBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_status_pill"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
-            android:textColor="@color/color_text_on_primary"
-            android:textSize="10sp"
-            android:textStyle="bold" />
+            android:textColor="@color/color_text_heading"
+            android:textSize="10sp" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvBookingDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/color_text_primary"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp" />
 
     <Button
         android:id="@+id/btnCancelBooking"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="36dp"
         android:text="@string/btn_cancel_booking"
         android:textColor="@color/color_error"
-        android:backgroundTint="@color/color_surface"
+        android:textSize="11sp"
+        android:backgroundTint="@color/color_background"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:visibility="gone" />
 
