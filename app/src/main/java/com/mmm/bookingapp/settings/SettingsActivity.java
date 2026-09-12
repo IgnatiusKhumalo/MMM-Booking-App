@@ -1,10 +1,9 @@
 package com.mmm.bookingapp.settings;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.content.pm.PackageInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
@@ -22,14 +21,11 @@ import com.mmm.bookingapp.utils.ThemeManager;
 
 /**
  * Screen 12 - Settings Screen (client version).
- * The admin-only "Practice Information" section is added on top of this
- * same screen in a later batch, once AdminDashboardActivity and
- * PracticeInfoActivity are built - per the Blueprint, both roles share
- * this Settings screen, with the extra section shown only when role == admin.
- *
- * Logout is now available in three places: a top-of-screen red button
- * (visible immediately, no scrolling required), plus the original
- * Security and Support section buttons further down.
+ * Redesigned to a card-based layout matching Home/Admin Dashboard's
+ * visual language. Reduced from three Logout buttons down to one
+ * (btnLogout, in the Support card) - the earlier top-of-screen and
+ * Security-section Logout buttons were redundant and have been removed
+ * entirely, both from the layout and here.
  */
 public class SettingsActivity extends AppCompatActivity {
 
@@ -77,12 +73,7 @@ public class SettingsActivity extends AppCompatActivity {
         findViewById(R.id.btnFAQ).setOnClickListener(v ->
                 startActivity(new Intent(this, FAQActivity.class)));
 
-        Button btnLogoutTop = findViewById(R.id.btnLogoutTop);
-        Button btnLogoutSecurity = findViewById(R.id.btnLogoutSecurity);
-        Button btnLogoutSupport = findViewById(R.id.btnLogoutSupport);
-        btnLogoutTop.setOnClickListener(v -> logout());
-        btnLogoutSecurity.setOnClickListener(v -> logout());
-        btnLogoutSupport.setOnClickListener(v -> logout());
+        findViewById(R.id.btnLogout).setOnClickListener(v -> logout());
     }
 
     private void loadUserData() {
@@ -98,6 +89,13 @@ public class SettingsActivity extends AppCompatActivity {
 
                     Boolean notificationsEnabled = document.getBoolean("notificationsEnabled");
                     switchNotifications.setChecked(notificationsEnabled == null || notificationsEnabled);
+
+                    String role = document.getString("role");
+                    if ("admin".equals(role)) {
+                        findViewById(R.id.layoutAdminSection).setVisibility(android.view.View.VISIBLE);
+                        findViewById(R.id.btnPracticeInfo).setOnClickListener(v ->
+                                startActivity(new Intent(this, com.mmm.bookingapp.admin.PracticeInfoActivity.class)));
+                    }
                 });
 
         switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -114,8 +112,6 @@ public class SettingsActivity extends AppCompatActivity {
                         practiceContactEmail = info.getEmail();
                     }
                 });
-        // On failure, the hardcoded fallback above is used - defensive,
-        // per the documented safe-fallback pattern.
     }
 
     private void displayAppVersion() {
@@ -147,13 +143,6 @@ public class SettingsActivity extends AppCompatActivity {
                         Toast.makeText(this, getString(R.string.error_update_failed, e.getMessage()), Toast.LENGTH_LONG).show());
     }
 
-    /**
-     * Delete My Account - deliberately a static contact instruction, not a
-     * database-backed request queue, per the agreed simplification: opens
-     * the device's email app pre-addressed to the practice. Actual deletion
-     * is completed manually by the developer via the Firebase Console,
-     * as documented.
-     */
     private void openDeleteAccountEmail() {
         Toast.makeText(this, R.string.delete_account_instructions, Toast.LENGTH_LONG).show();
 

@@ -306,6 +306,9 @@
     <string name="home_subtitle_contact">Get in touch</string>
     <string name="home_subtitle_settings">App preferences</string>
 
+    <!-- settings_subtitle -->
+    <string name="settings_subtitle">Manage your account</string>
+
     <!-- login -->
     <string name="login_welcome_back_title">Welcome Back</string>
     <string name="login_subtitle">We\'re here for you. Sign in to continue.</string>

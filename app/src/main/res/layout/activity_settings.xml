@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_background"
+    android:fillViewport="true"
     android:scrollbars="vertical"
     android:scrollbarStyle="outsideOverlay"
     android:scrollbarThumbVertical="@color/color_primary"
@@ -12,58 +13,61 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="18dp">
 
+        <!-- Header - matches Admin Dashboard's header language: circular
+             back button, title + subtitle -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:background="@color/color_primary"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
+            android:layout_marginBottom="20dp">
 
             <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/bg_circle_button"
+                android:padding="10dp"
                 android:src="@android:drawable/ic_menu_revert"
-                app:tint="@color/color_text_on_primary"
+                app:tint="@color/color_primary"
                 android:contentDescription="@string/btn_ok" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/settings_title"
-                android:textColor="@color/color_text_on_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
 
-            <View
-                android:layout_width="40dp"
-                android:layout_height="1dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_title"
+                    android:textColor="@color/color_text_heading"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_subtitle"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="13sp" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Top-of-screen Logout - visible immediately, no scrolling required -->
-        <Button
-            android:id="@+id/btnLogoutTop"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_margin="16dp"
-            android:text="@string/btn_logout_top"
-            android:textColor="@color/color_text_on_primary"
-            android:backgroundTint="@color/color_error" />
-
+        <!-- Account card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:background="@drawable/bg_card"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
 
-            <!-- Account -->
             <TextView style="@style/SectionHeader" android:text="@string/section_account" />
 
             <EditText
@@ -72,16 +76,16 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_full_name"
                 android:padding="14dp"
-                android:background="@color/color_surface"
-                android:layout_marginBottom="10dp" />
+                android:background="@drawable/bg_dropdown_field"
+                android:layout_marginBottom="12dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@color/color_surface"
+                android:background="@drawable/bg_dropdown_field"
                 android:padding="14dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="12dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -105,16 +109,16 @@
                 android:hint="@string/hint_phone"
                 android:inputType="phone"
                 android:padding="14dp"
-                android:background="@color/color_surface"
-                android:layout_marginBottom="10dp" />
+                android:background="@drawable/bg_dropdown_field"
+                android:layout_marginBottom="12dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@color/color_surface"
+                android:background="@drawable/bg_dropdown_field"
                 android:padding="14dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -138,52 +142,58 @@
                 android:text="@string/btn_save_changes"
                 android:textColor="@color/color_text_on_primary"
                 android:backgroundTint="@color/color_primary"
-                android:layout_marginBottom="10dp" />
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="12dp" />
 
             <Button
                 android:id="@+id/btnDeleteAccount"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
                 android:text="@string/btn_delete_account"
                 android:textColor="@color/color_error"
                 android:backgroundTint="@color/color_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="24dp" />
+                style="@style/Widget.MMM.TallOutlinedButton" />
+        </LinearLayout>
 
-            <!-- Security -->
+        <!-- Security card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
+
             <TextView style="@style/SectionHeader" android:text="@string/section_security" />
 
             <Button
                 android:id="@+id/btnChangePassword"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
                 android:text="@string/btn_change_password"
                 android:textColor="@color/color_primary"
                 android:backgroundTint="@color/color_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="10dp" />
+                style="@style/Widget.MMM.TallOutlinedButton" />
+        </LinearLayout>
 
-            <Button
-                android:id="@+id/btnLogoutSecurity"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="@string/btn_logout"
-                android:textColor="@color/color_primary"
-                android:backgroundTint="@color/color_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="24dp" />
+        <!-- Notifications card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
 
-            <!-- Notifications -->
             <TextView style="@style/SectionHeader" android:text="@string/section_notifications" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@color/color_surface"
-                android:padding="14dp"
-                android:layout_marginBottom="24dp">
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
@@ -197,48 +207,58 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
+        </LinearLayout>
 
-            <!-- App -->
+        <!-- App card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
+
             <TextView style="@style/SectionHeader" android:text="@string/section_app" />
 
             <Button
                 android:id="@+id/btnAbout"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
                 android:text="@string/btn_about"
                 android:textColor="@color/color_primary"
                 android:backgroundTint="@color/color_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="10dp" />
+                style="@style/Widget.MMM.TallOutlinedButton"
+                android:layout_marginBottom="12dp" />
 
             <Button
                 android:id="@+id/btnPrivacyPolicy"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
                 android:text="@string/btn_privacy_policy"
                 android:textColor="@color/color_primary"
                 android:backgroundTint="@color/color_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="10dp" />
+                style="@style/Widget.MMM.TallOutlinedButton"
+                android:layout_marginBottom="12dp" />
 
             <Button
                 android:id="@+id/btnTerms"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
                 android:text="@string/btn_terms"
                 android:textColor="@color/color_primary"
                 android:backgroundTint="@color/color_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="10dp" />
+                style="@style/Widget.MMM.TallOutlinedButton"
+                android:layout_marginBottom="16dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@color/color_surface"
-                android:padding="14dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="16dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -256,9 +276,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="14dp"
-                android:layout_marginBottom="24dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -274,39 +292,75 @@
                     android:gravity="end"
                     android:textColor="@color/color_text_primary" />
             </LinearLayout>
+        </LinearLayout>
 
-            <!-- Support -->
+        <!-- Admin-only card - visible only when role == admin -->
+        <LinearLayout
+            android:id="@+id/layoutAdminSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <TextView style="@style/SectionHeader" android:text="@string/section_practice_admin" />
+
+            <Button
+                android:id="@+id/btnPracticeInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:text="@string/btn_practice_info"
+                android:textColor="@color/color_primary"
+                android:backgroundTint="@color/color_background"
+                style="@style/Widget.MMM.TallOutlinedButton" />
+        </LinearLayout>
+
+        <!-- Support card - the ONLY Logout button on this screen now -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="18dp">
+
             <TextView style="@style/SectionHeader" android:text="@string/section_support" />
 
             <Button
                 android:id="@+id/btnContactUs"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
                 android:text="@string/btn_contact_us"
                 android:textColor="@color/color_primary"
                 android:backgroundTint="@color/color_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="10dp" />
+                style="@style/Widget.MMM.TallOutlinedButton"
+                android:layout_marginBottom="12dp" />
 
             <Button
                 android:id="@+id/btnFAQ"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
                 android:text="@string/btn_faq"
                 android:textColor="@color/color_primary"
                 android:backgroundTint="@color/color_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="10dp" />
+                style="@style/Widget.MMM.TallOutlinedButton"
+                android:layout_marginBottom="16dp" />
 
             <Button
-                android:id="@+id/btnLogoutSupport"
+                android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
                 android:text="@string/btn_logout"
-                android:textColor="@color/color_primary"
+                android:textColor="@color/color_error"
                 android:backgroundTint="@color/color_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
+                app:strokeColor="@color/color_error"
+                style="@style/Widget.MMM.TallOutlinedButton" />
         </LinearLayout>
+
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
