@@ -45,7 +45,7 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
-            <!-- Settings: circular icon-only, was a labelled row before -->
+            <!-- Settings: now matches Home's settings icon -->
             <ImageButton
                 android:id="@+id/btnSettings"
                 android:layout_width="42dp"
@@ -53,11 +53,11 @@
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/bg_circle_button"
                 android:padding="10dp"
-                android:src="@android:drawable/ic_menu_manage"
+                android:src="@drawable/ic_settings_sliders"
                 app:tint="@color/color_text_primary"
                 android:contentDescription="@string/btn_settings" />
 
-            <!-- Logout: circular icon-only, rose/red icon, was a solid red text button before -->
+            <!-- Logout: circular icon-only, rose/red icon -->
             <ImageButton
                 android:id="@+id/btnLogoutAdmin"
                 android:layout_width="42dp"
@@ -231,11 +231,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- b) single proportional stacked bar - 4 segments, one row.
-                 No filler Views needed here anymore: since all 4 segments
-                 share one row, their weights alone (set in Java to each
-                 status's raw count) naturally make each segment's width
-                 proportional to the total. -->
+            <!-- b) single proportional stacked bar -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
@@ -270,8 +266,6 @@
                     android:layout_weight="0"
                     android:background="@color/color_error" />
 
-                <!-- Shown only when there is no data at all, so the bar
-                     never renders as a blank/invisible strip. -->
                 <View
                     android:id="@+id/barEmptyFallback"
                     android:layout_width="0dp"
@@ -345,7 +339,7 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
         </LinearLayout>
 
-        <!-- 3. Search bar - rounded pill, leading search icon -->
+        <!-- 3. Search bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -376,7 +370,7 @@
                 android:textSize="13sp" />
         </LinearLayout>
 
-        <!-- 4. Filter pills row - horizontally scrollable -->
+        <!-- 4. Filter pills row -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

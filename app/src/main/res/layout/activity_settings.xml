@@ -16,8 +16,7 @@
         android:orientation="vertical"
         android:padding="18dp">
 
-        <!-- Header - matches Admin Dashboard's header language: circular
-             back button, title + subtitle -->
+        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -76,14 +75,14 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_full_name"
                 android:padding="14dp"
-                android:background="@drawable/bg_dropdown_field"
+                android:background="@drawable/bg_input_plain"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@drawable/bg_dropdown_field"
+                android:background="@drawable/bg_input_plain"
                 android:padding="14dp"
                 android:layout_marginBottom="12dp">
 
@@ -109,14 +108,14 @@
                 android:hint="@string/hint_phone"
                 android:inputType="phone"
                 android:padding="14dp"
-                android:background="@drawable/bg_dropdown_field"
+                android:background="@drawable/bg_input_plain"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@drawable/bg_dropdown_field"
+                android:background="@drawable/bg_input_plain"
                 android:padding="14dp"
                 android:layout_marginBottom="16dp">
 
@@ -318,7 +317,7 @@
                 style="@style/Widget.MMM.TallOutlinedButton" />
         </LinearLayout>
 
-        <!-- Support card - the ONLY Logout button on this screen now -->
+        <!-- Support card - the ONLY Logout button on this screen -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

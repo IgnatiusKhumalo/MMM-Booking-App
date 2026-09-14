@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_background"
+    android:fillViewport="true"
     android:scrollbars="vertical"
     android:scrollbarStyle="outsideOverlay"
     android:scrollbarThumbVertical="@color/color_primary"
@@ -12,47 +13,46 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="18dp">
 
-        <!-- Header bar with back arrow, per the app-wide navigation rule -->
+        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:background="@color/color_primary"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
+            android:layout_marginBottom="20dp">
 
             <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/bg_circle_button"
+                android:padding="10dp"
                 android:src="@android:drawable/ic_menu_revert"
-                app:tint="@color/color_text_on_primary"
+                app:tint="@color/color_primary"
                 android:contentDescription="@string/btn_ok" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@string/register_title"
-                android:textColor="@color/color_text_on_primary"
-                android:textSize="18sp"
+                android:textColor="@color/color_text_heading"
+                android:textSize="22sp"
                 android:textStyle="bold" />
-
-            <View
-                android:layout_width="40dp"
-                android:layout_height="1dp" />
         </LinearLayout>
 
+        <!-- Personal Details card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:background="@drawable/bg_card"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
 
             <EditText
                 android:id="@+id/etFullName"
@@ -61,7 +61,7 @@
                 android:hint="@string/hint_full_name"
                 android:inputType="textPersonName"
                 android:padding="14dp"
-                android:background="@color/color_surface"
+                android:background="@drawable/bg_input_plain"
                 android:layout_marginBottom="4dp" />
 
             <TextView
@@ -81,7 +81,7 @@
                 android:hint="@string/hint_email"
                 android:inputType="textEmailAddress"
                 android:padding="14dp"
-                android:background="@color/color_surface"
+                android:background="@drawable/bg_input_plain"
                 android:layout_marginBottom="4dp" />
 
             <TextView
@@ -94,8 +94,6 @@
                 android:text="@string/error_email"
                 android:layout_marginBottom="12dp" />
 
-            <!-- Phone row: fixed +27 box beside an editable remainder field.
-                 maxLength=9 already enforces the digit limit here. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -120,7 +118,7 @@
                     android:inputType="phone"
                     android:maxLength="9"
                     android:padding="14dp"
-                    android:background="@color/color_surface" />
+                    android:background="@drawable/bg_input_plain" />
             </LinearLayout>
 
             <TextView
@@ -131,20 +129,26 @@
                 android:textSize="12sp"
                 android:visibility="gone"
                 android:text="@string/error_phone"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
 
-            <!-- Gap - keeps Password clearly separated from the Phone row -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="12dp" />
+        <!-- Account Security card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
 
-            <!-- Password row: EditText + eye toggle icon -->
+            <TextView style="@style/SectionHeader" android:text="@string/section_security" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@color/color_surface">
+                android:background="@drawable/bg_input_plain">
 
                 <EditText
                     android:id="@+id/etPassword"
@@ -160,7 +164,7 @@
                     android:id="@+id/btnTogglePassword"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:layout_marginEnd="6dp"
+                    android:layout_marginEnd="4dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_eye"
                     android:contentDescription="@string/hint_password" />
@@ -173,16 +177,15 @@
                 android:text="@string/password_requirements"
                 android:textColor="@color/color_text_primary"
                 android:textSize="11sp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginBottom="12dp" />
 
-            <!-- Confirm Password row: same eye toggle treatment -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@color/color_surface"
+                android:background="@drawable/bg_input_plain"
                 android:layout_marginBottom="4dp">
 
                 <EditText
@@ -199,7 +202,7 @@
                     android:id="@+id/btnToggleConfirmPassword"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:layout_marginEnd="6dp"
+                    android:layout_marginEnd="4dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_eye"
                     android:contentDescription="@string/hint_confirm_password" />
@@ -212,21 +215,33 @@
                 android:textColor="@color/color_error"
                 android:textSize="12sp"
                 android:visibility="gone"
-                android:text="@string/error_confirm_password"
-                android:layout_marginBottom="20dp" />
+                android:text="@string/error_confirm_password" />
+        </LinearLayout>
 
-            <!-- Compulsory consent checkbox -->
+        <!-- Consent card - space below "(optional)" now added directly
+             on the TextView itself (marginBottom), not just on the row
+             around it, so it cannot be absorbed or overridden by
+             anything else in the row's layout. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="18dp"
+            android:layout_marginBottom="20dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="top"
-                android:layout_marginBottom="6dp">
+                android:layout_marginBottom="10dp">
 
                 <CheckBox
                     android:id="@+id/cbAgreeTerms"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
+                    android:layout_gravity="top"
                     android:scaleX="1.2"
                     android:scaleY="1.2" />
 
@@ -237,9 +252,12 @@
                     android:layout_weight="1"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="6dp"
+                    android:layout_marginBottom="4dp"
                     android:textColor="@color/color_text_primary"
                     android:textSize="14sp"
-                    android:lineSpacingExtra="4dp" />
+                    android:lineSpacingExtra="4dp"
+                    android:maxLines="3"
+                    android:ellipsize="none" />
             </LinearLayout>
 
             <TextView
@@ -250,20 +268,19 @@
                 android:textSize="12sp"
                 android:visibility="gone"
                 android:text="@string/error_must_agree_terms"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="16dp" />
 
-            <!-- Optional subscribe checkbox -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="top"
-                android:layout_marginBottom="24dp">
+                android:gravity="top">
 
                 <CheckBox
                     android:id="@+id/cbSubscribe"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
+                    android:layout_gravity="top"
                     android:scaleX="1.2"
                     android:scaleY="1.2" />
 
@@ -273,28 +290,33 @@
                     android:layout_weight="1"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="6dp"
+                    android:layout_marginBottom="24dp"
                     android:text="@string/register_subscribe_label"
                     android:textColor="@color/color_text_primary"
                     android:textSize="14sp"
-                    android:lineSpacingExtra="4dp" />
+                    android:lineSpacingExtra="4dp"
+                    android:maxLines="3"
+                    android:ellipsize="none" />
             </LinearLayout>
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:layout_marginBottom="12dp" />
-
-            <Button
-                android:id="@+id/btnSubmit"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="@string/btn_submit"
-                android:textColor="@color/color_text_on_primary"
-                android:backgroundTint="@color/color_primary" />
-
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/btn_submit"
+            android:textColor="@color/color_text_on_primary"
+            android:textStyle="bold"
+            android:backgroundTint="@color/color_primary"
+            app:cornerRadius="16dp" />
+
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
