@@ -24,9 +24,12 @@ import com.mmm.bookingapp.utils.NetworkStatusHelper;
 
 /**
  * Screen 4 - Login Screen (shared, role-aware).
- * Unchanged functionally from the previous revision; Log calls added at
- * key points (attempt, success, failure, unverified block) for the
- * Logging and Monitoring requirement.
+ * Now passes a "showLoginSuccess" intent extra to the destination screen
+ * on a fresh, successful login, so Home/Admin Dashboard can show a brief
+ * "Logged in successfully" toast as they load. This flag is only set on
+ * an actual login action here - it is NOT set when MainActivity's cached-
+ * session check skips Login entirely, so reopening the app while already
+ * logged in does not show this message every time.
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -152,7 +155,8 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         intent = new Intent(LoginActivity.this, HomeActivity.class);
                     }
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("showLoginSuccess", true);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
                 })

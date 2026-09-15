@@ -29,8 +29,12 @@ import java.util.Calendar;
  * notification triggered by another user's action on another device
  * (e.g. an admin confirming a booking) - that requires a server-side
  * trigger (Firebase Cloud Functions), which is out of scope for the
- * free Spark plan this project is built on. See Blueprint Section 7
- * and the D6 Future Work recommendation.
+ * free Spark plan this project is built on. See README's Notifications
+ * section and Known Limitations for the full explanation.
+ *
+ * Now uses NotificationCompat.BigTextStyle on every notification, so a
+ * longer service name or message expands fully on long-press/expand
+ * instead of being truncated with an ellipsis in the collapsed view.
  */
 public class NotificationHelper {
 
@@ -77,6 +81,10 @@ public class NotificationHelper {
      * Shows an immediate local notification. Used for booking confirmation
      * (the client's own device confirming their own just-submitted action) -
      * legitimate without a backend, since no other device is involved.
+     *
+     * Uses BigTextStyle so a longer message (e.g. a long service name)
+     * expands fully when the notification is long-pressed or expanded,
+     * rather than being cut off with "..." in the collapsed view.
      */
     public static void showImmediateNotification(Context context, String title, String message) {
         if (!hasPermission(context)) return;
@@ -85,6 +93,7 @@ public class NotificationHelper {
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle(title)
                 .setContentText(message)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true);
 
@@ -99,7 +108,8 @@ public class NotificationHelper {
      * Schedules a local reminder notification for the evening before the
      * appointment (18:00 the day before), using AlarmManager. This runs
      * entirely on the client's own device - no server or backend involved,
-     * so it works fully within the free Spark plan.
+     * so it works fully within the free Spark plan. Exactly ONE reminder
+     * is scheduled per booking (documented explicitly in the README).
      *
      * bookingId is used to build a stable, unique request code so a
      * specific booking's reminder can later be cancelled if that booking

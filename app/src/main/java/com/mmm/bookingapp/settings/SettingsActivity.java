@@ -16,16 +16,18 @@ import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.auth.WelcomeActivity;
 import com.mmm.bookingapp.client.ContactActivity;
 import com.mmm.bookingapp.models.PracticeInfo;
+import com.mmm.bookingapp.utils.DialogUtils;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.ThemeManager;
 
 /**
  * Screen 12 - Settings Screen (client version).
- * Redesigned to a card-based layout matching Home/Admin Dashboard's
- * visual language. Reduced from three Logout buttons down to one
- * (btnLogout, in the Support card) - the earlier top-of-screen and
- * Security-section Logout buttons were redundant and have been removed
- * entirely, both from the layout and here.
+ *
+ * Now shows a toast confirming Dark Mode and Booking Reminder toggle
+ * changes; Logout goes through a Cancel/Log Out confirmation dialog;
+ * Delete My Account now shows a clear explainer dialog (what to expect,
+ * that the practice will confirm by email) before launching the email
+ * app, replacing the previous brief Toast-only instruction.
  */
 public class SettingsActivity extends AppCompatActivity {
 
@@ -54,12 +56,16 @@ public class SettingsActivity extends AppCompatActivity {
         displayAppVersion();
 
         switchDarkMode.setChecked(ThemeManager.isDarkModeEnabled(this));
-        switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) ->
-                ThemeManager.setDarkModeEnabled(this, isChecked)
-        );
+        switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            ThemeManager.setDarkModeEnabled(this, isChecked);
+            Toast.makeText(this,
+                    isChecked ? R.string.dark_mode_enabled_message : R.string.dark_mode_disabled_message,
+                    Toast.LENGTH_SHORT).show();
+        });
 
         findViewById(R.id.btnSaveChanges).setOnClickListener(v -> saveAccountChanges());
-        findViewById(R.id.btnDeleteAccount).setOnClickListener(v -> openDeleteAccountEmail());
+        findViewById(R.id.btnDeleteAccount).setOnClickListener(v ->
+                DialogUtils.showDeleteAccountExplainer(this, this::launchDeleteAccountEmailApp));
         findViewById(R.id.btnChangePassword).setOnClickListener(v ->
                 startActivity(new Intent(this, ChangePasswordActivity.class)));
         findViewById(R.id.btnAbout).setOnClickListener(v ->
@@ -73,7 +79,8 @@ public class SettingsActivity extends AppCompatActivity {
         findViewById(R.id.btnFAQ).setOnClickListener(v ->
                 startActivity(new Intent(this, FAQActivity.class)));
 
-        findViewById(R.id.btnLogout).setOnClickListener(v -> logout());
+        findViewById(R.id.btnLogout).setOnClickListener(v ->
+                DialogUtils.showLogoutConfirmation(this, this::logout));
     }
 
     private void loadUserData() {
@@ -101,6 +108,9 @@ public class SettingsActivity extends AppCompatActivity {
         switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
             FirebaseRefs.usersCollection().document(uid)
                     .update("notificationsEnabled", isChecked);
+            Toast.makeText(this,
+                    isChecked ? R.string.notifications_enabled_message : R.string.notifications_disabled_message,
+                    Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -143,9 +153,12 @@ public class SettingsActivity extends AppCompatActivity {
                         Toast.makeText(this, getString(R.string.error_update_failed, e.getMessage()), Toast.LENGTH_LONG).show());
     }
 
-    private void openDeleteAccountEmail() {
-        Toast.makeText(this, R.string.delete_account_instructions, Toast.LENGTH_LONG).show();
-
+    /**
+     * The actual email-launch step, now separated from the explainer
+     * dialog above it (DialogUtils.showDeleteAccountExplainer calls this
+     * only after the client taps "Continue" and understands the process).
+     */
+    private void launchDeleteAccountEmailApp() {
         Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + practiceContactEmail));
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.delete_account_email_subject));
         try {

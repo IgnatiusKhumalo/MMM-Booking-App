@@ -323,6 +323,22 @@
     <string name="error_public_holiday">The practice is closed on this date (South African public holiday) — please choose a different date</string>
     <string name="holidays_load_failed">Could not check public holidays — date will only be checked against weekday and hour rules</string>
 
+    <!-- press_back_again -->
+    <string name="press_back_again_to_exit">Press back again to exit</string>
+
+    <!-- messages -->
+    <string name="login_success_message">Logged in successfully</string>
+    <string name="dark_mode_enabled_message">Dark Mode enabled</string>
+    <string name="dark_mode_disabled_message">Dark Mode disabled</string>
+    <string name="notifications_enabled_message">Booking reminders enabled</string>
+    <string name="notifications_disabled_message">Booking reminders disabled</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_continue">Continue</string>
+    <string name="dialog_logout_title">Log Out?</string>
+    <string name="dialog_logout_message">Are you sure you want to log out? You\'ll need to log in again to access your account.</string>
+    <string name="dialog_delete_account_title">Delete Your Account</string>
+    <string name="dialog_delete_account_message">To permanently delete your account and all your data, please email us using the button below. Our team will review your request and confirm once your account has been removed.</string>
+
     <!-- Offline indicator - Innovation Feature -->
     <string name="offline_banner_text">You\'re offline — changes will sync once you\'re back online</string>
 </resources>

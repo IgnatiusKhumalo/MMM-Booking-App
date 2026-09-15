@@ -5,38 +5,41 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.auth.WelcomeActivity;
+import com.mmm.bookingapp.utils.DialogUtils;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.NetworkStatusHelper;
 
 /**
  * Screen 6 - Home Screen (client root screen).
- * Redesigned per the detailed mockup spec: minimal circular Logout icon,
- * a branding card showing the real logo edge-to-edge with no wrapper,
- * a "Next Appointment" card housing the primary Book Appointment action,
- * a 2x2 feature grid with icon+title+subtitle per card, and a tappable
- * footer support bar routing to Contact.
  *
- * "No upcoming bookings" is currently STATIC text matching the mockup -
- * this does not yet query Firestore for a real next booking. Wiring
- * that up is a straightforward follow-up if wanted, but is a functional
- * (not visual) change and was deliberately left out of this pass.
- *
- * Navigation destinations and core logic are otherwise UNCHANGED: the
- * four grid cards route to the exact same four Activities as before.
+ * Back button fix: this is a root screen per the Blueprint's navigation
+ * rule, so pressing the system back button here must NEVER pop back to
+ * a stale pre-login screen or appear to log the user out. Implements
+ * double-press-to-exit instead: first press shows a toast, a second
+ * press within 2 seconds exits the app. No Firebase sign-out happens
+ * here at all - the session remains fully intact, and the user is only
+ * ever logged out via the explicit Logout button/dialog.
  */
 public class HomeActivity extends AppCompatActivity {
 
     private TextView tvWelcome;
+    private long backPressedTime = 0;
+    private static final long BACK_PRESS_EXIT_INTERVAL = 2000; // 2 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        if (getIntent().getBooleanExtra("showLoginSuccess", false)) {
+            Toast.makeText(this, R.string.login_success_message, Toast.LENGTH_SHORT).show();
+        }
 
         NetworkStatusHelper.observeConnectivity(this, findViewById(R.id.tvOfflineBanner));
 
@@ -48,7 +51,7 @@ public class HomeActivity extends AppCompatActivity {
         View cardMyBookings = findViewById(R.id.btnMyBookings);
         View cardContact = findViewById(R.id.btnContact);
         View cardSettings = findViewById(R.id.btnSettings);
-        View btnLogoutHome = findViewById(R.id.btnLogoutHome); // now ImageButton, typed as View
+        View btnLogoutHome = findViewById(R.id.btnLogoutHome);
         View layoutFooterSupport = findViewById(R.id.layoutFooterSupport);
 
         btnBookAppointment.setOnClickListener(v ->
@@ -66,12 +69,26 @@ public class HomeActivity extends AppCompatActivity {
         cardSettings.setOnClickListener(v ->
                 startActivity(new Intent(this, com.mmm.bookingapp.settings.SettingsActivity.class)));
 
-        btnLogoutHome.setOnClickListener(v -> logout());
+        btnLogoutHome.setOnClickListener(v ->
+                DialogUtils.showLogoutConfirmation(this, this::logout));
 
-        // Footer support bar - tappable, routes to the same Contact screen
-        // as the Contact card, since the right-arrow implies navigation.
         layoutFooterSupport.setOnClickListener(v ->
                 startActivity(new Intent(this, ContactActivity.class)));
+    }
+
+    /**
+     * Double-press-to-exit. Deliberately does NOT touch the Firebase
+     * session in any way - the user stays fully logged in, and simply
+     * exits the app to the device's home screen on the second press.
+     */
+    @Override
+    public void onBackPressed() {
+        if (backPressedTime + BACK_PRESS_EXIT_INTERVAL > System.currentTimeMillis()) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, R.string.press_back_again_to_exit, Toast.LENGTH_SHORT).show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 
     private void loadWelcomeMessage() {

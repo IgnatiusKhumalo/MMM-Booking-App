@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void goTo(Class<?> activityClass) {
         Intent intent = new Intent(MainActivity.this, activityClass);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }

@@ -2,6 +2,7 @@ package com.mmm.bookingapp.admin;
 
 import android.os.Bundle;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,31 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Admin Analytics Screen (new, beyond the original 20-screen Blueprint).
- * Shows time-bucketed counts (Today / This Week / This Month / This Year)
- * with percentage change vs. the equivalent previous period, for both
- * Bookings Created and New Registrations, plus a simple week-over-week
- * trend projection.
+ * Admin Analytics Screen.
  *
- * Uses Firestore's count() aggregation queries - these execute entirely
- * on Firebase's servers and return only a number, not the underlying
- * documents, which is a genuinely more efficient pattern than the
- * document-download-and-count approach used on the original Admin
- * Dashboard bar chart. This is a deliberate, documented improvement,
- * not an inconsistency - both approaches are correct at this practice's
- * scale, but this one scales better as data grows.
- *
- * The trend projection is explicitly labelled in the UI as a simple
- * heuristic (this week's count adjusted by the most recent week-over-week
- * growth rate) - it is NOT machine learning or true predictive analytics,
- * and is never presented as such, per the documented decision to avoid
- * overclaiming AI capability the app does not have.
- *
- * Depends on a "createdAt" (long, epoch millis) field on both the
- * bookings collection (already existed) and the users collection (added
- * alongside this feature - see models/User.java). Accounts created before
- * this field existed are correctly excluded from date-bucketed counts by
- * Firestore's own inequality-query behaviour, rather than causing an error.
+ * NOW INCLUDES a real visual chart (Item #26 gap fix): each of the two
+ * cards (Bookings Created, New Registrations) shows four proportional
+ * bars comparing Today/Week/Month/Year, using the exact same
+ * weight-based View technique already used on the Admin Dashboard's
+ * overview bar - no new charting library, no Canvas drawing needed.
+ * Bars are scaled relative to the LARGEST of the four values (not
+ * summed to 100%, since these periods are overlapping/cumulative, not
+ * mutually exclusive categories the way booking statuses are).
  */
 public class AdminAnalyticsActivity extends AppCompatActivity {
 
@@ -58,6 +44,11 @@ public class AdminAnalyticsActivity extends AppCompatActivity {
     private TextView tvRegsYear, tvRegsYearChange;
 
     private TextView tvTrendProjection;
+
+    private android.view.View barChartBookingsToday, barChartBookingsWeek, barChartBookingsMonth, barChartBookingsYear;
+    private android.view.View fillerChartBookingsToday, fillerChartBookingsWeek, fillerChartBookingsMonth, fillerChartBookingsYear;
+    private android.view.View barChartRegsToday, barChartRegsWeek, barChartRegsMonth, barChartRegsYear;
+    private android.view.View fillerChartRegsToday, fillerChartRegsWeek, fillerChartRegsMonth, fillerChartRegsYear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +77,24 @@ public class AdminAnalyticsActivity extends AppCompatActivity {
         tvRegsYearChange = findViewById(R.id.tvRegsYearChange);
 
         tvTrendProjection = findViewById(R.id.tvTrendProjection);
+
+        barChartBookingsToday = findViewById(R.id.barChartBookingsToday);
+        fillerChartBookingsToday = findViewById(R.id.fillerChartBookingsToday);
+        barChartBookingsWeek = findViewById(R.id.barChartBookingsWeek);
+        fillerChartBookingsWeek = findViewById(R.id.fillerChartBookingsWeek);
+        barChartBookingsMonth = findViewById(R.id.barChartBookingsMonth);
+        fillerChartBookingsMonth = findViewById(R.id.fillerChartBookingsMonth);
+        barChartBookingsYear = findViewById(R.id.barChartBookingsYear);
+        fillerChartBookingsYear = findViewById(R.id.fillerChartBookingsYear);
+
+        barChartRegsToday = findViewById(R.id.barChartRegsToday);
+        fillerChartRegsToday = findViewById(R.id.fillerChartRegsToday);
+        barChartRegsWeek = findViewById(R.id.barChartRegsWeek);
+        fillerChartRegsWeek = findViewById(R.id.fillerChartRegsWeek);
+        barChartRegsMonth = findViewById(R.id.barChartRegsMonth);
+        fillerChartRegsMonth = findViewById(R.id.fillerChartRegsMonth);
+        barChartRegsYear = findViewById(R.id.barChartRegsYear);
+        fillerChartRegsYear = findViewById(R.id.fillerChartRegsYear);
 
         loadAnalytics();
     }
@@ -144,8 +153,48 @@ public class AdminAnalyticsActivity extends AppCompatActivity {
 
             if (isBookings) {
                 updateTrendProjection(lastWeek, week);
+                updateChartBars(today, week, month, year,
+                        barChartBookingsToday, fillerChartBookingsToday,
+                        barChartBookingsWeek, fillerChartBookingsWeek,
+                        barChartBookingsMonth, fillerChartBookingsMonth,
+                        barChartBookingsYear, fillerChartBookingsYear);
+            } else {
+                updateChartBars(today, week, month, year,
+                        barChartRegsToday, fillerChartRegsToday,
+                        barChartRegsWeek, fillerChartRegsWeek,
+                        barChartRegsMonth, fillerChartRegsMonth,
+                        barChartRegsYear, fillerChartRegsYear);
             }
         });
+    }
+
+    /**
+     * Renders the 4-bar comparison chart: each bar's weight is set to
+     * its own value, scaled against the largest of the four (matching
+     * the Admin Dashboard's original per-category comparison technique).
+     * When all four values are zero, all bars collapse to zero width -
+     * an acceptable, honest "no data yet" state, not an error.
+     */
+    private void updateChartBars(long today, long week, long month, long year,
+                                 android.view.View barToday, android.view.View fillerToday,
+                                 android.view.View barWeek, android.view.View fillerWeek,
+                                 android.view.View barMonth, android.view.View fillerMonth,
+                                 android.view.View barYear, android.view.View fillerYear) {
+        long max = Math.max(1, Math.max(Math.max(today, week), Math.max(month, year)));
+
+        setBarWeight(barToday, fillerToday, today, max);
+        setBarWeight(barWeek, fillerWeek, week, max);
+        setBarWeight(barMonth, fillerMonth, month, max);
+        setBarWeight(barYear, fillerYear, year, max);
+    }
+
+    private void setBarWeight(android.view.View bar, android.view.View filler, long value, long max) {
+        LinearLayout.LayoutParams barParams = (LinearLayout.LayoutParams) bar.getLayoutParams();
+        LinearLayout.LayoutParams fillerParams = (LinearLayout.LayoutParams) filler.getLayoutParams();
+        barParams.weight = (int) value;
+        fillerParams.weight = (int) Math.max(0, max - value);
+        bar.setLayoutParams(barParams);
+        filler.setLayoutParams(fillerParams);
     }
 
     private Task<AggregateQuerySnapshot> countSince(CollectionReference collection, long start) {

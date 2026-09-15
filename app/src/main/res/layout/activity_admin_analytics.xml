@@ -112,6 +112,71 @@
                     <TextView android:id="@+id/tvBookingsYearChange" android:layout_width="70dp" android:layout_height="wrap_content"
                         android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
                 </LinearLayout>
+
+                <!-- Visual trend bars (NEW) - Today/Week/Month/Year compared,
+                     each bar's width proportional to its share of the largest
+                     of the four values. Reuses the same weight-based View
+                     technique already used on the Admin Dashboard's overview
+                     bar - no new charting library, no Canvas drawing. -->
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="@color/color_border" android:layout_marginTop="4dp" android:layout_marginBottom="12dp" />
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                        android:text="@string/period_today" android:textColor="@color/color_text_primary" android:textSize="10sp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="10dp" android:layout_weight="1"
+                        android:orientation="horizontal" android:background="@color/color_background"
+                        android:layout_marginStart="6dp">
+                        <View android:id="@+id/barChartBookingsToday" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="0" android:background="@color/color_primary" />
+                        <View android:id="@+id/fillerChartBookingsToday" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1" android:background="@android:color/transparent" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                        android:text="@string/period_week" android:textColor="@color/color_text_primary" android:textSize="10sp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="10dp" android:layout_weight="1"
+                        android:orientation="horizontal" android:background="@color/color_background"
+                        android:layout_marginStart="6dp">
+                        <View android:id="@+id/barChartBookingsWeek" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="0" android:background="@color/color_primary" />
+                        <View android:id="@+id/fillerChartBookingsWeek" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1" android:background="@android:color/transparent" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                        android:text="@string/period_month" android:textColor="@color/color_text_primary" android:textSize="10sp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="10dp" android:layout_weight="1"
+                        android:orientation="horizontal" android:background="@color/color_background"
+                        android:layout_marginStart="6dp">
+                        <View android:id="@+id/barChartBookingsMonth" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="0" android:background="@color/color_primary" />
+                        <View android:id="@+id/fillerChartBookingsMonth" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1" android:background="@android:color/transparent" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                        android:text="@string/period_year" android:textColor="@color/color_text_primary" android:textSize="10sp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="10dp" android:layout_weight="1"
+                        android:orientation="horizontal" android:background="@color/color_background"
+                        android:layout_marginStart="6dp">
+                        <View android:id="@+id/barChartBookingsYear" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="0" android:background="@color/color_primary" />
+                        <View android:id="@+id/fillerChartBookingsYear" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1" android:background="@android:color/transparent" />
+                    </LinearLayout>
+                </LinearLayout>
+
             </LinearLayout>
 
             <!-- New Registrations card -->
@@ -171,6 +236,67 @@
                     <TextView android:id="@+id/tvRegsYearChange" android:layout_width="70dp" android:layout_height="wrap_content"
                         android:text="0%" android:textColor="@color/color_status_confirmed" android:textSize="12sp" android:gravity="end" android:textStyle="bold" />
                 </LinearLayout>
+
+                <!-- Visual trend bars (NEW) - same technique, Registrations data -->
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="@color/color_border" android:layout_marginTop="4dp" android:layout_marginBottom="12dp" />
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                        android:text="@string/period_today" android:textColor="@color/color_text_primary" android:textSize="10sp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="10dp" android:layout_weight="1"
+                        android:orientation="horizontal" android:background="@color/color_background"
+                        android:layout_marginStart="6dp">
+                        <View android:id="@+id/barChartRegsToday" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="0" android:background="@color/color_primary" />
+                        <View android:id="@+id/fillerChartRegsToday" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1" android:background="@android:color/transparent" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                        android:text="@string/period_week" android:textColor="@color/color_text_primary" android:textSize="10sp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="10dp" android:layout_weight="1"
+                        android:orientation="horizontal" android:background="@color/color_background"
+                        android:layout_marginStart="6dp">
+                        <View android:id="@+id/barChartRegsWeek" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="0" android:background="@color/color_primary" />
+                        <View android:id="@+id/fillerChartRegsWeek" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1" android:background="@android:color/transparent" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                        android:text="@string/period_month" android:textColor="@color/color_text_primary" android:textSize="10sp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="10dp" android:layout_weight="1"
+                        android:orientation="horizontal" android:background="@color/color_background"
+                        android:layout_marginStart="6dp">
+                        <View android:id="@+id/barChartRegsMonth" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="0" android:background="@color/color_primary" />
+                        <View android:id="@+id/fillerChartRegsMonth" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1" android:background="@android:color/transparent" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="50dp" android:layout_height="wrap_content"
+                        android:text="@string/period_year" android:textColor="@color/color_text_primary" android:textSize="10sp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="10dp" android:layout_weight="1"
+                        android:orientation="horizontal" android:background="@color/color_background"
+                        android:layout_marginStart="6dp">
+                        <View android:id="@+id/barChartRegsYear" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="0" android:background="@color/color_primary" />
+                        <View android:id="@+id/fillerChartRegsYear" android:layout_width="0dp" android:layout_height="match_parent"
+                            android:layout_weight="1" android:background="@android:color/transparent" />
+                    </LinearLayout>
+                </LinearLayout>
+
             </LinearLayout>
 
             <!-- Trend projection - explicitly labelled as a simple heuristic -->

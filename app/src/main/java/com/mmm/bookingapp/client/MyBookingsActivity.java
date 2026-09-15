@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.ListenerRegistration;
 import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.adapters.BookingListAdapter;
 import com.mmm.bookingapp.models.Booking;
@@ -26,22 +27,19 @@ import java.util.List;
 
 /**
  * Screen 10 - My Bookings Screen.
- * Loads the logged-in client's own bookings (Firestore Security Rules
- * already enforce that a client can only read their own bookings, per
- * the Blueprint's Section 5). Cancel requires confirming the custom
- * permanent-action dialog, and also cancels that booking's scheduled
- * reminder notification.
  *
- * Offline behaviour, precisely: Firestore's offline cache only holds data
- * already loaded at least once while online. A first-ever visit to this
- * screen while offline shows the empty state, not an error.
+ * REAL-TIME UPDATE (new): bookings are now loaded via addSnapshotListener
+ * instead of a one-time .get() call in onResume(). If an admin confirms
+ * or declines this client's booking while this screen is open, the
+ * status badge now updates automatically, with no manual refresh needed.
+ * The listener is registered once in onCreate() and removed in
+ * onDestroy() to avoid a leak.
  *
- * Booking history summary (NEW): a simple client-facing count of bookings
- * made this calendar year, computed entirely from the booking list already
- * loaded for this screen - no new Firestore read required. Chosen as a
- * replacement for session-time/login-time tracking, which would have
- * required new tracking infrastructure and raised privacy considerations
- * beyond what this app's Privacy Policy currently covers.
+ * Offline behaviour is unchanged in substance: the listener still serves
+ * cached data when offline (Firestore's own built-in behaviour), and the
+ * offline banner is now driven by NetworkStatusHelper.observeConnectivity
+ * (same live-updating pattern already used on Home and Book Appointment)
+ * rather than a one-time check.
  */
 public class MyBookingsActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
@@ -51,6 +49,8 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
     private TextView tvBookingHistorySummary;
     private final List<Booking> bookingList = new ArrayList<>();
     private BookingListAdapter adapter;
+
+    private ListenerRegistration bookingsListenerRegistration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,25 +68,41 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
 
         adapter = new BookingListAdapter(bookingList, false, this);
         recyclerBookings.setAdapter(adapter);
+
+        NetworkStatusHelper.observeConnectivity(this, tvOfflineBanner);
+
+        attachBookingsListener();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        loadBookings();
+    protected void onDestroy() {
+        super.onDestroy();
+        if (bookingsListenerRegistration != null) {
+            bookingsListenerRegistration.remove();
+        }
     }
 
-    private void loadBookings() {
+    private void attachBookingsListener() {
         String uid = FirebaseRefs.getAuth().getUid();
         if (uid == null) return;
 
-        boolean online = NetworkStatusHelper.isOnline(this);
-        tvOfflineBanner.setVisibility(online ? View.GONE : View.VISIBLE);
-
-        FirebaseRefs.bookingsCollection()
+        bookingsListenerRegistration = FirebaseRefs.bookingsCollection()
                 .whereEqualTo("clientId", uid)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
+                .addSnapshotListener((querySnapshot, error) -> {
+                    if (error != null) {
+                        if (!NetworkStatusHelper.isOnline(this)) {
+                            bookingList.clear();
+                            adapter.notifyDataSetChanged();
+                            tvEmptyState.setVisibility(View.VISIBLE);
+                            recyclerBookings.setVisibility(View.GONE);
+                            tvBookingHistorySummary.setVisibility(View.GONE);
+                        } else {
+                            Toast.makeText(this, getString(R.string.error_cancel_failed, error.getMessage()), Toast.LENGTH_LONG).show();
+                        }
+                        return;
+                    }
+                    if (querySnapshot == null) return;
+
                     bookingList.clear();
                     for (com.google.firebase.firestore.QueryDocumentSnapshot doc : querySnapshot) {
                         Booking booking = doc.toObject(Booking.class);
@@ -97,26 +113,9 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
                     tvEmptyState.setVisibility(bookingList.isEmpty() ? View.VISIBLE : View.GONE);
                     recyclerBookings.setVisibility(bookingList.isEmpty() ? View.GONE : View.VISIBLE);
                     updateBookingHistorySummary();
-                })
-                .addOnFailureListener(e -> {
-                    if (!NetworkStatusHelper.isOnline(this)) {
-                        bookingList.clear();
-                        adapter.notifyDataSetChanged();
-                        tvEmptyState.setVisibility(View.VISIBLE);
-                        recyclerBookings.setVisibility(View.GONE);
-                        tvBookingHistorySummary.setVisibility(View.GONE);
-                    } else {
-                        Toast.makeText(this, getString(R.string.error_cancel_failed, e.getMessage()), Toast.LENGTH_LONG).show();
-                    }
                 });
     }
 
-    /**
-     * Counts how many of the already-loaded bookings fall within the
-     * current calendar year (by comparing the "yyyy" prefix of each
-     * booking's date string), and displays it as a simple summary line.
-     * No new Firestore read - reuses bookingList already in memory.
-     */
     private void updateBookingHistorySummary() {
         if (bookingList.isEmpty()) {
             tvBookingHistorySummary.setVisibility(View.GONE);
@@ -172,7 +171,8 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
                     NotificationHelper.cancelReminder(this, booking.getBookingId());
 
                     Toast.makeText(this, R.string.booking_cancelled_message, Toast.LENGTH_SHORT).show();
-                    loadBookings();
+                    // No manual reload needed - the real-time listener above
+                    // picks up this change automatically.
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, getString(R.string.error_cancel_failed, e.getMessage()), Toast.LENGTH_LONG).show()

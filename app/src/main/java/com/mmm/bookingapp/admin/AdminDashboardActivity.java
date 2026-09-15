@@ -11,11 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.adapters.BookingListAdapter;
@@ -23,6 +25,7 @@ import com.mmm.bookingapp.auth.WelcomeActivity;
 import com.mmm.bookingapp.models.Booking;
 import com.mmm.bookingapp.settings.SettingsActivity;
 import com.mmm.bookingapp.utils.CsvExportUtils;
+import com.mmm.bookingapp.utils.DialogUtils;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.TouchTargetUtils;
 
@@ -34,15 +37,17 @@ import java.util.Locale;
 /**
  * Screen 18 - Admin Dashboard (admin root screen).
  *
- * Redesigned per the detailed mockup spec. Key changes from the previous
- * version, flagged explicitly:
- * - Settings and Logout are now circular icon-only buttons (View, not
- *   LinearLayout/Button) - visual type change only.
- * - The bar chart is now ONE proportional stacked bar instead of 4
- *   separate comparison bars. updateAnalyticsBars() now computes each
- *   segment's weight as its raw share of the total (not relative to the
- *   largest category), and falls back to a neutral grey full-width bar
- *   when there is no data at all, so the chart never renders blank.
+ * REAL-TIME UPDATE (new): bookings are now loaded via an addSnapshotListener
+ * instead of a one-time .get() call. This means a new client booking, or a
+ * status change made from Booking Detail, is reflected here automatically
+ * without the admin needing to reopen or refresh the screen - a genuine
+ * real-time feature, free-tier, no Cloud Functions required. The listener
+ * is registered once in onCreate() and explicitly removed in onDestroy()
+ * to avoid a memory/listener leak.
+ *
+ * Also now shows a brief "Logged in successfully" toast on a fresh login
+ * (via the "showLoginSuccess" intent extra), and Logout goes through a
+ * Cancel/Log Out confirmation dialog before actually signing out.
  */
 public class AdminDashboardActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
@@ -67,10 +72,19 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
     private String filterDate = null;
     private String searchQuery = "";
 
+    private ListenerRegistration bookingsListenerRegistration;
+
+    private long backPressedTime = 0;
+    private static final long BACK_PRESS_EXIT_INTERVAL = 2000; // 2 seconds
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_dashboard);
+
+        if (getIntent().getBooleanExtra("showLoginSuccess", false)) {
+            Toast.makeText(this, R.string.login_success_message, Toast.LENGTH_SHORT).show();
+        }
 
         tvSummaryPending = findViewById(R.id.tvSummaryPending);
         tvSummaryConfirmed = findViewById(R.id.tvSummaryConfirmed);
@@ -95,14 +109,12 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         tvCountCompleted = findViewById(R.id.tvCountCompleted);
         tvCountCancelled = findViewById(R.id.tvCountCancelled);
 
-        // Settings and Logout are now plain circular icon buttons -
-        // looked up as View since their XML type is now ImageButton,
-        // not LinearLayout/Button as before.
         View btnSettings = findViewById(R.id.btnSettings);
         btnSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
 
         View btnLogoutAdmin = findViewById(R.id.btnLogoutAdmin);
-        btnLogoutAdmin.setOnClickListener(v -> logout());
+        btnLogoutAdmin.setOnClickListener(v ->
+                DialogUtils.showLogoutConfirmation(this, this::logout));
 
         TouchTargetUtils.expandTouchArea(findViewById(android.R.id.content), btnLogoutAdmin);
         TouchTargetUtils.expandTouchArea(findViewById(android.R.id.content), btnSettings);
@@ -121,12 +133,31 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         tvClearFilters.setOnClickListener(v -> clearFilters());
         tvFilterDate.setOnClickListener(v -> showDateFilterPicker());
         tvExportCsv.setOnClickListener(v -> exportCurrentListToCsv());
+
+        attachBookingsListener();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        loadAllBookings();
+    protected void onDestroy() {
+        super.onDestroy();
+        if (bookingsListenerRegistration != null) {
+            bookingsListenerRegistration.remove();
+        }
+    }
+
+    /**
+     * Double-press-to-exit, same as Home - Admin Dashboard is also a root
+     * screen per the Blueprint's navigation rule, so it has the identical
+     * back-button requirement. Does not touch the Firebase session.
+     */
+    @Override
+    public void onBackPressed() {
+        if (backPressedTime + BACK_PRESS_EXIT_INTERVAL > System.currentTimeMillis()) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, R.string.press_back_again_to_exit, Toast.LENGTH_SHORT).show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 
     private void setupSearch() {
@@ -190,9 +221,21 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         applyFilters();
     }
 
-    private void loadAllBookings() {
-        FirebaseRefs.bookingsCollection().get()
-                .addOnSuccessListener(querySnapshot -> {
+    /**
+     * Real-time listener (replaces the previous one-time .get() call).
+     * Fires immediately with current data, then again automatically
+     * whenever any booking is added, changed, or removed - including
+     * changes made from other screens (Booking Detail, client bookings).
+     */
+    private void attachBookingsListener() {
+        bookingsListenerRegistration = FirebaseRefs.bookingsCollection()
+                .addSnapshotListener((querySnapshot, error) -> {
+                    if (error != null) {
+                        Log.e(TAG, "Real-time bookings listener error", error);
+                        return;
+                    }
+                    if (querySnapshot == null) return;
+
                     allBookings.clear();
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         Booking booking = doc.toObject(Booking.class);
@@ -201,8 +244,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
                     }
                     updateSummaryCounts();
                     applyFilters();
-                })
-                .addOnFailureListener(e -> Log.e(TAG, "Failed to load bookings", e));
+                });
     }
 
     private void updateSummaryCounts() {
@@ -223,15 +265,6 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         updateAnalyticsBars(pending, confirmed, completed, cancelled);
     }
 
-    /**
-     * Renders ONE proportional stacked bar: each segment's weight is set
-     * to its own raw count, so - since all four segments and the fallback
-     * share a single row - Android's weight system alone makes each
-     * segment's width naturally proportional to the total. When the total
-     * is zero, all four real segments collapse to zero width and the
-     * fallback grey segment takes the full row instead, so the bar is
-     * never left blank.
-     */
     private void updateAnalyticsBars(int pending, int confirmed, int completed, int cancelled) {
         int total = pending + confirmed + completed + cancelled;
 
