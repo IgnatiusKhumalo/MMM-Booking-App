@@ -31,17 +31,25 @@
             android:gravity="center"
             android:text="@string/faq_title"
             android:textColor="@color/color_text_on_primary"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_size_18"
             android:textStyle="bold" />
 
         <View android:layout_width="40dp" android:layout_height="1dp" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerFAQ"
+    <com.mmm.bookingapp.utils.MaxWidthLinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
-        android:clipToPadding="false" />
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerFAQ"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:clipToPadding="false" />
+
+    </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
 
 </LinearLayout>

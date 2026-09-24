@@ -41,13 +41,20 @@
             <View android:layout_width="40dp" android:layout_height="1dp" />
         </LinearLayout>
 
-        <TextView
+        <com.mmm.bookingapp.utils.MaxWidthLinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/privacy_policy_body"
-            android:textColor="@color/color_text_primary"
-            android:textSize="14sp"
-            android:lineSpacingExtra="4dp"
-            android:padding="24dp" />
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_policy_body"
+                android:textColor="@color/color_text_primary"
+                android:textSize="14sp"
+                android:lineSpacingExtra="4dp"
+                android:padding="24dp" />
+        </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
     </LinearLayout>
 </ScrollView>

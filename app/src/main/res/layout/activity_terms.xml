@@ -35,19 +35,26 @@
                 android:gravity="center"
                 android:text="@string/terms_title"
                 android:textColor="@color/color_text_on_primary"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_size_18"
                 android:textStyle="bold" />
 
             <View android:layout_width="40dp" android:layout_height="1dp" />
         </LinearLayout>
 
-        <TextView
+        <com.mmm.bookingapp.utils.MaxWidthLinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/terms_body"
-            android:textColor="@color/color_text_primary"
-            android:textSize="14sp"
-            android:lineSpacingExtra="4dp"
-            android:padding="24dp" />
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/terms_body"
+                android:textColor="@color/color_text_primary"
+                android:textSize="@dimen/text_size_14"
+                android:lineSpacingExtra="4dp"
+                android:padding="24dp" />
+        </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
     </LinearLayout>
 </ScrollView>

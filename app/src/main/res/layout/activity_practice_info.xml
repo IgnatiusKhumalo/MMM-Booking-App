@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_background">
+    android:background="@color/color_background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <LinearLayout
@@ -35,7 +36,7 @@
                 android:gravity="center"
                 android:text="@string/practice_info_title"
                 android:textColor="@color/color_text_on_primary"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_size_18"
                 android:textStyle="bold" />
 
             <View android:layout_width="40dp" android:layout_height="1dp" />
@@ -43,59 +44,70 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
 
-            <TextView style="@style/DetailLabel" android:text="@string/label_practice_phone" />
-            <EditText android:id="@+id/etPracticePhone" style="@style/SettingsInput" android:inputType="phone" />
-
-            <TextView style="@style/DetailLabel" android:text="@string/label_practice_email" />
-            <EditText android:id="@+id/etPracticeEmail" style="@style/SettingsInput" android:inputType="textEmailAddress" />
-
-            <TextView style="@style/DetailLabel" android:text="@string/label_whatsapp_link" />
-            <EditText android:id="@+id/etWhatsappLink" style="@style/SettingsInput" android:inputType="textUri" />
-
-            <TextView style="@style/DetailLabel" android:text="@string/label_operating_days" />
-            <EditText android:id="@+id/etOperatingDays" style="@style/SettingsInput" />
-
-            <TextView style="@style/DetailLabel" android:text="@string/label_hours_start" />
-            <EditText android:id="@+id/etHoursStart" style="@style/SettingsInput" />
-
-            <TextView style="@style/DetailLabel" android:text="@string/label_hours_end" />
-            <EditText android:id="@+id/etHoursEnd" style="@style/SettingsInput" />
-
-            <TextView style="@style/DetailLabel" android:text="@string/label_crisis_note" />
-            <EditText android:id="@+id/etCrisisNote"
+            <com.mmm.bookingapp.utils.MaxWidthLinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minLines="2"
-                android:gravity="top"
-                android:padding="14dp"
-                android:background="@color/color_surface"
-                android:layout_marginBottom="16dp" />
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="@dimen/screen_horizontal_padding">
 
-            <TextView style="@style/DetailLabel" android:text="@string/label_locations_readonly" />
-            <TextView android:id="@+id/tvLocationsReadonly" style="@style/DetailValue" />
+                <TextView style="@style/DetailLabel" android:text="@string/label_practice_phone" />
+                <EditText android:id="@+id/etPracticePhone" style="@style/SettingsInput" android:inputType="phone" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp" />
+                <TextView style="@style/DetailLabel" android:text="@string/label_practice_email" />
+                <EditText android:id="@+id/etPracticeEmail" style="@style/SettingsInput" android:inputType="textEmailAddress" />
 
-            <Button
-                android:id="@+id/btnSavePracticeInfo"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="@string/btn_save_changes"
-                android:textColor="@color/color_text_on_primary"
-                android:backgroundTint="@color/color_primary"
-                android:layout_marginTop="8dp" />
+                <TextView style="@style/DetailLabel" android:text="@string/label_whatsapp_link" />
+                <EditText android:id="@+id/etWhatsappLink" style="@style/SettingsInput" android:inputType="textUri" />
 
+                <TextView style="@style/DetailLabel" android:text="@string/label_operating_days" />
+                <EditText android:id="@+id/etOperatingDays" style="@style/SettingsInput" />
+
+                <TextView style="@style/DetailLabel" android:text="@string/label_hours_start" />
+                <EditText android:id="@+id/etHoursStart" style="@style/SettingsInput" />
+
+                <TextView style="@style/DetailLabel" android:text="@string/label_hours_end" />
+                <EditText android:id="@+id/etHoursEnd" style="@style/SettingsInput" />
+
+                <TextView style="@style/DetailLabel" android:text="@string/label_crisis_note" />
+                <EditText android:id="@+id/etCrisisNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minLines="2"
+                    android:gravity="top"
+                    android:padding="14dp"
+                    android:background="@color/color_surface"
+                    android:textSize="@dimen/text_size_14"
+                    android:layout_marginBottom="16dp" />
+
+                <TextView style="@style/DetailLabel" android:text="@string/label_locations_readonly" />
+                <TextView android:id="@+id/tvLocationsReadonly" style="@style/DetailValue" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp" />
+
+                <Button
+                    android:id="@+id/btnSavePracticeInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="@string/btn_save_changes"
+                    android:textColor="@color/color_text_on_primary"
+                    android:textSize="@dimen/text_size_16"
+                    android:backgroundTint="@color/color_primary"
+                    android:layout_marginTop="8dp" />
+
+            </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

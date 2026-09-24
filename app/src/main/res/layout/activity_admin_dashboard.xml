@@ -10,13 +10,13 @@
     android:scrollbarThumbVertical="@color/color_primary"
     android:fadeScrollbars="false">
 
-    <LinearLayout
+    <com.mmm.bookingapp.utils.MaxWidthLinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="18dp">
+        android:padding="@dimen/screen_horizontal_padding">
 
-        <!-- 1. Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,17 +35,16 @@
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_header_title"
                     android:textColor="@color/color_text_heading"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/text_size_20" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/admin_dashboard_subtitle"
                     android:textColor="@color/color_text_primary"
-                    android:textSize="13sp" />
+                    android:textSize="@dimen/text_size_13" />
             </LinearLayout>
 
-            <!-- Settings: now matches Home's settings icon -->
             <ImageButton
                 android:id="@+id/btnSettings"
                 android:layout_width="42dp"
@@ -57,7 +56,6 @@
                 app:tint="@color/color_text_primary"
                 android:contentDescription="@string/btn_settings" />
 
-            <!-- Logout: circular icon-only, rose/red icon -->
             <ImageButton
                 android:id="@+id/btnLogoutAdmin"
                 android:layout_width="42dp"
@@ -69,7 +67,6 @@
                 android:contentDescription="@string/btn_logout_top" />
         </LinearLayout>
 
-        <!-- 2. Overview card - single unified card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,7 +75,6 @@
             android:padding="16dp"
             android:layout_marginBottom="18dp">
 
-            <!-- a) 2x2 stat grid, flat left-accent style -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -109,14 +105,14 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/color_text_heading"
-                            android:textSize="22sp" />
+                            android:textSize="@dimen/text_size_22" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/summary_pending"
                             android:textColor="@color/color_text_primary"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_size_12" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -143,14 +139,14 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/color_text_heading"
-                            android:textSize="22sp" />
+                            android:textSize="@dimen/text_size_22" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/summary_confirmed"
                             android:textColor="@color/color_text_primary"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_size_12" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -185,14 +181,14 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/color_text_heading"
-                            android:textSize="22sp" />
+                            android:textSize="@dimen/text_size_22" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/summary_completed"
                             android:textColor="@color/color_text_primary"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_size_12" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -219,19 +215,18 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/color_text_heading"
-                            android:textSize="22sp" />
+                            android:textSize="@dimen/text_size_22" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/summary_cancelled"
                             android:textColor="@color/color_text_primary"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/text_size_12" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- b) single proportional stacked bar -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
@@ -274,7 +269,6 @@
                     android:background="@color/color_border" />
             </LinearLayout>
 
-            <!-- c) legend row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -285,17 +279,17 @@
                 <TextView
                     android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
                     android:layout_marginStart="5dp" android:layout_marginEnd="8dp"
-                    android:text="@string/summary_pending" android:textColor="@color/color_text_primary" android:textSize="11sp" />
+                    android:text="@string/summary_pending" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_11" />
                 <TextView android:id="@+id/tvCountPending" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="0" android:textColor="@color/color_text_heading" android:textSize="11sp" android:layout_marginEnd="12dp" />
+                    android:text="0" android:textColor="@color/color_text_heading" android:textSize="@dimen/text_size_11" android:layout_marginEnd="12dp" />
 
                 <View android:layout_width="8dp" android:layout_height="8dp" android:background="@color/color_status_confirmed" />
                 <TextView
                     android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
                     android:layout_marginStart="5dp" android:layout_marginEnd="8dp"
-                    android:text="@string/summary_confirmed" android:textColor="@color/color_text_primary" android:textSize="11sp" />
+                    android:text="@string/summary_confirmed" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_11" />
                 <TextView android:id="@+id/tvCountConfirmed" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="0" android:textColor="@color/color_text_heading" android:textSize="11sp" />
+                    android:text="0" android:textColor="@color/color_text_heading" android:textSize="@dimen/text_size_11" />
             </LinearLayout>
 
             <LinearLayout
@@ -308,27 +302,26 @@
                 <TextView
                     android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
                     android:layout_marginStart="5dp" android:layout_marginEnd="8dp"
-                    android:text="@string/summary_completed" android:textColor="@color/color_text_primary" android:textSize="11sp" />
+                    android:text="@string/summary_completed" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_11" />
                 <TextView android:id="@+id/tvCountCompleted" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="0" android:textColor="@color/color_text_heading" android:textSize="11sp" android:layout_marginEnd="12dp" />
+                    android:text="0" android:textColor="@color/color_text_heading" android:textSize="@dimen/text_size_11" android:layout_marginEnd="12dp" />
 
                 <View android:layout_width="8dp" android:layout_height="8dp" android:background="@color/color_error" />
                 <TextView
                     android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
                     android:layout_marginStart="5dp" android:layout_marginEnd="8dp"
-                    android:text="@string/summary_cancelled" android:textColor="@color/color_text_primary" android:textSize="11sp" />
+                    android:text="@string/summary_cancelled" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_11" />
                 <TextView android:id="@+id/tvCountCancelled" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="0" android:textColor="@color/color_text_heading" android:textSize="11sp" />
+                    android:text="0" android:textColor="@color/color_text_heading" android:textSize="@dimen/text_size_11" />
             </LinearLayout>
 
-            <!-- d) View detailed analytics -->
             <Button
                 android:id="@+id/btnViewAnalytics"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:text="@string/btn_view_analytics"
                 android:textColor="@color/color_primary"
-                android:textSize="13sp"
+                android:textSize="@dimen/text_size_13"
                 android:backgroundTint="@color/color_background"
                 app:strokeColor="@color/color_primary"
                 app:strokeWidth="1dp"
@@ -339,7 +332,6 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
         </LinearLayout>
 
-        <!-- 3. Search bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -367,10 +359,9 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:textColor="@color/color_text_heading"
-                android:textSize="13sp" />
+                android:textSize="@dimen/text_size_13" />
         </LinearLayout>
 
-        <!-- 4. Filter pills row -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -441,7 +432,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/filter_date_label"
                         android:textColor="@color/color_text_primary"
-                        android:textSize="13sp" />
+                        android:textSize="@dimen/text_size_13" />
 
                     <ImageView
                         android:layout_width="14dp"
@@ -453,7 +444,6 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-        <!-- 5. Utility row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -468,7 +458,7 @@
                 android:layout_weight="1"
                 android:text="@string/btn_clear_filters"
                 android:textColor="@color/color_text_primary"
-                android:textSize="12sp" />
+                android:textSize="@dimen/text_size_12" />
 
             <ImageView
                 android:layout_width="14dp"
@@ -483,7 +473,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/btn_export_csv"
                 android:textColor="@color/color_primary"
-                android:textSize="12sp" />
+                android:textSize="@dimen/text_size_12" />
         </LinearLayout>
 
         <TextView
@@ -492,7 +482,7 @@
             android:layout_height="wrap_content"
             android:text="@string/empty_admin_bookings_message"
             android:textColor="@color/color_text_primary"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_size_14"
             android:gravity="center"
             android:padding="32dp"
             android:visibility="gone" />
@@ -503,5 +493,5 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false" />
 
-    </LinearLayout>
+    </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -6,17 +6,14 @@
     android:background="@color/color_background"
     android:fillViewport="true">
 
-    <LinearLayout
+    <com.mmm.bookingapp.utils.MaxWidthLinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
         android:orientation="vertical"
         android:gravity="center_vertical"
-        android:padding="32dp">
+        android:padding="@dimen/screen_horizontal_padding">
 
-        <!-- Logo shown edge-to-edge, no wrapper/background - the logo file
-             is already a complete, fully-designed graphic (white square,
-             hands-and-heart icon, full practice name), same rule already
-             applied to the Home screen's branding card. -->
         <ImageView
             android:layout_width="180dp"
             android:layout_height="180dp"
@@ -31,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/welcome_heading"
-            android:textSize="26sp"
+            android:textSize="@dimen/text_size_26"
             android:textStyle="bold"
             android:textColor="@color/color_text_heading"
             android:gravity="center"
@@ -42,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/welcome_subheading"
-            android:textSize="26sp"
+            android:textSize="@dimen/text_size_26"
             android:textStyle="bold"
             android:textColor="@color/color_text_heading"
             android:layout_marginBottom="12dp"
@@ -54,23 +51,20 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/welcome_tagline"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_size_14"
             android:textColor="@color/color_text_primary"
             android:layout_marginBottom="40dp"
             android:gravity="center"
             android:maxLines="2"
             android:ellipsize="end" />
 
-        <!-- Primary and secondary actions - same rounded-pill button
-             language now used consistently across Home, Login, and
-             Welcome, rather than a separate default-square style here. -->
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="58dp"
             android:text="@string/btn_register"
             android:textColor="@color/color_text_on_primary"
-            android:textSize="15sp"
+            android:textSize="@dimen/text_size_15"
             android:textStyle="bold"
             android:backgroundTint="@color/color_primary"
             app:cornerRadius="28dp"
@@ -82,7 +76,7 @@
             android:layout_height="58dp"
             android:text="@string/btn_login"
             android:textColor="@color/color_primary"
-            android:textSize="15sp"
+            android:textSize="@dimen/text_size_15"
             android:textStyle="bold"
             android:backgroundTint="@color/color_background"
             app:strokeColor="@color/color_primary"
@@ -96,10 +90,10 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/login_footer_tagline"
             android:textColor="@color/color_text_primary"
-            android:textSize="11sp"
+            android:textSize="@dimen/text_size_11"
             android:gravity="center"
             android:maxLines="1"
             android:layout_marginTop="36dp" />
 
-    </LinearLayout>
+    </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
 </ScrollView>

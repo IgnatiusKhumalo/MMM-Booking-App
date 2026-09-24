@@ -6,13 +6,14 @@
     android:background="@color/color_background"
     android:fillViewport="true">
 
-    <LinearLayout
+    <com.mmm.bookingapp.utils.MaxWidthLinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="@dimen/screen_horizontal_padding">
 
-        <!-- Offline banner - unchanged -->
         <TextView
             android:id="@+id/tvOfflineBanner"
             android:layout_width="match_parent"
@@ -20,14 +21,13 @@
             android:background="@color/color_status_pending"
             android:text="@string/offline_banner_text"
             android:textColor="@color/color_text_on_primary"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_12"
             android:textStyle="bold"
             android:gravity="center"
             android:padding="10dp"
             android:layout_marginBottom="16dp"
             android:visibility="gone" />
 
-        <!-- 1. HEADER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/home_welcome_default"
-                android:textSize="24sp"
+                android:textSize="@dimen/text_size_24"
                 android:textStyle="bold"
                 android:textColor="@color/color_text_heading"
                 android:maxLines="1"
@@ -58,7 +58,6 @@
                 android:contentDescription="@string/btn_logout" />
         </LinearLayout>
 
-        <!-- 2. BRANDING CARD - logo shown edge-to-edge, no wrapper/background -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,7 +87,7 @@
                     android:text="@string/app_name"
                     android:textColor="@color/color_text_heading"
                     android:textStyle="bold"
-                    android:textSize="17sp"
+                    android:textSize="@dimen/text_size_17"
                     android:maxLines="1"
                     android:ellipsize="end" />
 
@@ -97,14 +96,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/home_brand_subtitle"
                     android:textColor="@color/color_text_primary"
-                    android:textSize="13sp"
+                    android:textSize="@dimen/text_size_13"
                     android:layout_marginTop="2dp"
                     android:maxLines="2"
                     android:ellipsize="end" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 3. NEXT APPOINTMENT CARD -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -112,7 +110,6 @@
             android:background="@drawable/bg_card_bordered"
             android:layout_marginBottom="16dp">
 
-            <!-- thin accent line -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="4dp"
@@ -145,7 +142,7 @@
                         android:text="@string/home_next_appointment_title"
                         android:textColor="@color/color_text_heading"
                         android:textStyle="bold"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/text_size_15"
                         android:maxLines="1"
                         android:ellipsize="end" />
 
@@ -154,7 +151,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/home_no_upcoming_bookings"
                         android:textColor="@color/color_text_primary"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/text_size_12"
                         android:maxLines="1"
                         android:ellipsize="end" />
                 </LinearLayout>
@@ -164,7 +161,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/home_next_appointment_note"
                     android:textColor="@color/color_text_primary"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_size_12"
                     android:layout_marginBottom="16dp"
                     android:maxLines="2"
                     android:ellipsize="end" />
@@ -175,7 +172,7 @@
                     android:layout_height="60dp"
                     android:text="@string/btn_book_appointment"
                     android:textColor="@color/color_text_on_primary"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/text_size_16"
                     android:textStyle="bold"
                     android:backgroundTint="@color/color_primary"
                     android:gravity="center"
@@ -187,7 +184,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 4. FEATURES GRID 2x2 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -228,7 +224,7 @@
                         android:text="@string/btn_services"
                         android:textColor="@color/color_text_heading"
                         android:textStyle="bold"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_size_14"
                         android:maxLines="1"
                         android:ellipsize="end" />
 
@@ -238,7 +234,7 @@
                         android:layout_marginTop="2dp"
                         android:text="@string/home_subtitle_services"
                         android:textColor="@color/color_text_primary"
-                        android:textSize="11sp"
+                        android:textSize="@dimen/text_size_11"
                         android:maxLines="1"
                         android:ellipsize="end" />
                 </LinearLayout>
@@ -278,7 +274,7 @@
                         android:text="@string/btn_my_bookings"
                         android:textColor="@color/color_text_heading"
                         android:textStyle="bold"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_size_14"
                         android:maxLines="1"
                         android:ellipsize="end" />
 
@@ -288,7 +284,7 @@
                         android:layout_marginTop="2dp"
                         android:text="@string/home_subtitle_bookings"
                         android:textColor="@color/color_text_primary"
-                        android:textSize="11sp"
+                        android:textSize="@dimen/text_size_11"
                         android:maxLines="1"
                         android:ellipsize="end" />
                 </LinearLayout>
@@ -335,7 +331,7 @@
                         android:text="@string/btn_contact"
                         android:textColor="@color/color_text_heading"
                         android:textStyle="bold"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_size_14"
                         android:maxLines="1"
                         android:ellipsize="end" />
 
@@ -345,7 +341,7 @@
                         android:layout_marginTop="2dp"
                         android:text="@string/home_subtitle_contact"
                         android:textColor="@color/color_text_primary"
-                        android:textSize="11sp"
+                        android:textSize="@dimen/text_size_11"
                         android:maxLines="1"
                         android:ellipsize="end" />
                 </LinearLayout>
@@ -385,7 +381,7 @@
                         android:text="@string/btn_settings"
                         android:textColor="@color/color_text_heading"
                         android:textStyle="bold"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_size_14"
                         android:maxLines="1"
                         android:ellipsize="end" />
 
@@ -395,14 +391,13 @@
                         android:layout_marginTop="2dp"
                         android:text="@string/home_subtitle_settings"
                         android:textColor="@color/color_text_primary"
-                        android:textSize="11sp"
+                        android:textSize="@dimen/text_size_11"
                         android:maxLines="1"
                         android:ellipsize="end" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <!-- 5. FOOTER SUPPORT BAR -->
         <LinearLayout
             android:id="@+id/layoutFooterSupport"
             android:layout_width="match_parent"
@@ -427,7 +422,7 @@
                 android:layout_marginStart="10dp"
                 android:text="@string/home_footer_support"
                 android:textColor="@color/color_text_primary"
-                android:textSize="13sp"
+                android:textSize="@dimen/text_size_13"
                 android:gravity="center"
                 android:maxLines="1"
                 android:ellipsize="end" />
@@ -439,5 +434,5 @@
                 app:tint="@color/color_text_primary" />
         </LinearLayout>
 
-    </LinearLayout>
+    </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
 </ScrollView>

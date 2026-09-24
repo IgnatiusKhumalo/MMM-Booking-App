@@ -31,7 +31,7 @@
             android:gravity="center"
             android:text="@string/my_bookings_title"
             android:textColor="@color/color_text_on_primary"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_size_18"
             android:textStyle="bold" />
 
         <View
@@ -46,14 +46,12 @@
         android:background="@color/color_status_pending"
         android:text="@string/offline_bookings_cached_message"
         android:textColor="@color/color_text_on_primary"
-        android:textSize="12sp"
+        android:textSize="@dimen/text_size_12"
         android:textStyle="bold"
         android:gravity="center"
         android:padding="10dp"
         android:visibility="gone" />
 
-    <!-- Simple booking history summary - client-facing, computed from
-         data already loaded on this screen, no new Firestore reads -->
     <TextView
         android:id="@+id/tvBookingHistorySummary"
         android:layout_width="match_parent"
@@ -61,7 +59,7 @@
         android:background="@color/color_surface"
         android:padding="10dp"
         android:textColor="@color/color_text_heading"
-        android:textSize="12sp"
+        android:textSize="@dimen/text_size_12"
         android:textStyle="bold"
         android:gravity="center"
         android:visibility="gone" />
@@ -72,29 +70,37 @@
         android:layout_height="wrap_content"
         android:text="@string/empty_bookings_message"
         android:textColor="@color/color_text_primary"
-        android:textSize="14sp"
+        android:textSize="@dimen/text_size_14"
         android:gravity="center"
         android:padding="32dp"
         android:visibility="gone" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerBookings"
+    <com.mmm.bookingapp.utils.MaxWidthLinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp"
-        android:clipToPadding="false"
-        android:scrollbars="vertical"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbarThumbVertical="@color/color_primary"
-        android:fadeScrollbars="false" />
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerBookings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:clipToPadding="false"
+            android:scrollbars="vertical"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbarThumbVertical="@color/color_primary"
+            android:fadeScrollbars="false" />
+
+    </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/cancellation_policy_note"
         android:textColor="@color/color_text_primary"
-        android:textSize="11sp"
+        android:textSize="@dimen/text_size_11"
         android:padding="14dp"
         android:gravity="center" />
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="content_max_width">640dp</dimen>
+    <dimen name="screen_horizontal_padding">48dp</dimen>
+
+    <!-- Same text-size names, scaled up ~1.3x for comfortable reading
+         at arm's length on a 10" tablet. -->
+    <dimen name="text_size_10">14sp</dimen>
+    <dimen name="text_size_11">15sp</dimen>
+    <dimen name="text_size_12">16sp</dimen>
+    <dimen name="text_size_13">17sp</dimen>
+    <dimen name="text_size_14">19sp</dimen>
+    <dimen name="text_size_15">20sp</dimen>
+    <dimen name="text_size_16">21sp</dimen>
+    <dimen name="text_size_17">22sp</dimen>
+    <dimen name="text_size_18">24sp</dimen>
+    <dimen name="text_size_20">26sp</dimen>
+    <dimen name="text_size_22">29sp</dimen>
+    <dimen name="text_size_24">31sp</dimen>
+    <dimen name="text_size_26">34sp</dimen>
+</resources>
