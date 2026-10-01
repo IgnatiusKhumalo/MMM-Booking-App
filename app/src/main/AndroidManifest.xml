@@ -40,6 +40,7 @@
         <activity android:name=".client.BookingConfirmationActivity" android:exported="false" />
 
         <activity android:name=".settings.ChangePasswordActivity" android:exported="false" />
+        <activity android:name=".settings.ChangeEmailActivity" android:exported="false" />
         <activity android:name=".settings.AboutActivity" android:exported="false" />
         <activity android:name=".settings.PrivacyPolicyActivity" android:exported="false" />
         <activity android:name=".settings.TermsActivity" android:exported="false" />

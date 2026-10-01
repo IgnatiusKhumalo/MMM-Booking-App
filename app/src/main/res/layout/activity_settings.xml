@@ -15,9 +15,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Header: pulled out as its own fixed top block, capped/centered
-             for tablet width alignment but NOT part of the vertical
-             centering below - matches the proven Book Appointment pattern. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,8 +56,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Centering wrapper: takes remaining space below the header,
-             centers the card stack within it on tall/tablet screens. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -189,6 +184,17 @@
                         android:layout_height="wrap_content"
                         android:singleLine="false"
                         android:text="@string/btn_change_password"
+                        android:textColor="@color/color_primary"
+                        android:backgroundTint="@color/color_background"
+                        style="@style/Widget.MMM.TallOutlinedButton"
+                        android:layout_marginBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/btnChangeEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="false"
+                        android:text="@string/btn_change_email"
                         android:textColor="@color/color_primary"
                         android:backgroundTint="@color/color_background"
                         style="@style/Widget.MMM.TallOutlinedButton" />

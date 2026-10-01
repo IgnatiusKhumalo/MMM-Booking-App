@@ -7,7 +7,7 @@ import org.junit.Test;
 
 /**
  * Real unit tests for ValidationUtils, replacing the untouched Android
- * Studio default test file. 27 test cases covering every validation
+ * Studio default test file. 34 test cases covering every validation
  * rule and its edge cases.
  */
 public class ValidationUtilsTest {
@@ -111,5 +111,19 @@ public class ValidationUtilsTest {
     }
     @Test public void passwordsMatch_firstNull_returnsFalse() {
         assertFalse(ValidationUtils.doPasswordsMatch(null, "Passw0rd!"));
+    }
+
+    // ---------- doEmailsMatch ----------
+    @Test public void emailsMatch_identicalStrings_returnsTrue() {
+        assertTrue(ValidationUtils.doEmailsMatch("thandi@example.com", "thandi@example.com"));
+    }
+    @Test public void emailsMatch_differentCase_returnsTrue() {
+        assertTrue(ValidationUtils.doEmailsMatch("Thandi@Example.com", "thandi@example.com"));
+    }
+    @Test public void emailsMatch_differentStrings_returnsFalse() {
+        assertFalse(ValidationUtils.doEmailsMatch("thandi@example.com", "sipho@example.com"));
+    }
+    @Test public void emailsMatch_firstNull_returnsFalse() {
+        assertFalse(ValidationUtils.doEmailsMatch(null, "thandi@example.com"));
     }
 }

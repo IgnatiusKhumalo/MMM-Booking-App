@@ -289,14 +289,27 @@
     <!-- logout -->
     <string name="btn_logout_top">Logout</string>
 
-    <!-- Dashboard Admin -->
+    <!-- Search -->
+    <string name="search_hint">Search bookings (service, location, status, notes)</string>
+    <string name="btn_export_csv">Export to CSV</string>
+    <string name="export_success_message">Export ready — choose where to save or share it</string>
+    <string name="export_failed_message">Export failed. Please try again.</string>
+    <string name="error_public_holiday">The practice is closed on this date (South African public holiday) — please choose a different date</string>
+    <string name="holidays_load_failed">Could not check public holidays — date will only be checked against weekday and hour rules</string>
+
+    <!-- dashboard header -->
     <string name="dashboard_header_title">Bookings</string>
     <string name="admin_dashboard_subtitle">Admin dashboard</string>
     <string name="filter_status_all">Status: All</string>
     <string name="filter_location_all">Location: All</string>
 
+    <!-- home footer -->
+    <string name="home_footer_support">Need support? Contact us 24/7</string>
 
-    <!-- subtitle -->
+    <!-- settings -->
+    <string name="settings_subtitle">Manage your account</string>
+
+    <!-- new pixel-perfect home mockup -->
     <string name="home_next_appointment_title">Next Appointment</string>
     <string name="home_no_upcoming_bookings">No upcoming bookings</string>
     <string name="home_next_appointment_note">Once confirmed, it will appear in My Bookings tab</string>
@@ -306,27 +319,12 @@
     <string name="home_subtitle_contact">Get in touch</string>
     <string name="home_subtitle_settings">App preferences</string>
 
-    <!-- settings_subtitle -->
-    <string name="settings_subtitle">Manage your account</string>
-
-    <!-- login -->
+    <!-- login redesign -->
     <string name="login_welcome_back_title">Welcome Back</string>
     <string name="login_subtitle">We\'re here for you. Sign in to continue.</string>
     <string name="login_footer_tagline">Secure  •  Confidential  •  Compassionate Care</string>
-    <string name="home_footer_support">Need support? Contact us 24/7</string>
 
-    <!-- Search -->
-    <string name="search_hint">Search bookings (service, location, status, notes)</string>
-    <string name="btn_export_csv">Export to CSV</string>
-    <string name="export_success_message">Export ready — choose where to save or share it</string>
-    <string name="export_failed_message">Export failed. Please try again.</string>
-    <string name="error_public_holiday">The practice is closed on this date (South African public holiday) — please choose a different date</string>
-    <string name="holidays_load_failed">Could not check public holidays — date will only be checked against weekday and hour rules</string>
-
-    <!-- press_back_again -->
-    <string name="press_back_again_to_exit">Press back again to exit</string>
-
-    <!-- messages -->
+    <!-- pro UX additions -->
     <string name="login_success_message">Logged in successfully</string>
     <string name="dark_mode_enabled_message">Dark Mode enabled</string>
     <string name="dark_mode_disabled_message">Dark Mode disabled</string>
@@ -338,6 +336,19 @@
     <string name="dialog_logout_message">Are you sure you want to log out? You\'ll need to log in again to access your account.</string>
     <string name="dialog_delete_account_title">Delete Your Account</string>
     <string name="dialog_delete_account_message">To permanently delete your account and all your data, please email us using the button below. Our team will review your request and confirm once your account has been removed.</string>
+    <string name="press_back_again_to_exit">Press back again to exit</string>
+
+    <!-- change email / confirm email -->
+    <string name="hint_confirm_email">Confirm Email Address</string>
+    <string name="error_confirm_email">Email addresses do not match</string>
+    <string name="btn_change_email">Change Email Address</string>
+    <string name="change_email_title">Change Email</string>
+    <string name="hint_new_email">New Email Address</string>
+    <string name="hint_confirm_new_email">Confirm New Email Address</string>
+    <string name="change_email_note">A confirmation link will be sent to your new email address. Your login email will not change until you click that link.</string>
+    <string name="change_email_success_title">Confirmation Sent</string>
+    <string name="change_email_success_message">We\'ve sent a confirmation link to your new email address. Your account will keep using your current email until you click that link — check your inbox to complete the change.</string>
+    <string name="error_change_email_failed">Could not change email: %1$s</string>
 
     <!-- Offline indicator - Innovation Feature -->
     <string name="offline_banner_text">You\'re offline — changes will sync once you\'re back online</string>

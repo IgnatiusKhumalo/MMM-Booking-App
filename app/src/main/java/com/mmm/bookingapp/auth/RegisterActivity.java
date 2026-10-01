@@ -34,16 +34,20 @@ import com.mmm.bookingapp.utils.ValidationUtils;
 
 /**
  * Screen 3 - Register Screen.
- * Unchanged functionally from the previous revision; Log calls added at
- * key points (attempt, validation failure summary, success, failure)
- * for the Logging and Monitoring requirement.
+ *
+ * Now includes a Confirm Email Address field (etConfirmEmail), validated
+ * against the main email field via ValidationUtils.doEmailsMatch() -
+ * catches a typo made differently in each field. This does not protect
+ * against copy-pasting the same wrong email into both boxes, which no
+ * confirm-field pattern can catch - it is a genuine, but partial,
+ * safeguard, same limitation every "confirm email" field everywhere has.
  */
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "RegisterActivity";
 
-    private EditText etFullName, etEmail, etPhone, etPassword, etConfirmPassword;
-    private TextView tvFullNameError, tvEmailError, tvPhoneError, tvConfirmPasswordError;
+    private EditText etFullName, etEmail, etConfirmEmail, etPhone, etPassword, etConfirmPassword;
+    private TextView tvFullNameError, tvEmailError, tvConfirmEmailError, tvPhoneError, tvConfirmPasswordError;
     private TextView tvPasswordRequirements, tvAgreeTerms, tvAgreeTermsError;
     private CheckBox cbAgreeTerms, cbSubscribe;
     private Button btnSubmit;
@@ -60,12 +64,14 @@ public class RegisterActivity extends AppCompatActivity {
 
         etFullName = findViewById(R.id.etFullName);
         etEmail = findViewById(R.id.etEmail);
+        etConfirmEmail = findViewById(R.id.etConfirmEmail);
         etPhone = findViewById(R.id.etPhone);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
 
         tvFullNameError = findViewById(R.id.tvFullNameError);
         tvEmailError = findViewById(R.id.tvEmailError);
+        tvConfirmEmailError = findViewById(R.id.tvConfirmEmailError);
         tvPhoneError = findViewById(R.id.tvPhoneError);
         tvConfirmPasswordError = findViewById(R.id.tvConfirmPasswordError);
         tvPasswordRequirements = findViewById(R.id.tvPasswordRequirements);
@@ -172,6 +178,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void attemptRegistration() {
         String fullName = etFullName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
+        String confirmEmail = etConfirmEmail.getText().toString().trim();
         String phoneRemainder = etPhone.getText().toString().trim();
         String password = etPassword.getText().toString();
         String confirmPassword = etConfirmPassword.getText().toString();
@@ -192,6 +199,13 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         } else {
             tvEmailError.setVisibility(View.GONE);
+        }
+
+        if (!ValidationUtils.doEmailsMatch(email, confirmEmail)) {
+            tvConfirmEmailError.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else {
+            tvConfirmEmailError.setVisibility(View.GONE);
         }
 
         if (!ValidationUtils.isValidPhoneRemainder(phoneRemainder)) {

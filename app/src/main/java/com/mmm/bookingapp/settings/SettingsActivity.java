@@ -23,11 +23,11 @@ import com.mmm.bookingapp.utils.ThemeManager;
 /**
  * Screen 12 - Settings Screen (client version).
  *
- * Now shows a toast confirming Dark Mode and Booking Reminder toggle
- * changes; Logout goes through a Cancel/Log Out confirmation dialog;
- * Delete My Account now shows a clear explainer dialog (what to expect,
- * that the practice will confirm by email) before launching the email
- * app, replacing the previous brief Toast-only instruction.
+ * Now includes a "Change Email Address" option in the Security card,
+ * right next to Change Password, routing to ChangeEmailActivity - added
+ * so a client who still knows their password can proactively secure
+ * their account onto a safe email if they suspect the registered one is
+ * lost or compromised, without needing to already be locked out first.
  */
 public class SettingsActivity extends AppCompatActivity {
 
@@ -68,6 +68,8 @@ public class SettingsActivity extends AppCompatActivity {
                 DialogUtils.showDeleteAccountExplainer(this, this::launchDeleteAccountEmailApp));
         findViewById(R.id.btnChangePassword).setOnClickListener(v ->
                 startActivity(new Intent(this, ChangePasswordActivity.class)));
+        findViewById(R.id.btnChangeEmail).setOnClickListener(v ->
+                startActivity(new Intent(this, ChangeEmailActivity.class)));
         findViewById(R.id.btnAbout).setOnClickListener(v ->
                 startActivity(new Intent(this, AboutActivity.class)));
         findViewById(R.id.btnPrivacyPolicy).setOnClickListener(v ->
@@ -153,11 +155,6 @@ public class SettingsActivity extends AppCompatActivity {
                         Toast.makeText(this, getString(R.string.error_update_failed, e.getMessage()), Toast.LENGTH_LONG).show());
     }
 
-    /**
-     * The actual email-launch step, now separated from the explainer
-     * dialog above it (DialogUtils.showDeleteAccountExplainer calls this
-     * only after the client taps "Continue" and understands the process).
-     */
     private void launchDeleteAccountEmailApp() {
         Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + practiceContactEmail));
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.delete_account_email_subject));
