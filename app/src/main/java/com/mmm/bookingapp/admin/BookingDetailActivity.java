@@ -12,15 +12,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.models.Booking;
+import com.mmm.bookingapp.utils.BookingActions;
+import com.mmm.bookingapp.utils.DialogUtils;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 
 /**
  * Screen 19 - Booking Detail Screen (Admin).
- * Confirm / Decline / Mark as Paid / Mark as Completed, per the Blueprint.
- * Decline reuses the same underlying mechanism as a client cancellation -
- * status set to "cancelled" and the matching bookedSlots entry freed -
- * since both represent the same real-world outcome (the slot becomes
- * available again).
+ * Confirm / Decline / Mark as Paid / Mark as Completed / Delete.
+ *
+ * Decline and Delete are deliberately different actions:
+ *  - Decline sets the booking to "cancelled" and frees its slot (the
+ *    record is kept for history).
+ *  - Delete permanently removes the booking record.
+ * Both run through BookingActions as a single atomic transaction, and
+ * both ask for confirmation first. Only an admin may delete - the
+ * Firestore Security Rules enforce this server-side.
  */
 public class BookingDetailActivity extends AppCompatActivity {
 
@@ -30,7 +36,7 @@ public class BookingDetailActivity extends AppCompatActivity {
     private TextView tvStatusBadge, tvClientName, tvClientContact, tvServiceValue,
             tvTypeLocationValue, tvDateTimeValue, tvAdditionalInfoValue;
     private Switch switchPaid;
-    private Button btnConfirmBooking, btnDeclineBooking, btnMarkCompleted;
+    private Button btnConfirmBooking, btnDeclineBooking, btnMarkCompleted, btnDeleteBooking;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +59,14 @@ public class BookingDetailActivity extends AppCompatActivity {
         btnConfirmBooking = findViewById(R.id.btnConfirmBooking);
         btnDeclineBooking = findViewById(R.id.btnDeclineBooking);
         btnMarkCompleted = findViewById(R.id.btnMarkCompleted);
+        btnDeleteBooking = findViewById(R.id.btnDeleteBooking);
 
         btnConfirmBooking.setOnClickListener(v -> updateStatus("confirmed", R.string.booking_confirmed_message));
-        btnDeclineBooking.setOnClickListener(v -> declineBooking());
+        btnDeclineBooking.setOnClickListener(v ->
+                DialogUtils.showDeclineBookingConfirmation(this, this::declineBooking));
         btnMarkCompleted.setOnClickListener(v -> updateStatus("completed", R.string.booking_completed_message));
+        btnDeleteBooking.setOnClickListener(v ->
+                DialogUtils.showDeleteBookingConfirmation(this, this::deleteBooking));
 
         loadBooking();
     }
@@ -117,12 +127,15 @@ public class BookingDetailActivity extends AppCompatActivity {
         btnConfirmBooking.setVisibility(isPending ? View.VISIBLE : View.GONE);
         btnDeclineBooking.setVisibility(isPending ? View.VISIBLE : View.GONE);
         btnMarkCompleted.setVisibility(isConfirmed ? View.VISIBLE : View.GONE);
+        btnDeleteBooking.setVisibility(View.VISIBLE);
     }
 
     private void applyStatusBadge(String status) {
+        // A missing status is treated as "pending" rather than crashing.
+        String safeStatus = (status == null) ? "pending" : status;
         int colorRes;
         String label;
-        switch (status) {
+        switch (safeStatus) {
             case "confirmed": colorRes = R.color.color_status_confirmed; label = getString(R.string.status_confirmed); break;
             case "cancelled": colorRes = R.color.color_error; label = getString(R.string.status_cancelled); break;
             case "completed": colorRes = R.color.color_status_completed; label = getString(R.string.status_completed); break;
@@ -143,20 +156,46 @@ public class BookingDetailActivity extends AppCompatActivity {
                         Toast.makeText(this, getString(R.string.error_action_failed, e.getMessage()), Toast.LENGTH_LONG).show());
     }
 
+    /** Decline = atomic cancel (status change + slot release). The record is kept. */
     private void declineBooking() {
-        FirebaseRefs.bookingsCollection().document(bookingId)
-                .update("status", "cancelled")
-                .addOnSuccessListener(unused -> {
-                    if (currentBooking != null) {
-                        String slotLocationPart = (currentBooking.getLocation() != null) ? currentBooking.getLocation() : "online";
-                        String slotId = currentBooking.getDate() + "_" + currentBooking.getTime() + "_" + slotLocationPart;
-                        FirebaseRefs.bookedSlotsCollection().document(slotId).delete();
-                    }
-                    Toast.makeText(this, R.string.booking_declined_message, Toast.LENGTH_SHORT).show();
-                    loadBooking();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, getString(R.string.error_action_failed, e.getMessage()), Toast.LENGTH_LONG).show());
+        BookingActions.cancelBooking(bookingId, new BookingActions.Callback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(BookingDetailActivity.this, R.string.booking_declined_message, Toast.LENGTH_SHORT).show();
+                loadBooking();
+            }
+
+            @Override
+            public void onError(int reason, String message) {
+                showActionError(reason, message);
+            }
+        });
+    }
+
+    /** Delete = permanently removes the booking record (admin only). */
+    private void deleteBooking() {
+        BookingActions.deleteBooking(bookingId, new BookingActions.Callback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(BookingDetailActivity.this, R.string.booking_deleted_message, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onError(int reason, String message) {
+                showActionError(reason, message);
+            }
+        });
+    }
+
+    private void showActionError(int reason, String message) {
+        if (reason == BookingActions.REASON_NOT_CANCELLABLE) {
+            Toast.makeText(this, R.string.error_booking_not_cancellable, Toast.LENGTH_LONG).show();
+        } else if (reason == BookingActions.REASON_MISSING) {
+            Toast.makeText(this, R.string.error_booking_missing, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, getString(R.string.error_action_failed, message), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void updatePaidStatus(boolean paid) {

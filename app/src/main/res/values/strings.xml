@@ -350,6 +350,34 @@
     <string name="change_email_success_message">We\'ve sent a confirmation link to your new email address. Your account will keep using your current email until you click that link — check your inbox to complete the change.</string>
     <string name="error_change_email_failed">Could not change email: %1$s</string>
 
+    <!-- booking delete / decline (admin) and atomic cancel messages -->
+    <string name="btn_delete_booking">Delete Booking</string>
+    <string name="btn_delete_booking_confirm">Delete</string>
+    <string name="dialog_decline_booking_title">Decline this booking?</string>
+    <string name="dialog_decline_booking_message">The booking will be marked as cancelled and its time slot will become available again. The client will see it as cancelled in My Bookings.</string>
+    <string name="dialog_delete_booking_title">Permanently delete this booking?</string>
+    <string name="dialog_delete_booking_message">This permanently removes the booking record and cannot be undone. To keep a record of a cancelled appointment, use Decline instead.</string>
+    <string name="booking_deleted_message">Booking deleted</string>
+    <string name="error_booking_not_cancellable">This booking can no longer be cancelled because it has already been cancelled or completed.</string>
+    <string name="error_booking_missing">This booking no longer exists.</string>
+
+    <!-- booking rules: open days, hours and quarter-hour starts -->
+    <string name="label_open_days">Open Days</string>
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+    <string name="day_sunday">Sunday</string>
+    <string name="error_closed_day">The practice is closed on that day. Open days: %1$s. Please choose another date.</string>
+    <string name="error_time_quarter_hour">Appointments start on the quarter hour (:00, :15, :30 or :45). Please choose a different time.</string>
+    <string name="error_appointment_runs_past_close">A %1$d-minute appointment starting then would finish after closing time (%2$s). Please choose an earlier time or a shorter duration.</string>
+    <string name="error_time_cleared_by_duration">Your chosen time no longer fits the new duration. Please choose the time again.</string>
+    <string name="error_practice_no_open_days">Select at least one open day.</string>
+    <string name="error_practice_hours_invalid">Enter opening and closing times as HH:mm, for example 08:00.</string>
+    <string name="error_practice_hours_order">Opening time must be earlier than closing time.</string>
+
     <!-- Offline indicator - Innovation Feature -->
     <string name="offline_banner_text">You\'re offline — changes will sync once you\'re back online</string>
 </resources>

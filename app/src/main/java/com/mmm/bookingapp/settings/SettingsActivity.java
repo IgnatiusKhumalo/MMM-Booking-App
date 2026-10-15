@@ -12,22 +12,32 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.auth.WelcomeActivity;
 import com.mmm.bookingapp.client.ContactActivity;
 import com.mmm.bookingapp.models.PracticeInfo;
 import com.mmm.bookingapp.utils.DialogUtils;
 import com.mmm.bookingapp.utils.FirebaseRefs;
+import com.mmm.bookingapp.utils.NotificationHelper;
 import com.mmm.bookingapp.utils.ThemeManager;
 
 /**
- * Screen 12 - Settings Screen (client version).
+ * Screen 12 - Settings Screen.
  *
- * Now includes a "Change Email Address" option in the Security card,
- * right next to Change Password, routing to ChangeEmailActivity - added
- * so a client who still knows their password can proactively secure
- * their account onto a safe email if they suspect the registered one is
- * lost or compromised, without needing to already be locked out first.
+ * Booking Reminders switch: the choice is saved on the account in
+ * Firestore and cached on the device (NotificationHelper), so every
+ * notification the app creates actually obeys it. Switching OFF also
+ * cancels the reminders already scheduled for the user's active
+ * bookings; switching back ON reschedules them.
+ *
+ * The switch's listener is attached only AFTER the saved value has been
+ * applied, so opening this screen never fires a false "enabled" toast or
+ * a needless write.
+ *
+ * Also provides Change Password / Change Email (Security card), a
+ * confirmation dialog before logout, and a Delete My Account explainer
+ * dialog shown before the email app opens.
  */
 public class SettingsActivity extends AppCompatActivity {
 
@@ -50,6 +60,11 @@ public class SettingsActivity extends AppCompatActivity {
         tvAppVersion = findViewById(R.id.tvAppVersion);
         switchNotifications = findViewById(R.id.switchNotifications);
         switchDarkMode = findViewById(R.id.switchDarkMode);
+
+        // Show the device's cached choice straight away (works offline); the
+        // account's saved value replaces it once it loads.
+        switchNotifications.setChecked(NotificationHelper.areRemindersEnabled(this));
+        attachNotificationsListener();
 
         loadUserData();
         loadPracticeEmail();
@@ -96,8 +111,14 @@ public class SettingsActivity extends AppCompatActivity {
                     etPhone.setText(document.getString("phone"));
                     tvEmail.setText(document.getString("email"));
 
+                    // Apply the account's saved reminder choice WITHOUT firing the
+                    // listener, refresh the device cache, then re-attach the listener.
                     Boolean notificationsEnabled = document.getBoolean("notificationsEnabled");
-                    switchNotifications.setChecked(notificationsEnabled == null || notificationsEnabled);
+                    boolean remindersOn = notificationsEnabled == null || notificationsEnabled;
+                    switchNotifications.setOnCheckedChangeListener(null);
+                    switchNotifications.setChecked(remindersOn);
+                    NotificationHelper.setRemindersEnabled(this, remindersOn);
+                    attachNotificationsListener();
 
                     String role = document.getString("role");
                     if ("admin".equals(role)) {
@@ -106,14 +127,53 @@ public class SettingsActivity extends AppCompatActivity {
                                 startActivity(new Intent(this, com.mmm.bookingapp.admin.PracticeInfoActivity.class)));
                     }
                 });
+    }
 
-        switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            FirebaseRefs.usersCollection().document(uid)
-                    .update("notificationsEnabled", isChecked);
-            Toast.makeText(this,
-                    isChecked ? R.string.notifications_enabled_message : R.string.notifications_disabled_message,
-                    Toast.LENGTH_SHORT).show();
-        });
+    private void attachNotificationsListener() {
+        switchNotifications.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> onRemindersToggled(isChecked));
+    }
+
+    /**
+     * Handles the user flipping Booking Reminders: save locally FIRST (the
+     * scheduler checks it), save on the account, cancel or reschedule the
+     * reminders for active bookings, then confirm with a toast.
+     */
+    private void onRemindersToggled(boolean enabled) {
+        String uid = FirebaseRefs.getAuth().getUid();
+        if (uid == null) return;
+
+        NotificationHelper.setRemindersEnabled(this, enabled);
+        FirebaseRefs.usersCollection().document(uid).update("notificationsEnabled", enabled);
+        syncScheduledReminders(uid, enabled);
+
+        Toast.makeText(this,
+                enabled ? R.string.notifications_enabled_message : R.string.notifications_disabled_message,
+                Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Cancels (switch off) or reschedules (switch on) the evening-before
+     * reminder of every active - pending or confirmed - booking this user
+     * owns. Finished bookings never had a live reminder worth touching.
+     */
+    private void syncScheduledReminders(String uid, boolean enabled) {
+        FirebaseRefs.bookingsCollection()
+                .whereEqualTo("clientId", uid)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        String status = doc.getString("status");
+                        if (!"pending".equals(status) && !"confirmed".equals(status)) continue;
+
+                        if (enabled) {
+                            NotificationHelper.scheduleReminder(
+                                    this, doc.getId(), doc.getString("date"), doc.getString("service"));
+                        } else {
+                            NotificationHelper.cancelReminder(this, doc.getId());
+                        }
+                    }
+                });
     }
 
     private void loadPracticeEmail() {

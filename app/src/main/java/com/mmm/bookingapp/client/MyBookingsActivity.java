@@ -17,6 +17,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.adapters.BookingListAdapter;
 import com.mmm.bookingapp.models.Booking;
+import com.mmm.bookingapp.utils.BookingActions;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.NetworkStatusHelper;
 import com.mmm.bookingapp.utils.NotificationHelper;
@@ -28,18 +29,15 @@ import java.util.List;
 /**
  * Screen 10 - My Bookings Screen.
  *
- * REAL-TIME UPDATE (new): bookings are now loaded via addSnapshotListener
- * instead of a one-time .get() call in onResume(). If an admin confirms
- * or declines this client's booking while this screen is open, the
- * status badge now updates automatically, with no manual refresh needed.
- * The listener is registered once in onCreate() and removed in
- * onDestroy() to avoid a leak.
+ * Bookings are loaded through a real-time Firestore listener, so a
+ * status change made by an admin appears without a manual refresh. The
+ * listener is registered once in onCreate() and removed in onDestroy().
  *
- * Offline behaviour is unchanged in substance: the listener still serves
- * cached data when offline (Firestore's own built-in behaviour), and the
- * offline banner is now driven by NetworkStatusHelper.observeConnectivity
- * (same live-updating pattern already used on Home and Book Appointment)
- * rather than a one-time check.
+ * Cancelling a booking goes through BookingActions.cancelBooking(),
+ * which changes the booking status and frees its slot in a single
+ * atomic transaction. Cancelling is the client's version of "delete":
+ * the record is kept (for booking history) and only an admin can
+ * permanently remove it.
  */
 public class MyBookingsActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
@@ -160,22 +158,30 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
         dialog.show();
     }
 
+    /**
+     * Atomic cancel: booking status change + slot release happen together
+     * inside BookingActions. The real-time listener above refreshes the
+     * list automatically once the transaction commits.
+     */
     private void performCancellation(Booking booking) {
-        FirebaseRefs.bookingsCollection().document(booking.getBookingId())
-                .update("status", "cancelled")
-                .addOnSuccessListener(unused -> {
-                    String slotLocationPart = (booking.getLocation() != null) ? booking.getLocation() : "online";
-                    String slotId = booking.getDate() + "_" + booking.getTime() + "_" + slotLocationPart;
+        BookingActions.cancelBooking(booking.getBookingId(), new BookingActions.Callback() {
+            @Override
+            public void onSuccess() {
+                NotificationHelper.cancelReminder(MyBookingsActivity.this, booking.getBookingId());
+                Toast.makeText(MyBookingsActivity.this, R.string.booking_cancelled_message, Toast.LENGTH_SHORT).show();
+            }
 
-                    FirebaseRefs.bookedSlotsCollection().document(slotId).delete();
-                    NotificationHelper.cancelReminder(this, booking.getBookingId());
-
-                    Toast.makeText(this, R.string.booking_cancelled_message, Toast.LENGTH_SHORT).show();
-                    // No manual reload needed - the real-time listener above
-                    // picks up this change automatically.
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, getString(R.string.error_cancel_failed, e.getMessage()), Toast.LENGTH_LONG).show()
-                );
+            @Override
+            public void onError(int reason, String message) {
+                if (reason == BookingActions.REASON_NOT_CANCELLABLE) {
+                    Toast.makeText(MyBookingsActivity.this, R.string.error_booking_not_cancellable, Toast.LENGTH_LONG).show();
+                } else if (reason == BookingActions.REASON_MISSING) {
+                    Toast.makeText(MyBookingsActivity.this, R.string.error_booking_missing, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MyBookingsActivity.this,
+                            getString(R.string.error_cancel_failed, message), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 }

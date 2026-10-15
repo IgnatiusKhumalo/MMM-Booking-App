@@ -19,35 +19,39 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.mmm.bookingapp.R;
-import com.mmm.bookingapp.models.Booking;
 import com.mmm.bookingapp.models.BookedSlot;
+import com.mmm.bookingapp.models.Booking;
 import com.mmm.bookingapp.models.PracticeInfo;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.HolidayApiClient;
 import com.mmm.bookingapp.utils.NetworkStatusHelper;
 import com.mmm.bookingapp.utils.NotificationHelper;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Screen 8 - Book Appointment Screen.
  *
- * Now includes a real external API integration: on load, fetches the
- * current year's South African public holidays from the Nager.Date API
- * (HolidayApiClient) and blocks the date picker from accepting a booking
- * on any of those dates, in addition to the existing weekend and hours
- * checks. If the API call fails (e.g. no connectivity), booking still
- * works normally using only the existing Mon-Fri/hours rules - the
- * holiday check is a genuine enhancement, not a hard dependency.
- *
- * Logging added throughout key decision points (holiday load result,
- * date/time rejections, booking outcomes) to satisfy the Logging and
- * Monitoring requirement with real, meaningful log calls rather than
- * relying on Crashlytics' automatic crash capture alone.
+ * Booking rules enforced here:
+ *  - The chosen day must be one of the practice's saved open days
+ *    (PracticeInfo.isOpenOn) and must not be a South African public
+ *    holiday (Nager.Date API, fetched and cached per year).
+ *  - The appointment must fit completely inside operating hours:
+ *    start >= opening time AND start + duration <= closing time.
+ *  - Start times are on the quarter hour, matching the 15-minute slot
+ *    blocks that prevent overlaps.
+ *  - No overlap with ANY other booking (the client's own or anyone
+ *    else's): the booking reserves one slot document per 15-minute block
+ *    inside a single Firestore transaction that fails if any block
+ *    already exists. Each location (and Online) is its own calendar.
  */
 public class BookAppointmentActivity extends AppCompatActivity {
 
@@ -64,8 +68,8 @@ public class BookAppointmentActivity extends AppCompatActivity {
     private String selectedTime = null;   // "HH:mm"
     private final int[] durationValues = {30, 45, 60};
 
-    private PracticeInfo practiceInfo; // loaded once, used for hours validation
-    private final Set<String> publicHolidayDates = new HashSet<>(); // "yyyy-MM-dd", from Nager.Date API
+    private PracticeInfo practiceInfo; // loaded once; the fallback is used until it arrives
+    private final Map<Integer, Set<String>> holidaysByYear = new HashMap<>(); // year -> "yyyy-MM-dd" dates
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,35 +96,14 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
         setupSpinners();
         loadPracticeInfo();
-        loadPublicHolidays();
+        ensureHolidaysLoaded(Calendar.getInstance().get(Calendar.YEAR), null);
 
         tvSelectedDate.setOnClickListener(v -> showDatePicker());
         tvSelectedTime.setOnClickListener(v -> showTimePicker());
         btnSubmitBooking.setOnClickListener(v -> attemptSubmit());
     }
 
-    /**
-     * Real API integration: fetches South African public holidays for
-     * the current year from the Nager.Date REST API. Used to block the
-     * date picker from accepting a booking on a public holiday, since
-     * the practice is closed then even on an otherwise valid weekday.
-     */
-    private void loadPublicHolidays() {
-        HolidayApiClient.fetchCurrentYearHolidays(new HolidayApiClient.HolidayCallback() {
-            @Override
-            public void onHolidaysLoaded(Set<String> holidayDates) {
-                publicHolidayDates.clear();
-                publicHolidayDates.addAll(holidayDates);
-                Log.i(TAG, "Public holidays loaded: " + holidayDates.size() + " dates");
-            }
-
-            @Override
-            public void onError(String message) {
-                Log.w(TAG, "Public holiday fetch failed, continuing without it: " + message);
-                Toast.makeText(BookAppointmentActivity.this, R.string.holidays_load_failed, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+    // ---------- Setup ----------
 
     private void setupSpinners() {
         ArrayAdapter<CharSequence> serviceAdapter = ArrayAdapter.createFromResource(
@@ -153,6 +136,17 @@ public class BookAppointmentActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
+
+        // A longer duration can push an already-chosen start time past closing,
+        // so the chosen time is re-checked whenever the duration changes.
+        spinnerDuration.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                recheckSelectedTime();
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
     }
 
     private void loadPracticeInfo() {
@@ -164,61 +158,139 @@ public class BookAppointmentActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> practiceInfo = PracticeInfo.getFallback());
     }
 
+    private PracticeInfo currentPracticeInfo() {
+        return practiceInfo != null ? practiceInfo : PracticeInfo.getFallback();
+    }
+
+    private int currentDuration() {
+        return durationValues[spinnerDuration.getSelectedItemPosition()];
+    }
+
+    // ---------- Public holidays (cached per year) ----------
+
+    /** Runs afterLoaded (may be null) once holidays for that year are cached, or once the fetch fails. */
+    private void ensureHolidaysLoaded(int year, Runnable afterLoaded) {
+        if (holidaysByYear.containsKey(year)) {
+            if (afterLoaded != null) afterLoaded.run();
+            return;
+        }
+        HolidayApiClient.fetchHolidaysForYear(year, new HolidayApiClient.HolidayCallback() {
+            @Override
+            public void onHolidaysLoaded(Set<String> holidayDates) {
+                holidaysByYear.put(year, holidayDates);
+                Log.i(TAG, "Public holidays loaded for " + year + ": " + holidayDates.size() + " dates");
+                if (afterLoaded != null) afterLoaded.run();
+            }
+
+            @Override
+            public void onError(String message) {
+                // Not cached, so a later pick retries. Booking still works on the open-day and hours rules.
+                Log.w(TAG, "Public holiday fetch failed for " + year + ": " + message);
+                Toast.makeText(BookAppointmentActivity.this, R.string.holidays_load_failed, Toast.LENGTH_SHORT).show();
+                if (afterLoaded != null) afterLoaded.run();
+            }
+        });
+    }
+
+    // ---------- Date and time selection ----------
+
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
-        DatePickerDialog dialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-            Calendar picked = Calendar.getInstance();
-            picked.set(year, month, dayOfMonth);
-            int dayOfWeek = picked.get(Calendar.DAY_OF_WEEK);
-
-            if (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
-                Log.d(TAG, "Date rejected - weekend: " + year + "-" + (month + 1) + "-" + dayOfMonth);
-                Toast.makeText(this, R.string.error_weekend_date, Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            String candidateDate = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
-
-            if (publicHolidayDates.contains(candidateDate)) {
-                Log.d(TAG, "Date rejected - public holiday: " + candidateDate);
-                Toast.makeText(this, R.string.error_public_holiday, Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            selectedDate = candidateDate;
-            tvSelectedDate.setText(String.format(Locale.US, "%02d/%02d/%04d", dayOfMonth, month + 1, year));
-            Log.d(TAG, "Date selected: " + selectedDate);
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        DatePickerDialog dialog = new DatePickerDialog(this,
+                (view, year, month, dayOfMonth) -> handleDatePicked(year, month, dayOfMonth),
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
         dialog.getDatePicker().setMinDate(System.currentTimeMillis());
         dialog.show();
     }
 
+    private void handleDatePicked(int year, int month, int dayOfMonth) {
+        Calendar picked = Calendar.getInstance();
+        picked.clear();
+        picked.set(year, month, dayOfMonth);
+
+        PracticeInfo info = currentPracticeInfo();
+        if (!info.isOpenOn(picked.get(Calendar.DAY_OF_WEEK))) {
+            Log.d(TAG, "Date rejected - practice closed that day of the week");
+            Toast.makeText(this, getString(R.string.error_closed_day, info.describeOpenDays()), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        ensureHolidaysLoaded(year, () -> finishDateSelection(year, month, dayOfMonth));
+    }
+
+    private void finishDateSelection(int year, int month, int dayOfMonth) {
+        String candidateDate = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+
+        Set<String> holidays = holidaysByYear.get(year);
+        if (holidays != null && holidays.contains(candidateDate)) {
+            Log.d(TAG, "Date rejected - public holiday: " + candidateDate);
+            Toast.makeText(this, R.string.error_public_holiday, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        selectedDate = candidateDate;
+        tvSelectedDate.setText(String.format(Locale.US, "%02d/%02d/%04d", dayOfMonth, month + 1, year));
+        Log.d(TAG, "Date selected: " + selectedDate);
+    }
+
     private void showTimePicker() {
         Calendar calendar = Calendar.getInstance();
         TimePickerDialog dialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            int startMinutes = hourOfDay * 60 + minute;
 
-            String startStr = (practiceInfo != null && practiceInfo.getOperatingHours() != null)
-                    ? practiceInfo.getOperatingHours().getStart() : "08:00";
-            String endStr = (practiceInfo != null && practiceInfo.getOperatingHours() != null)
-                    ? practiceInfo.getOperatingHours().getEnd() : "18:00";
-
-            int startHour = Integer.parseInt(startStr.split(":")[0]);
-            int endHour = Integer.parseInt(endStr.split(":")[0]);
-
-            if (hourOfDay < startHour || hourOfDay >= endHour) {
-                Log.d(TAG, "Time rejected - outside hours: " + hourOfDay + ":" + minute);
-                Toast.makeText(this, getString(R.string.error_outside_hours, startStr, endStr), Toast.LENGTH_LONG).show();
+            if (minute % BookedSlot.BLOCK_MINUTES != 0) {
+                Toast.makeText(this, R.string.error_time_quarter_hour, Toast.LENGTH_LONG).show();
                 return;
             }
+            if (!timeFitsOperatingHours(startMinutes, currentDuration())) return;
 
-            selectedTime = String.format(Locale.US, "%02d:%02d", hourOfDay, minute);
+            selectedTime = PracticeInfo.formatMinutes(startMinutes);
             tvSelectedTime.setText(selectedTime);
             Log.d(TAG, "Time selected: " + selectedTime);
         }, calendar.get(Calendar.HOUR_OF_DAY), 0, true);
 
         dialog.show();
     }
+
+    /**
+     * True if an appointment of the given duration starting at startMinutes
+     * fits completely inside operating hours. Shows the reason if not.
+     */
+    private boolean timeFitsOperatingHours(int startMinutes, int duration) {
+        PracticeInfo info = currentPracticeInfo();
+        int opening = info.computeOpeningMinutes();
+        int closing = info.computeClosingMinutes();
+
+        if (startMinutes < opening) {
+            Toast.makeText(this, getString(R.string.error_outside_hours,
+                            PracticeInfo.formatMinutes(opening), PracticeInfo.formatMinutes(closing)),
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if (startMinutes + duration > closing) {
+            Toast.makeText(this, getString(R.string.error_appointment_runs_past_close,
+                    duration, PracticeInfo.formatMinutes(closing)), Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
+
+    /** If the chosen time no longer fits (duration changed), clears it so it must be chosen again. */
+    private void recheckSelectedTime() {
+        if (selectedTime == null) return;
+        int startMinutes = PracticeInfo.parseMinutes(selectedTime, -1);
+        PracticeInfo info = currentPracticeInfo();
+        boolean stillFits = startMinutes >= info.computeOpeningMinutes()
+                && startMinutes + currentDuration() <= info.computeClosingMinutes();
+        if (!stillFits) {
+            selectedTime = null;
+            tvSelectedTime.setText(R.string.tap_to_select_time);
+            Toast.makeText(this, R.string.error_time_cleared_by_duration, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // ---------- Submission ----------
 
     private void attemptSubmit() {
         if (!NetworkStatusHelper.isOnline(this)) {
@@ -236,6 +308,14 @@ public class BookAppointmentActivity extends AppCompatActivity {
             return;
         }
 
+        int duration = currentDuration();
+        int startMinutes = PracticeInfo.parseMinutes(selectedTime, -1);
+        // Authoritative re-check using the fully loaded practice settings.
+        if (startMinutes < 0 || startMinutes % BookedSlot.BLOCK_MINUTES != 0
+                || !timeFitsOperatingHours(startMinutes, duration)) {
+            return;
+        }
+
         String uid = FirebaseRefs.getAuth().getUid();
         if (uid == null) return;
 
@@ -243,80 +323,55 @@ public class BookAppointmentActivity extends AppCompatActivity {
         boolean isInPerson = spinnerConsultationType.getSelectedItemPosition() == 1;
         String consultationType = isInPerson ? "in-person" : "online";
         String location = isInPerson ? spinnerLocation.getSelectedItem().toString() : null;
-        int duration = durationValues[spinnerDuration.getSelectedItemPosition()];
         String additionalInfo = etAdditionalInfo.getText().toString().trim();
 
         Log.i(TAG, "Booking submission attempt: " + service + " / " + consultationType + " / " + selectedDate + " " + selectedTime);
 
         setLoading(true);
-        checkOwnOverlap(uid, service, consultationType, location, duration, additionalInfo);
+        submitBookingTransaction(uid, service, consultationType, location, duration, additionalInfo);
     }
 
-    private void checkOwnOverlap(String uid, String service, String consultationType,
-                                 String location, int duration, String additionalInfo) {
-        FirebaseRefs.bookingsCollection()
-                .whereEqualTo("clientId", uid)
-                .whereEqualTo("date", selectedDate)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    int newStart = toMinutes(selectedTime);
-                    int newEnd = newStart + duration;
-
-                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : querySnapshot) {
-                        String status = doc.getString("status");
-                        if (!"pending".equals(status) && !"confirmed".equals(status)) continue;
-
-                        String existingTime = doc.getString("time");
-                        Long existingDuration = doc.getLong("duration");
-                        if (existingTime == null || existingDuration == null) continue;
-
-                        int existingStart = toMinutes(existingTime);
-                        int existingEnd = existingStart + existingDuration.intValue();
-
-                        boolean overlaps = newStart < existingEnd && existingStart < newEnd;
-                        if (overlaps) {
-                            Log.w(TAG, "Booking rejected - overlaps client's own existing booking");
-                            setLoading(false);
-                            Toast.makeText(this, R.string.error_own_overlap, Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                    }
-
-                    submitBookingTransaction(uid, service, consultationType, location, duration, additionalInfo);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Own-overlap check failed", e);
-                    setLoading(false);
-                    Toast.makeText(this, getString(R.string.error_booking_failed, e.getMessage()), Toast.LENGTH_LONG).show();
-                });
-    }
-
-    private int toMinutes(String hhmm) {
-        String[] parts = hhmm.split(":");
-        return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
-    }
-
+    /**
+     * Reads every 15-minute block the appointment covers, fails if any is
+     * already reserved (by this client or anyone else), then writes all
+     * the blocks and the booking in the same transaction.
+     */
     private void submitBookingTransaction(String uid, String service, String consultationType,
                                           String location, int duration, String additionalInfo) {
 
-        String slotLocationPart = (location != null) ? location : "online";
-        String slotId = selectedDate + "_" + selectedTime + "_" + slotLocationPart;
+        final String date = selectedDate;
+        final String time = selectedTime;
 
-        DocumentReference slotRef = FirebaseRefs.bookedSlotsCollection().document(slotId);
+        List<String> blockTimes = BookedSlot.buildBlockTimes(time, duration);
+        List<DocumentReference> slotRefs = new ArrayList<>();
+        for (String blockTime : blockTimes) {
+            slotRefs.add(FirebaseRefs.bookedSlotsCollection()
+                    .document(BookedSlot.buildId(date, blockTime, location)));
+        }
         DocumentReference newBookingRef = FirebaseRefs.bookingsCollection().document();
 
         FirebaseRefs.getFirestore().runTransaction(transaction -> {
-            DocumentSnapshot slotSnapshot = transaction.get(slotRef);
-            if (slotSnapshot.exists()) {
-                throw new RuntimeException("SLOT_TAKEN");
+            // All reads first (Firestore requires reads before writes).
+            List<DocumentSnapshot> snapshots = new ArrayList<>();
+            for (DocumentReference ref : slotRefs) {
+                snapshots.add(transaction.get(ref));
+            }
+            for (DocumentSnapshot snapshot : snapshots) {
+                if (snapshot.exists()) {
+                    boolean ownBooking = uid.equals(snapshot.getString("clientId"));
+                    throw new FirebaseFirestoreException(
+                            ownBooking ? "SLOT_TAKEN_OWN" : "SLOT_TAKEN",
+                            FirebaseFirestoreException.Code.FAILED_PRECONDITION);
+                }
             }
 
-            BookedSlot bookedSlot = new BookedSlot(selectedDate, selectedTime, consultationType, location, duration);
-            transaction.set(slotRef, bookedSlot);
+            for (int i = 0; i < slotRefs.size(); i++) {
+                transaction.set(slotRefs.get(i),
+                        new BookedSlot(uid, date, blockTimes.get(i), consultationType, location, duration));
+            }
 
-            Booking booking = new Booking(uid, service, consultationType, location, duration, selectedDate, selectedTime, additionalInfo);
-            transaction.set(newBookingRef, booking);
-
+            transaction.set(newBookingRef,
+                    new Booking(uid, service, consultationType, location, duration, date, time, additionalInfo));
             return null;
         }).addOnSuccessListener(unused -> {
             setLoading(false);
@@ -324,20 +379,24 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
             NotificationHelper.showImmediateNotification(
                     this, "Booking Submitted", "Your " + service + " booking request has been received.");
-            NotificationHelper.scheduleReminder(this, newBookingRef.getId(), selectedDate, service);
+            NotificationHelper.scheduleReminder(this, newBookingRef.getId(), date, service);
 
             goToConfirmation(service, consultationType, location, duration, additionalInfo);
         }).addOnFailureListener(e -> {
             setLoading(false);
-            if ("SLOT_TAKEN".equals(e.getMessage())) {
-                Log.w(TAG, "Booking rejected - slot already taken by another client: " + slotId);
+            String message = e.getMessage() == null ? "" : e.getMessage();
+            if (message.contains("SLOT_TAKEN_OWN")) {
+                Log.w(TAG, "Booking rejected - overlaps the client's own booking");
+                Toast.makeText(this, R.string.error_own_overlap, Toast.LENGTH_LONG).show();
+            } else if (message.contains("SLOT_TAKEN")) {
+                Log.w(TAG, "Booking rejected - time already reserved by another client");
                 Toast.makeText(this, R.string.error_slot_taken, Toast.LENGTH_LONG).show();
             } else if (!NetworkStatusHelper.isOnline(this)) {
                 Log.w(TAG, "Booking failed - connectivity lost mid-submission");
                 Toast.makeText(this, R.string.error_offline_booking, Toast.LENGTH_LONG).show();
             } else {
                 Log.e(TAG, "Booking transaction failed", e);
-                Toast.makeText(this, getString(R.string.error_booking_failed, e.getMessage()), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.error_booking_failed, message), Toast.LENGTH_LONG).show();
             }
         });
     }

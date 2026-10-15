@@ -140,6 +140,20 @@
                     android:backgroundTint="@color/color_background"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
+                <!-- Delete Booking: a deliberate, separate admin action that
+                     permanently removes the record (not the same as Decline,
+                     which only cancels and keeps the record for history). -->
+                <Button
+                    android:id="@+id/btnDeleteBooking"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/btn_delete_booking"
+                    android:textColor="@color/color_error"
+                    android:backgroundTint="@color/color_background"
+                    app:strokeColor="@color/color_error"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginTop="24dp" />
+
             </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
         </LinearLayout>
     </LinearLayout>

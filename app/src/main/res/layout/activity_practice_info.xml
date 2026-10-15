@@ -65,8 +65,34 @@
                 <TextView style="@style/DetailLabel" android:text="@string/label_whatsapp_link" />
                 <EditText android:id="@+id/etWhatsappLink" style="@style/SettingsInput" android:inputType="textUri" />
 
-                <TextView style="@style/DetailLabel" android:text="@string/label_operating_days" />
-                <EditText android:id="@+id/etOperatingDays" style="@style/SettingsInput" />
+                <!-- Open days: one checkbox per day. The booking screen enforces
+                     exactly these days; the Contact screen shows readable text
+                     generated from them. -->
+                <TextView style="@style/DetailLabel" android:text="@string/label_open_days" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/color_surface"
+                    android:padding="8dp"
+                    android:layout_marginBottom="16dp">
+
+                    <CheckBox android:id="@+id/cbDayMonday" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/day_monday" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_14" />
+                    <CheckBox android:id="@+id/cbDayTuesday" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/day_tuesday" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_14" />
+                    <CheckBox android:id="@+id/cbDayWednesday" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/day_wednesday" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_14" />
+                    <CheckBox android:id="@+id/cbDayThursday" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/day_thursday" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_14" />
+                    <CheckBox android:id="@+id/cbDayFriday" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/day_friday" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_14" />
+                    <CheckBox android:id="@+id/cbDaySaturday" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/day_saturday" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_14" />
+                    <CheckBox android:id="@+id/cbDaySunday" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/day_sunday" android:textColor="@color/color_text_primary" android:textSize="@dimen/text_size_14" />
+                </LinearLayout>
 
                 <TextView style="@style/DetailLabel" android:text="@string/label_hours_start" />
                 <EditText android:id="@+id/etHoursStart" style="@style/SettingsInput" />
