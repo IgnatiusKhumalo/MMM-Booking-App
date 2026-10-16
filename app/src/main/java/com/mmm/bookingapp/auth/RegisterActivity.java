@@ -35,12 +35,19 @@ import com.mmm.bookingapp.utils.ValidationUtils;
 /**
  * Screen 3 - Register Screen.
  *
- * Now includes a Confirm Email Address field (etConfirmEmail), validated
- * against the main email field via ValidationUtils.doEmailsMatch() -
- * catches a typo made differently in each field. This does not protect
- * against copy-pasting the same wrong email into both boxes, which no
- * confirm-field pattern can catch - it is a genuine, but partial,
- * safeguard, same limitation every "confirm email" field everywhere has.
+ * Validates every field (name, email plus a matching confirm-email
+ * field, phone, password plus confirm-password, and the compulsory
+ * consent checkbox) before creating the account. The confirm-email field
+ * catches a typo made differently in each box; it cannot catch the same
+ * wrong address typed into both, which no confirm field can.
+ *
+ * Registration is two steps: create the Firebase Authentication account,
+ * then write the matching Firestore profile document. If the second step
+ * fails, the Authentication account is deleted again (rolled back), so a
+ * failed registration never leaves a login that has no profile and could
+ * never get into the app.
+ *
+ * Log messages deliberately contain no email addresses.
  */
 public class RegisterActivity extends AppCompatActivity {
 
@@ -183,7 +190,7 @@ public class RegisterActivity extends AppCompatActivity {
         String password = etPassword.getText().toString();
         String confirmPassword = etConfirmPassword.getText().toString();
 
-        Log.d(TAG, "Registration attempt for: " + email);
+        Log.d(TAG, "Registration attempt");
 
         boolean isValid = true;
 
@@ -235,7 +242,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (!isValid) {
-            Log.w(TAG, "Registration blocked - validation failed for: " + email);
+            Log.w(TAG, "Registration blocked - validation failed");
             return;
         }
 
@@ -254,7 +261,7 @@ public class RegisterActivity extends AppCompatActivity {
                     FirebaseUser firebaseUser = authResult.getUser();
                     if (firebaseUser == null) {
                         setLoading(false);
-                        Log.e(TAG, "Firebase user was null after account creation for: " + email);
+                        Log.e(TAG, "Firebase user was null after account creation");
                         Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -264,24 +271,42 @@ public class RegisterActivity extends AppCompatActivity {
 
                     FirebaseRefs.usersCollection().document(uid).set(newUser)
                             .addOnSuccessListener(unused -> {
-                                Log.i(TAG, "Registration successful for: " + email);
+                                Log.i(TAG, "Registration successful for uid: " + uid);
                                 sendVerificationEmail(firebaseUser);
                             })
                             .addOnFailureListener(e -> {
-                                setLoading(false);
-                                Log.e(TAG, "Failed to write user document for: " + email, e);
-                                Toast.makeText(this,
-                                        getString(R.string.error_registration_failed, e.getMessage()),
-                                        Toast.LENGTH_LONG).show();
+                                Log.e(TAG, "Failed to write user document for uid: " + uid, e);
+                                rollbackAuthAccount(firebaseUser, e.getMessage());
                             });
                 })
                 .addOnFailureListener(e -> {
                     setLoading(false);
-                    Log.e(TAG, "Firebase account creation failed for: " + email, e);
+                    Log.e(TAG, "Firebase account creation failed", e);
                     Toast.makeText(this,
                             getString(R.string.error_registration_failed, e.getMessage()),
                             Toast.LENGTH_LONG).show();
                 });
+    }
+
+    /**
+     * The Authentication account exists but its Firestore profile could
+     * not be written. Delete the Authentication account so the user is not
+     * left with a login that has no profile (which could never get into
+     * the app), then tell them registration failed so they can try again.
+     */
+    private void rollbackAuthAccount(FirebaseUser firebaseUser, String failureMessage) {
+        firebaseUser.delete().addOnCompleteListener(deleteTask -> {
+            if (deleteTask.isSuccessful()) {
+                Log.i(TAG, "Rolled back incomplete registration");
+            } else {
+                Log.e(TAG, "Could not roll back incomplete registration", deleteTask.getException());
+            }
+            FirebaseRefs.getAuth().signOut();
+            setLoading(false);
+            Toast.makeText(this,
+                    getString(R.string.error_registration_failed, failureMessage),
+                    Toast.LENGTH_LONG).show();
+        });
     }
 
     private void sendVerificationEmail(FirebaseUser firebaseUser) {

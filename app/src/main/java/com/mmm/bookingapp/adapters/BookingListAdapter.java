@@ -11,16 +11,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.models.Booking;
+import com.mmm.bookingapp.utils.StatusUtils;
 
 import java.util.List;
 
 /**
- * RecyclerView adapter shared by My Bookings (Screen 10) and Admin Dashboard
- * (Screen 18), per the Project Structure document. In client mode
- * (adminView = false), each row shows a Cancel button on pending/confirmed
- * bookings. In admin mode (adminView = true, wired up in a later batch),
- * the row instead becomes tappable to open Booking Detail, and no Cancel
- * button is shown - admin actions live on that separate screen.
+ * RecyclerView adapter shared by My Bookings (Screen 10) and the Admin
+ * Dashboard (Screen 18), per the Project Structure document.
+ *
+ * Client mode (adminView = false): each row shows a Cancel button on
+ * pending and confirmed bookings.
+ * Admin mode (adminView = true): the row is tappable to open Booking
+ * Detail and shows no Cancel button - admin actions live on that screen.
+ *
+ * The status badge text and colour come from StatusUtils, which treats a
+ * missing status as "pending" so a row can never crash the list.
  */
 public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.BookingViewHolder> {
 
@@ -61,10 +66,10 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
                 + "  ·  " + locationText + "  ·  " + booking.getDuration() + " min";
         holder.tvBookingDetails.setText(details);
 
-        applyStatusBadge(holder, booking.getStatus(), context);
+        holder.tvStatusBadge.setText(StatusUtils.badgeLabelRes(booking.getStatus()));
+        holder.tvStatusBadge.setBackgroundColor(context.getColor(StatusUtils.badgeColorRes(booking.getStatus())));
 
-        boolean showCancel = !adminView
-                && ("pending".equals(booking.getStatus()) || "confirmed".equals(booking.getStatus()));
+        boolean showCancel = !adminView && StatusUtils.isActive(booking.getStatus());
         holder.btnCancelBooking.setVisibility(showCancel ? View.VISIBLE : View.GONE);
         holder.btnCancelBooking.setOnClickListener(v -> {
             if (listener != null) listener.onCancelClick(booking);
@@ -77,30 +82,6 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
         } else {
             holder.itemView.setOnClickListener(null);
         }
-    }
-
-    private void applyStatusBadge(BookingViewHolder holder, String status, android.content.Context context) {
-        int colorRes;
-        String label;
-        switch (status) {
-            case "confirmed":
-                colorRes = R.color.color_status_confirmed;
-                label = context.getString(R.string.status_confirmed);
-                break;
-            case "cancelled":
-                colorRes = R.color.color_error;
-                label = context.getString(R.string.status_cancelled);
-                break;
-            case "completed":
-                colorRes = R.color.color_status_completed;
-                label = context.getString(R.string.status_completed);
-                break;
-            default:
-                colorRes = R.color.color_status_pending;
-                label = context.getString(R.string.status_pending);
-        }
-        holder.tvStatusBadge.setText(label);
-        holder.tvStatusBadge.setBackgroundColor(context.getColor(colorRes));
     }
 
     @Override

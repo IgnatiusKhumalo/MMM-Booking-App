@@ -27,6 +27,7 @@ import com.mmm.bookingapp.settings.SettingsActivity;
 import com.mmm.bookingapp.utils.CsvExportUtils;
 import com.mmm.bookingapp.utils.DialogUtils;
 import com.mmm.bookingapp.utils.FirebaseRefs;
+import com.mmm.bookingapp.utils.StatusUtils;
 import com.mmm.bookingapp.utils.TouchTargetUtils;
 
 import java.util.ArrayList;
@@ -37,17 +38,20 @@ import java.util.Locale;
 /**
  * Screen 18 - Admin Dashboard (admin root screen).
  *
- * REAL-TIME UPDATE (new): bookings are now loaded via an addSnapshotListener
- * instead of a one-time .get() call. This means a new client booking, or a
- * status change made from Booking Detail, is reflected here automatically
- * without the admin needing to reopen or refresh the screen - a genuine
- * real-time feature, free-tier, no Cloud Functions required. The listener
- * is registered once in onCreate() and explicitly removed in onDestroy()
- * to avoid a memory/listener leak.
+ * Bookings load through a real-time Firestore listener, so a new client
+ * booking, or a status change made on Booking Detail, appears without a
+ * refresh. The listener is registered once in onCreate() and removed in
+ * onDestroy().
  *
- * Also now shows a brief "Logged in successfully" toast on a fresh login
- * (via the "showLoginSuccess" intent extra), and Logout goes through a
- * Cancel/Log Out confirmation dialog before actually signing out.
+ * Shows a status overview (counts and one proportional bar), search,
+ * Status / Location / Date filters, and a CSV export of the currently
+ * filtered list. Status values are read through StatusUtils, so a booking
+ * with no status is counted and filtered as "pending" instead of crashing.
+ *
+ * As a root screen it uses double-press-to-exit on the back button, which
+ * never touches the login session. Logout asks for confirmation first.
+ * When reached from a fresh login it shows a brief "Logged in
+ * successfully" toast (the "showLoginSuccess" intent extra).
  */
 public class AdminDashboardActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
@@ -146,9 +150,8 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
     }
 
     /**
-     * Double-press-to-exit, same as Home - Admin Dashboard is also a root
-     * screen per the Blueprint's navigation rule, so it has the identical
-     * back-button requirement. Does not touch the Firebase session.
+     * Double-press-to-exit: the first press shows a toast, a second press
+     * within 2 seconds exits the app. Does not touch the Firebase session.
      */
     @Override
     public void onBackPressed() {
@@ -222,9 +225,8 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
     }
 
     /**
-     * Real-time listener (replaces the previous one-time .get() call).
-     * Fires immediately with current data, then again automatically
-     * whenever any booking is added, changed, or removed - including
+     * Real-time listener: fires immediately with the current bookings, then
+     * again whenever any booking is added, changed or removed - including
      * changes made from other screens (Booking Detail, client bookings).
      */
     private void attachBookingsListener() {
@@ -250,7 +252,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
     private void updateSummaryCounts() {
         int pending = 0, confirmed = 0, completed = 0, cancelled = 0;
         for (Booking b : allBookings) {
-            switch (b.getStatus()) {
+            switch (StatusUtils.normalize(b.getStatus())) {
                 case "pending": pending++; break;
                 case "confirmed": confirmed++; break;
                 case "completed": completed++; break;
@@ -289,7 +291,8 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
     private void applyFilters() {
         filteredBookings.clear();
         for (Booking b : allBookings) {
-            if (!"All".equals(filterStatus) && !b.getStatus().equalsIgnoreCase(filterStatus)) continue;
+            if (!"All".equals(filterStatus)
+                    && !StatusUtils.normalize(b.getStatus()).equalsIgnoreCase(filterStatus)) continue;
 
             if (!"All".equals(filterLocation)) {
                 String bookingLocation = "in-person".equals(b.getConsultationType()) ? b.getLocation() : "Online";
@@ -312,7 +315,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Booking
         String haystack = safeLower(b.getService()) + " "
                 + safeLower(location) + " "
                 + safeLower(b.getConsultationType()) + " "
-                + safeLower(b.getStatus()) + " "
+                + safeLower(StatusUtils.normalize(b.getStatus())) + " "
                 + safeLower(b.getAdditionalInfo());
         return haystack.contains(searchQuery);
     }

@@ -13,18 +13,20 @@ import com.mmm.bookingapp.auth.WelcomeActivity;
 import com.mmm.bookingapp.client.HomeActivity;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.NotificationHelper;
+import com.mmm.bookingapp.utils.SessionCache;
 
 /**
  * Screen 1 - Splash Screen.
  * The app's real launcher. Creates the notification channel (required
- * once, before any notification can ever be shown), shows the logo
- * briefly while Firebase initialises, then checks whether a user is
- * already logged in:
- * - If yes, skips Welcome/Login entirely and routes straight to the
- *   correct home screen by role (this is standard, expected behaviour -
- *   a returning logged-in user should not see the Welcome screen again).
- * - If no, routes to WelcomeActivity, the documented true entry point
- *   for anyone not currently signed in.
+ * once, before any notification can be shown), shows the logo briefly
+ * while Firebase initialises, then checks whether a user is already
+ * logged in:
+ * - If yes, skips Welcome/Login and routes straight to the correct home
+ *   screen by role, so a returning user never sees Welcome again.
+ * - If the role cannot be fetched (for example offline with no cached
+ *   copy), the role cached on this device at the last successful login
+ *   is used instead, so a logged-in user is not sent back to Welcome.
+ * - If no user is logged in, routes to WelcomeActivity.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -52,9 +54,8 @@ public class MainActivity extends AppCompatActivity {
         // approach used in LoginActivity.
         currentUser.reload().addOnCompleteListener(task -> {
             if (!currentUser.isEmailVerified()) {
-                // Logged in but unverified - safest to send back to Welcome
-                // rather than Home, matching the documented rule that
-                // unverified accounts cannot fully access the app.
+                // Logged in but unverified: unverified accounts cannot
+                // access the app, so send back to Welcome.
                 FirebaseRefs.getAuth().signOut();
                 goTo(WelcomeActivity.class);
                 return;
@@ -69,14 +70,28 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
                         String role = document.getString("role");
-                        if ("admin".equals(role)) {
-                            goTo(AdminDashboardActivity.class);
-                        } else {
-                            goTo(HomeActivity.class);
-                        }
+                        SessionCache.saveRole(this, uid, role);
+                        routeByRole(role);
                     })
-                    .addOnFailureListener(e -> goTo(WelcomeActivity.class));
+                    .addOnFailureListener(e -> {
+                        // Role could not be fetched. Use the role remembered from the
+                        // last successful login; only fall back to Welcome if none exists.
+                        String cachedRole = SessionCache.getRole(this, uid);
+                        if (cachedRole != null) {
+                            routeByRole(cachedRole);
+                        } else {
+                            goTo(WelcomeActivity.class);
+                        }
+                    });
         });
+    }
+
+    private void routeByRole(String role) {
+        if ("admin".equals(role)) {
+            goTo(AdminDashboardActivity.class);
+        } else {
+            goTo(HomeActivity.class);
+        }
     }
 
     private void goTo(Class<?> activityClass) {
