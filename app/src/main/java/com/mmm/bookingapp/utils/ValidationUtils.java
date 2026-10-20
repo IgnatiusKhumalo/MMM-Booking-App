@@ -3,11 +3,20 @@ package com.mmm.bookingapp.utils;
 import java.util.regex.Pattern;
 
 /**
- * Centralises all input validation rules used across Register, Login,
- * Change Password, and Book Appointment, per the Project Structure
- * document. Kept deliberately simple and readable.
+ * Centralises the input validation rules used by Register, Login,
+ * Change Password, Change Email and Book Appointment, per the Project
+ * Structure document. Plain Java with no Android dependencies, so every
+ * rule is covered by fast unit tests (ValidationUtilsTest).
  */
 public class ValidationUtils {
+
+    /**
+     * An email must have a local part, one "@", and a domain with at least
+     * one dot (for example name@example.com). Firebase Authentication also
+     * validates the address when the account is created.
+     */
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+$");
 
     public static boolean isValidFullName(String name) {
         if (name == null) return false;
@@ -22,8 +31,7 @@ public class ValidationUtils {
     }
 
     public static boolean isValidEmail(String email) {
-        if (email == null) return false;
-        return email.contains("@");
+        return email != null && EMAIL_PATTERN.matcher(email).matches();
     }
 
     public static boolean isValidPhoneRemainder(String phone) {
@@ -47,11 +55,11 @@ public class ValidationUtils {
     }
 
     /**
-     * Compares two email addresses for equality, case-insensitively and
-     * with surrounding whitespace trimmed - email addresses are treated
-     * as case-insensitive in virtually every real-world provider, so a
-     * confirm-email field should not reject "Name@Example.com" vs
-     * "name@example.com" as a mismatch.
+     * Compares two email addresses for equality, ignoring case and
+     * surrounding whitespace - email addresses are treated as
+     * case-insensitive by virtually every real provider, so a confirm-email
+     * field should not call "Name@Example.com" and "name@example.com" a
+     * mismatch.
      */
     public static boolean doEmailsMatch(String email1, String email2) {
         if (email1 == null || email2 == null) return false;

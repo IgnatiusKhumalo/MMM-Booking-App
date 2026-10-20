@@ -1,6 +1,5 @@
 package com.mmm.bookingapp.settings;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,24 +19,23 @@ import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.ValidationUtils;
 
 /**
- * Change Email Screen (Settings). Added specifically so a client who
- * suspects their registered email may be lost or compromised can secure
- * their account immediately, WHILE they are still logged in and still
- * know their password - the one window where self-service recovery is
- * actually possible. If a client loses both their password AND access
- * to their email at the same time, no self-service option exists here
- * or anywhere else (this is universal to all email/password login
- * systems) - the documented fallback is contacting the practice
- * directly so an admin can assist via the Firebase Console.
+ * Change Email Screen (Settings).
  *
- * Mirrors ChangePasswordActivity's exact re-authentication pattern:
- * the current password must be confirmed first (proves it's really the
- * account owner), before Firebase's verifyBeforeUpdateEmail() is called.
- * That method does NOT change the account's login email immediately -
- * it sends a confirmation link to the NEW address first, and the email
- * only actually changes once that link is clicked. This prevents someone
- * from silently taking over an account by entering a new email that
- * isn't really theirs.
+ * Lets a logged-in client move their account to a different email address
+ * - for example if the registered one is lost or may be compromised. This
+ * only works while the client is still signed in and still knows their
+ * password. If a client loses BOTH their password and access to their
+ * email, no self-service recovery exists here or in any email/password
+ * system; the fallback is to contact the practice so an admin can assist
+ * through the Firebase Console.
+ *
+ * It follows ChangePasswordActivity's pattern: the current password is
+ * confirmed first (re-authentication), then Firebase's
+ * verifyBeforeUpdateEmail() is called. That does NOT change the login
+ * email straight away - it sends a confirmation link to the NEW address,
+ * and the email only changes once that link is clicked. This stops
+ * someone taking over an account by entering an address that is not
+ * really theirs.
  */
 public class ChangeEmailActivity extends AppCompatActivity {
 

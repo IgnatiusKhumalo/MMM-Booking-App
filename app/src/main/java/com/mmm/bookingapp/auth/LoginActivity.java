@@ -25,13 +25,14 @@ import com.mmm.bookingapp.utils.SessionCache;
 /**
  * Screen 4 - Login Screen (shared by clients and admins, routed by role).
  *
- * A fresh login is blocked with a clear message when the device is
- * offline, and blocked until the account's email is verified. After a
- * successful login the account's role is cached on the device
- * (SessionCache) and the user is sent to the matching home screen with a
- * "showLoginSuccess" flag, so that screen shows a brief "Logged in
- * successfully" toast. MainActivity's returning-session path does not set
- * the flag, so reopening the app does not repeat the message.
+ * An empty email or password is flagged on the field itself. A fresh
+ * login is blocked with a clear message when the device is offline, and
+ * blocked until the account's email is verified. After a successful login
+ * the account's role is cached on the device (SessionCache) and the user
+ * is sent to the matching home screen with a "showLoginSuccess" flag, so
+ * that screen shows a brief "Logged in successfully" toast.
+ * MainActivity's returning-session path does not set the flag, so
+ * reopening the app does not repeat the message.
  *
  * Log messages deliberately contain no email addresses.
  */
@@ -88,17 +89,24 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
-        if (!NetworkStatusHelper.isOnline(this)) {
-            Log.w(TAG, "Login blocked - device offline");
-            Toast.makeText(this, R.string.error_offline_login, Toast.LENGTH_LONG).show();
-            return;
-        }
-
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, R.string.error_login_failed, Toast.LENGTH_SHORT).show();
+        // Flag every empty field on the field itself, before any network check.
+        boolean missingField = false;
+        if (email.isEmpty()) {
+            etEmail.setError(getString(R.string.error_field_required));
+            missingField = true;
+        }
+        if (password.isEmpty()) {
+            etPassword.setError(getString(R.string.error_field_required));
+            missingField = true;
+        }
+        if (missingField) return;
+
+        if (!NetworkStatusHelper.isOnline(this)) {
+            Log.w(TAG, "Login blocked - device offline");
+            Toast.makeText(this, R.string.error_offline_login, Toast.LENGTH_LONG).show();
             return;
         }
 

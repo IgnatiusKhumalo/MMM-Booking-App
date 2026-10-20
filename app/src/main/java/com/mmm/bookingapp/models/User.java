@@ -1,16 +1,19 @@
 package com.mmm.bookingapp.models;
 
 /**
- * Mirrors the "users" Firestore collection exactly, per the Blueprint's
- * Data Design (Section 4). The "role" field is write-protected at the
- * Firestore Security Rules level (see Section 5) - this class does not
- * enforce that itself, the server-side rules do.
+ * Mirrors the "users" Firestore collection, per the Blueprint's Data
+ * Design. The "role" field is protected by the Firestore Security Rules:
+ * a new account can only be created with role "client", and a client can
+ * never change it afterwards. This class does not enforce that - the
+ * server-side rules do. Admin accounts exist only because an
+ * administrator created them manually in the Firebase Console.
  *
- * marketingOptIn: tracks the OPTIONAL subscribe checkbox on Register.
- * createdAt (NEW): epoch milliseconds at registration, used by the Admin
+ * marketingOptIn: the OPTIONAL "subscribe" checkbox on Register.
+ * notificationsEnabled: the Booking Reminders switch in Settings.
+ * createdAt: epoch milliseconds at registration, used by the Admin
  * Analytics screen's date-bucketed registration counts. Accounts created
- * before this field existed will not have it, and are correctly excluded
- * from date-bucketed counts by Firestore's own inequality-query behaviour.
+ * before this field existed do not have it and are correctly excluded
+ * from those counts by Firestore's own inequality-query behaviour.
  */
 public class User {
     private String uid;

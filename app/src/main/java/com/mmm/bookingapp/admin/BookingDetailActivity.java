@@ -15,6 +15,7 @@ import com.mmm.bookingapp.models.Booking;
 import com.mmm.bookingapp.utils.BookingActions;
 import com.mmm.bookingapp.utils.DialogUtils;
 import com.mmm.bookingapp.utils.FirebaseRefs;
+import com.mmm.bookingapp.utils.StatusUtils;
 
 /**
  * Screen 19 - Booking Detail Screen (Admin).
@@ -27,6 +28,10 @@ import com.mmm.bookingapp.utils.FirebaseRefs;
  * Both run through BookingActions as a single atomic transaction, and
  * both ask for confirmation first. Only an admin may delete - the
  * Firestore Security Rules enforce this server-side.
+ *
+ * The status badge and the buttons shown come from StatusUtils, so a
+ * booking with a missing status is treated as pending rather than
+ * crashing the screen.
  */
 public class BookingDetailActivity extends AppCompatActivity {
 
@@ -100,7 +105,10 @@ public class BookingDetailActivity extends AppCompatActivity {
     private void displayBooking() {
         if (currentBooking == null) return;
 
-        applyStatusBadge(currentBooking.getStatus());
+        String status = StatusUtils.normalize(currentBooking.getStatus());
+
+        tvStatusBadge.setText(StatusUtils.badgeLabelRes(status));
+        tvStatusBadge.setBackgroundColor(getColor(StatusUtils.badgeColorRes(status)));
 
         tvServiceValue.setText(currentBooking.getService());
 
@@ -121,28 +129,13 @@ public class BookingDetailActivity extends AppCompatActivity {
         switchPaid.setChecked(currentBooking.isPaid());
         switchPaid.setOnCheckedChangeListener((buttonView, isChecked) -> updatePaidStatus(isChecked));
 
-        boolean isPending = "pending".equals(currentBooking.getStatus());
-        boolean isConfirmed = "confirmed".equals(currentBooking.getStatus());
+        boolean isPending = "pending".equals(status);
+        boolean isConfirmed = "confirmed".equals(status);
 
         btnConfirmBooking.setVisibility(isPending ? View.VISIBLE : View.GONE);
         btnDeclineBooking.setVisibility(isPending ? View.VISIBLE : View.GONE);
         btnMarkCompleted.setVisibility(isConfirmed ? View.VISIBLE : View.GONE);
         btnDeleteBooking.setVisibility(View.VISIBLE);
-    }
-
-    private void applyStatusBadge(String status) {
-        // A missing status is treated as "pending" rather than crashing.
-        String safeStatus = (status == null) ? "pending" : status;
-        int colorRes;
-        String label;
-        switch (safeStatus) {
-            case "confirmed": colorRes = R.color.color_status_confirmed; label = getString(R.string.status_confirmed); break;
-            case "cancelled": colorRes = R.color.color_error; label = getString(R.string.status_cancelled); break;
-            case "completed": colorRes = R.color.color_status_completed; label = getString(R.string.status_completed); break;
-            default: colorRes = R.color.color_status_pending; label = getString(R.string.status_pending);
-        }
-        tvStatusBadge.setText(label);
-        tvStatusBadge.setBackgroundColor(getColor(colorRes));
     }
 
     private void updateStatus(String newStatus, int successMessageRes) {

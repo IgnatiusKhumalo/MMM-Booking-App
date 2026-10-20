@@ -6,9 +6,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * Real unit tests for ValidationUtils, replacing the untouched Android
- * Studio default test file. 34 test cases covering every validation
- * rule and its edge cases.
+ * Unit tests for ValidationUtils: 37 tests covering every validation rule
+ * and its edge cases (null, empty, boundary lengths, whitespace).
  */
 public class ValidationUtilsTest {
 
@@ -42,21 +41,30 @@ public class ValidationUtilsTest {
     }
 
     // ---------- isValidEmail ----------
-    @Test public void email_containsAtSymbol_returnsTrue() {
+    @Test public void email_validAddress_returnsTrue() {
         assertTrue(ValidationUtils.isValidEmail("thandi@example.com"));
+    }
+    @Test public void email_subdomainAndPlusTag_returnsTrue() {
+        assertTrue(ValidationUtils.isValidEmail("thandi.m+tag@mail.example.co.za"));
     }
     @Test public void email_noAtSymbol_returnsFalse() {
         assertFalse(ValidationUtils.isValidEmail("thandi.example.com"));
     }
-    @Test public void email_null_returnsFalse() {
+    @Test public void email_noDomainDot_returnsFalse() {
+        assertFalse(ValidationUtils.isValidEmail("thandi@example"));
+    }
+    @Test public void email_missingLocalPart_returnsFalse() {
+        assertFalse(ValidationUtils.isValidEmail("@example.com"));
+    }
+    @Test public void email_containsSpace_returnsFalse() {
+        assertFalse(ValidationUtils.isValidEmail("thandi @example.com"));
+    }
+    @Test public void email_onlyAtSymbol_returnsFalse() {
+        assertFalse(ValidationUtils.isValidEmail("@"));
+    }
+    @Test public void email_nullOrEmpty_returnsFalse() {
         assertFalse(ValidationUtils.isValidEmail(null));
-    }
-    @Test public void email_empty_returnsFalse() {
         assertFalse(ValidationUtils.isValidEmail(""));
-    }
-    @Test public void email_onlyAtSymbol_returnsTrue() {
-        // Documents the actual (intentionally simple) rule: contains "@" only.
-        assertTrue(ValidationUtils.isValidEmail("@"));
     }
 
     // ---------- isValidPhoneRemainder ----------

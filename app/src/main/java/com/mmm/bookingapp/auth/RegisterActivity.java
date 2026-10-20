@@ -1,6 +1,7 @@
 package com.mmm.bookingapp.auth;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -35,11 +36,13 @@ import com.mmm.bookingapp.utils.ValidationUtils;
 /**
  * Screen 3 - Register Screen.
  *
- * Validates every field (name, email plus a matching confirm-email
- * field, phone, password plus confirm-password, and the compulsory
- * consent checkbox) before creating the account. The confirm-email field
- * catches a typo made differently in each box; it cannot catch the same
- * wrong address typed into both, which no confirm field can.
+ * Validates every field (name, email plus a matching confirm-email field,
+ * phone, password plus confirm-password, and the compulsory consent
+ * checkbox) and shows each problem next to its field. The password rules
+ * line turns green as the password becomes valid, and red and bold if the
+ * form is submitted while it is not. The confirm-email field catches a
+ * typo made differently in each box; it cannot catch the same wrong
+ * address typed into both, which no confirm field can.
  *
  * Registration is two steps: create the Firebase Authentication account,
  * then write the matching Firestore profile document. If the second step
@@ -101,10 +104,13 @@ public class RegisterActivity extends AppCompatActivity {
 
         setupAgreeTermsLinks();
 
+        // Live feedback: the rules line is green once the password is valid.
+        // Typing also clears the red/bold error styling set by a failed submit.
         etPassword.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void onTextChanged(CharSequence s, int a, int b, int c) {
                 boolean valid = ValidationUtils.isValidPassword(s.toString());
+                tvPasswordRequirements.setTypeface(null, Typeface.NORMAL);
                 tvPasswordRequirements.setTextColor(
                         valid ? getColor(R.color.color_status_confirmed) : getColor(R.color.color_text_primary)
                 );
@@ -223,7 +229,9 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (!ValidationUtils.isValidPassword(password)) {
-            Toast.makeText(this, R.string.error_password, Toast.LENGTH_SHORT).show();
+            // Inline feedback: highlight the password rules line instead of showing a toast.
+            tvPasswordRequirements.setTextColor(getColor(R.color.color_error));
+            tvPasswordRequirements.setTypeface(null, Typeface.BOLD);
             isValid = false;
         }
 

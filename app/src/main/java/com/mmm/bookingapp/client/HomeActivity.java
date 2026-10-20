@@ -18,13 +18,17 @@ import com.mmm.bookingapp.utils.NetworkStatusHelper;
 /**
  * Screen 6 - Home Screen (client root screen).
  *
- * Back button fix: this is a root screen per the Blueprint's navigation
- * rule, so pressing the system back button here must NEVER pop back to
- * a stale pre-login screen or appear to log the user out. Implements
- * double-press-to-exit instead: first press shows a toast, a second
- * press within 2 seconds exits the app. No Firebase sign-out happens
- * here at all - the session remains fully intact, and the user is only
- * ever logged out via the explicit Logout button/dialog.
+ * The hub for a logged-in client: a Book Appointment button plus cards
+ * for Services, My Bookings, Contact and Settings, and a live offline
+ * banner. It greets the client by first name and shows a brief "Logged in
+ * successfully" toast when reached from a fresh login (the
+ * "showLoginSuccess" intent extra).
+ *
+ * As a root screen it has no back arrow. The system back button uses
+ * double-press-to-exit: the first press shows a toast, a second press
+ * within 2 seconds exits the app. This never signs the user out - the
+ * login session stays intact and the user is only logged out through the
+ * Logout button, which asks for confirmation first.
  */
 public class HomeActivity extends AppCompatActivity {
 
@@ -77,9 +81,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     /**
-     * Double-press-to-exit. Deliberately does NOT touch the Firebase
-     * session in any way - the user stays fully logged in, and simply
-     * exits the app to the device's home screen on the second press.
+     * Double-press-to-exit. Does not touch the Firebase session: the user
+     * stays logged in and simply leaves the app on the second press.
      */
     @Override
     public void onBackPressed() {

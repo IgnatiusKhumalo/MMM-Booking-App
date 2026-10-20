@@ -380,4 +380,5 @@
 
     <!-- Offline indicator - Innovation Feature -->
     <string name="offline_banner_text">You\'re offline — changes will sync once you\'re back online</string>
+    <string name="error_field_required">This field is required</string>
 </resources>
