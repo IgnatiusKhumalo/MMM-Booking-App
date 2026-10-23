@@ -2,7 +2,8 @@
 
 This document covers the automated test suite, the hardening verification tests, the full manual test plan with recorded results, and the defect log for the booking app.
 
-**Evidence:** every test below has an ID. The screenshot or recording that proves its result is in the **Testing Evidence** document (`docs/Testing_Evidence.pdf`) under the **same ID** — for example, the proof for test `PB3` is in the Evidence document's section `PB3`.
+**Evidence:** every test below has an ID. The screenshot or recording that proves its result is in the **Testing Evidence** document (`MMM-Booking-App
+/Testing_Evidence_MMM_Booking_App-Group11.pdf`) under the **same ID** — for example, the proof for test `PB3` is in the Evidence document's section `PB3`.
 
 **Result column:** `PASS` = run and passed (an evidence reference such as `(PA1)` points to the test that proves it). `PENDING` = assigned but not yet run. Nothing is marked PASS unless it was actually run.
 
