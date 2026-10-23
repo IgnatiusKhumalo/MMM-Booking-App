@@ -269,24 +269,24 @@ Test plans assigned to each group member. Each test has an ID, an expected resul
 
 | Screen | Reached from | Notes | Opened |
 |---|---|---|---|
-| Splash / router | App launch | Routes to Welcome, client Home or admin Dashboard depending on session | ☐ |
-| Welcome | Splash (logged out) |  | ☐ |
-| Login | Welcome |  | ☐ |
-| Register | Welcome |  | ☐ |
-| Forgot Password | Login |  | ☐ |
-| Home | Login (client) |  | ☐ |
-| Services | Home |  | ☐ |
-| Book Appointment | Home or Services |  | ☐ |
-| Booking Confirmation | After a successful booking |  | ☐ |
-| My Bookings | Home |  | ☐ |
-| Contact | Home |  | ☐ |
-| Settings | Home or menu |  | ☐ |
-| Change Password / Change Email | Settings |  | ☐ |
-| FAQ / About / Privacy / Terms | Settings or Register (terms) |  | ☐ |
-| Admin Dashboard | Login (admin) |  | ☐ |
-| Booking Detail | Dashboard list item |  | ☐ |
-| Practice Information | Dashboard |  | ☐ |
-| Admin Analytics | Dashboard |  | ☐ |
+| Splash / router | App launch | Routes to Welcome, client Home or admin Dashboard depending on session | ✔ |
+| Welcome | Splash (logged out) | Opens with working Login and Register buttons. | ✔ |
+| Login | Welcome | Opens. Login works for both client and admin. | ✔ |
+| Register | Welcome | Opens. Form and validation errors show. | ✔ |
+| Forgot Password | Login | Opens. Reset email request works. | ✔ |
+| Home | Login (client) | Opens after client login. | ✔ |
+| Services | Home | Opens and lists the services. | ✔ |
+| Book Appointment | Home or Services | Opens. Booking form works. | ✔ |
+| Booking Confirmation | After a successful booking | Opens after submitting a valid booking. | ✔ |
+| My Bookings | Home | Opens and lists the client’s bookings. | ✔ |
+| Contact | Home | Opens. | ✔ |
+| Settings | Home or menu | Opens. Dark mode and reminders available. | ✔ |
+| Change Password / Change Email | Settings | Both open from Settings. | ✔ |
+| FAQ / About / Privacy / Terms | Settings or Register (terms) | All four open. | ✔ |
+| Admin Dashboard | Login (admin) | Opens after admin login, not the client Home. | ✔ |
+| Booking Detail | Dashboard list item | Opens when a booking is tapped. | ✔ |
+| Practice Information | Dashboard | Opens. | ✔ |
+| Admin Analytics | Dashboard | Opens. | ✔ |
 
 **Navigation tests**
 
