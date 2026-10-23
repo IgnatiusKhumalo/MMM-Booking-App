@@ -339,7 +339,7 @@ See [`TESTING.md`](./TESTING.md) for every test, its expected result and its rec
 - **Display name:** MMM Social Workers & Associates
 - **Language:** Java, exclusively
 - **Backend:** Firebase (Auth, Firestore, Crashlytics), Spark (free) plan
-- **GitHub:** `github.com/IgnatiusKhumalo/MMM-Booking-App` (private)
+- **GitHub:** `github.com/IgnatiusKhumalo/MMM-Booking-App` (public)
 - **Colours (Light Mode, locked):** white/beige backgrounds, dark green (`#1F6F63`) primary buttons, light blue highlights, black/dark grey text
 - **Colours (Dark Mode, locked):** `DARK_BACKGROUND` (24,24,24), `DARK_SURFACE` (40,40,40), `DARK_GREEN` (31,111,99), `LIGHT_BLUE` (120,200,210), `WHITE` (255,255,255), `LIGHT_GREY` (200,200,200), `BORDER` (70,70,70)
 - Theme preference stored locally (SharedPreferences via `ThemeManager`), applied at startup via `MMMApplication`
