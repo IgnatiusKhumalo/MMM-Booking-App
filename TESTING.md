@@ -439,13 +439,13 @@ Integration tests follow one complete story across the interface, authentication
 | Usability (U1–U12) | 12 | 12 | 0 |
 | Edge cases (E1–E8) | 8 | 8 | 0 |
 | **Core test plan — subtotal** | **143** | **143** | **0** |
-| Team: UX/UI (UX-01–UX-24) — Faith | 24 | 0 | 24 |
-| Team: Navigation (NAV-01–NAV-18) — Khauhelo | 18 | 0 | 18 |
-| Team: Database and authentication (DB-01–DB-21) — Ignatius | 21 | 0 | 21 |
-| Team: Booking logic (BK-01–BK-22) — Ignatius | 22 | 0 | 22 |
-| Team: Permissions (PM-01–PM-18) — Ignatius | 18 | 0 | 18 |
-| Team: Integration (INT-01–INT-12) — all three | 12 | 0 | 12 |
-| **Team plans — subtotal** | **115** | **0** | **115** |
+| Team: UX/UI (UX-01–UX-24) — Faith | 24 | 24 | 0 |
+| Team: Navigation (NAV-01–NAV-18) — Khauhelo | 18 | 18 | 0 |
+| Team: Database and authentication (DB-01–DB-21) — Ignatius | 21 | 21 | 0 |
+| Team: Booking logic (BK-01–BK-22) — Ignatius | 22 | 22 | 0 |
+| Team: Permissions (PM-01–PM-18) — Ignatius | 18 | 18 | 0 |
+| Team: Integration (INT-01–INT-12) — all three | 12 | 12 | 0 |
+| **Team plans — subtotal** | **115** | **115** | **0** |
 
 *Update the team rows and the Result columns in section 4 as each test is run.*
 
