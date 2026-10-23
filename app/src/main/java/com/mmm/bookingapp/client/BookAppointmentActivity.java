@@ -52,6 +52,10 @@ import java.util.Set;
  *    else's): the booking reserves one slot document per 15-minute block
  *    inside a single Firestore transaction that fails if any block
  *    already exists. Each location (and Online) is its own calendar.
+ *
+ * For In-Person bookings the full clinic address of the selected location
+ * is shown beneath the location dropdown (display only - the booking
+ * itself stores just the location name).
  */
 public class BookAppointmentActivity extends AppCompatActivity {
 
@@ -59,7 +63,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
     private Spinner spinnerService, spinnerConsultationType, spinnerLocation, spinnerDuration;
     private View layoutLocation;
-    private TextView tvOnlineNote, tvSelectedDate, tvSelectedTime;
+    private TextView tvOnlineNote, tvSelectedDate, tvSelectedTime, tvLocationAddress;
     private EditText etAdditionalInfo;
     private Button btnSubmitBooking;
     private ProgressBar progressBar;
@@ -67,6 +71,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
     private String selectedDate = null;   // "yyyy-MM-dd"
     private String selectedTime = null;   // "HH:mm"
     private final int[] durationValues = {30, 45, 60};
+    private String[] locationAddresses;   // same order as the physical_locations array
 
     private PracticeInfo practiceInfo; // loaded once; the fallback is used until it arrives
     private final Map<Integer, Set<String>> holidaysByYear = new HashMap<>(); // year -> "yyyy-MM-dd" dates
@@ -85,6 +90,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
         spinnerDuration = findViewById(R.id.spinnerDuration);
         layoutLocation = findViewById(R.id.layoutLocation);
         tvOnlineNote = findViewById(R.id.tvOnlineNote);
+        tvLocationAddress = findViewById(R.id.tvLocationAddress);
         tvSelectedDate = findViewById(R.id.tvSelectedDate);
         tvSelectedTime = findViewById(R.id.tvSelectedTime);
         etAdditionalInfo = findViewById(R.id.etAdditionalInfo);
@@ -137,6 +143,17 @@ public class BookAppointmentActivity extends AppCompatActivity {
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
 
+        // Show the full clinic address of whichever location is selected.
+        locationAddresses = getResources().getStringArray(R.array.location_addresses);
+        spinnerLocation.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                showAddressFor(position);
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+
         // A longer duration can push an already-chosen start time past closing,
         // so the chosen time is re-checked whenever the duration changes.
         spinnerDuration.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
@@ -147,6 +164,15 @@ public class BookAppointmentActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
+    }
+
+    /** Displays the address for the location at this position (same order as physical_locations). */
+    private void showAddressFor(int position) {
+        if (position >= 0 && position < locationAddresses.length) {
+            tvLocationAddress.setText(locationAddresses[position]);
+        } else {
+            tvLocationAddress.setText("");
+        }
     }
 
     private void loadPracticeInfo() {

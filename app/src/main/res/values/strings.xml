@@ -378,6 +378,14 @@
     <string name="error_practice_hours_invalid">Enter opening and closing times as HH:mm, for example 08:00.</string>
     <string name="error_practice_hours_order">Opening time must be earlier than closing time.</string>
 
+    <!-- clinic addresses shown on the Book Appointment screen (same order as physical_locations) -->
+    <string name="label_clinic_address">Clinic address</string>
+    <string-array name="location_addresses">
+        <item>Life Carstenhof Clinic, 21 Dane Rd, Glen Austin AH, Midrand, 1685, South Africa</item>
+        <item>19 Ameshoff Street, Braamfontein, Johannesburg, 2001, South Africa</item>
+        <item>162 Panorama Road, Rooihuiskraal, Centurion, 0154, South Africa</item>
+    </string-array>
+
     <!-- Offline indicator - Innovation Feature -->
     <string name="offline_banner_text">You\'re offline — changes will sync once you\'re back online</string>
     <string name="error_field_required">This field is required</string>

@@ -15,10 +15,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Header bar: full-width, un-capped, exactly as already
-             established on every other header-bar screen (Services,
-             Contact, etc.) - stays pinned at the top, does not
-             participate in centering. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -65,10 +61,6 @@
             android:padding="10dp"
             android:visibility="gone" />
 
-        <!-- Centering wrapper (Login's proven technique): takes the
-             remaining space below the header+banner, and centers the
-             content column within it only if that space is larger than
-             the content needs. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -149,10 +141,40 @@
                         android:id="@+id/spinnerLocation"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
-                        android:layout_marginBottom="16dp"
+                        android:layout_marginBottom="10dp"
                         android:background="@drawable/bg_dropdown_field"
                         android:paddingStart="14dp"
                         android:paddingEnd="40dp" />
+
+                    <!-- Full clinic address for the selected location. Shown to
+                         clients only, on this screen; it is display text and is
+                         not stored with the booking. -->
+                    <LinearLayout
+                        android:id="@+id/layoutLocationAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@color/color_highlight"
+                        android:padding="12dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="2dp"
+                            android:text="@string/label_clinic_address"
+                            android:textColor="@color/color_text_heading"
+                            android:textSize="@dimen/text_size_11"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvLocationAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/color_text_heading"
+                            android:textSize="@dimen/text_size_13"
+                            android:lineSpacingExtra="2dp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <TextView
