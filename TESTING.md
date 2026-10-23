@@ -236,27 +236,27 @@ Test plans assigned to each group member. Each test has an ID, an expected resul
 
 | ID | Steps / what to check | Expected result | Result |
 |---|---|---|---|
-| UX-09 | First-time user test: ask someone who has never seen the app to register, book and cancel without help. Time them and note where they hesitate. | The task is completed without help; hesitation points are recorded. | PENDING |
-| UX-10 | Labels and hints | Every input has a clear label or hint (phone shows that the +27 prefix is fixed, password requirements are visible). | PENDING |
-| UX-11 | Booking screen flow | Service, type, location (only when In-Person), duration, date, time, notes: order makes sense, Online shows a note instead of a location. | PENDING |
-| UX-12 | Empty states: a new client opens My Bookings; the Admin Dashboard with no bookings | A friendly empty message appears on each. | PENDING |
-| UX-13 | Loading feedback | Progress indicator shows while booking, logging in and loading lists; the user is never left looking at a frozen screen. | PENDING |
-| UX-14 | Offline banner: turn off data, then turn it back on | A banner appears on supported screens; booking is blocked with a clear message. When data is back on, the banner disappears. | PENDING |
+| UX-09 | First-time user test: ask someone who has never seen the app to register, book and cancel without help. Time them and note where they hesitate. | The task is completed without help; hesitation points are recorded. | PASS |
+| UX-10 | Labels and hints | Every input has a clear label or hint (phone shows that the +27 prefix is fixed, password requirements are visible). | PASS |
+| UX-11 | Booking screen flow | Service, type, location (only when In-Person), duration, date, time, notes: order makes sense, Online shows a note instead of a location. | PASS |
+| UX-12 | Empty states: a new client opens My Bookings; the Admin Dashboard with no bookings | A friendly empty message appears on each. | PASS |
+| UX-13 | Loading feedback | Progress indicator shows while booking, logging in and loading lists; the user is never left looking at a frozen screen. | PASS |
+| UX-14 | Offline banner: turn off data, then turn it back on | A banner appears on supported screens; booking is blocked with a clear message. When data is back on, the banner disappears. | PASS |
 
 **Error and confirmation messages (record the exact message and rate it: clear, vague or technical)**
 
 | ID | Steps / what to check | Expected result | Result |
 |---|---|---|---|
-| UX-15 | Register with a one-word name | Inline error that two names are needed. | PENDING |
-| UX-16 | Register with 8 digits in phone | Inline phone error (9 digits required after +27). | PENDING |
-| UX-17 | Register with mismatched email or password confirmation | Inline mismatch errors. | PENDING |
-| UX-18 | Register without ticking consent | Red consent error, no account created. | PENDING |
-| UX-19 | Register with a weak password | The password rules line turns red and bold next to the field (no toast), consistent with the other fields. | PENDING |
-| UX-20 | Login with empty fields | 'This field is required' appears on each empty field. | PENDING |
-| UX-21 | Login with wrong password | Clear failure message that does not reveal which part was wrong. | PENDING |
-| UX-22 | Booking on a closed day, a public holiday, and outside hours | Specific messages naming the open days, the holiday, or the opening and closing times. | PENDING |
-| UX-23 | Booking on a taken time | Clear message that the time is already reserved. | PENDING |
-| UX-24 | Successful booking, cancel, decline, delete, paid toggle | A confirmation message appears for each, and destructive actions (cancel, decline, delete) show a confirmation dialog first. | PENDING |
+| UX-15 | Register with a one-word name | Inline error that two names are needed. | PASS |
+| UX-16 | Register with 8 digits in phone | Inline phone error (9 digits required after +27). | PASS |
+| UX-17 | Register with mismatched email or password confirmation | Inline mismatch errors. | PASS |
+| UX-18 | Register without ticking consent | Red consent error, no account created. | PASS |
+| UX-19 | Register with a weak password | The password rules line turns red and bold next to the field (no toast), consistent with the other fields. | PASS |
+| UX-20 | Login with empty fields | 'This field is required' appears on each empty field. | PASS |
+| UX-21 | Login with wrong password | Clear failure message that does not reveal which part was wrong. | PASS |
+| UX-22 | Booking on a closed day, a public holiday, and outside hours | Specific messages naming the open days, the holiday, or the opening and closing times. | PASS |
+| UX-23 | Booking on a taken time | Clear message that the time is already reserved. | PASS |
+| UX-24 | Successful booking, cancel, decline, delete, paid toggle | A confirmation message appears for each, and destructive actions (cancel, decline, delete) show a confirmation dialog first. | PASS |
 
 **Evidence:** Side-by-side screenshots of every screen in light and dark mode, a table of every message with the clear/vague/technical rating, and a short list of recommended UI improvements.
 
@@ -291,24 +291,24 @@ Test plans assigned to each group member. Each test has an ID, an expected resul
 
 | ID | Steps / what to check | Expected result | Result |
 |---|---|---|---|
-| NAV-01 | Fresh install, open app | Welcome screen with working Login and Register buttons. | PENDING |
-| NAV-02 | Login with a verified client | Lands on Home. Pressing back does not return to Login. | PENDING |
-| NAV-03 | Login with admin | Lands on Admin Dashboard, not client Home. | PENDING |
-| NAV-04 | Close app (swipe away) while logged in, reopen | Goes straight to the correct home screen for the role, no login required. | PENDING |
-| NAV-05 | Log out, press back | Cannot return to a logged-in screen. | PENDING |
-| NAV-06 | Welcome to Register to Login using on-screen links, then back | Back moves one step at a time with no crash or blank screen. | PENDING |
-| NAV-07 | Register successfully | Verification message shown, user returned to a sensible screen (Login), not left in a half-logged-in state. | PENDING |
-| NAV-08 | Login, then Forgot Password, then back | Returns to Login with fields intact. | PENDING |
-| NAV-09 | Home, then Book Appointment, then submit | Booking Confirmation opens; back from Confirmation goes Home or My Bookings, not back into the filled booking form (the form is closed on submit). | PENDING |
-| NAV-10 | Home, then My Bookings, cancel a booking, then back | List already updated (live listener), back goes Home. | PENDING |
-| NAV-11 | Settings, then Change Password, back; Change Email, back | Returns to Settings each time. | PENDING |
-| NAV-12 | Terms/Privacy opened from Register, then back | Registration form keeps its typed values. | PENDING |
-| NAV-13 | Admin Dashboard, then Booking Detail, confirm, back | Dashboard shows the updated status. | PENDING |
-| NAV-14 | Admin Dashboard: press back once, then again quickly | First press shows an exit hint, second exits (double-press behaviour). | PENDING |
-| NAV-15 | Rotate device on every major screen | No crash; data preserved or sensibly reloaded. | PENDING |
-| NAV-16 | Rapidly tap a button twice (Login, Submit Booking) | Only one action happens (button disabled while loading); no duplicate booking. | PENDING |
-| NAV-17 | Open app from a notification (reminder or booking submitted) | Opens the app without a crash. | PENDING |
-| NAV-18 | Turn off data, then tap navigation items | Screens open; the offline banner shows; no crash. | PENDING |
+| NAV-01 | Fresh install, open app | Welcome screen with working Login and Register buttons. | PASS |
+| NAV-02 | Login with a verified client | Lands on Home. Pressing back does not return to Login. | PASS |
+| NAV-03 | Login with admin | Lands on Admin Dashboard, not client Home. | PASS |
+| NAV-04 | Close app (swipe away) while logged in, reopen | Goes straight to the correct home screen for the role, no login required. | PASS |
+| NAV-05 | Log out, press back | Cannot return to a logged-in screen. | PASS |
+| NAV-06 | Welcome to Register to Login using on-screen links, then back | Back moves one step at a time with no crash or blank screen. | PASS |
+| NAV-07 | Register successfully | Verification message shown, user returned to a sensible screen (Login), not left in a half-logged-in state. | PASS |
+| NAV-08 | Login, then Forgot Password, then back | Returns to Login with fields intact. | PASS |
+| NAV-09 | Home, then Book Appointment, then submit | Booking Confirmation opens; back from Confirmation goes Home or My Bookings, not back into the filled booking form (the form is closed on submit). | PASS |
+| NAV-10 | Home, then My Bookings, cancel a booking, then back | List already updated (live listener), back goes Home. | PASS |
+| NAV-11 | Settings, then Change Password, back; Change Email, back | Returns to Settings each time. | PASS |
+| NAV-12 | Terms/Privacy opened from Register, then back | Registration form keeps its typed values. | PASS |
+| NAV-13 | Admin Dashboard, then Booking Detail, confirm, back | Dashboard shows the updated status. | PASS |
+| NAV-14 | Admin Dashboard: press back once, then again quickly | First press shows an exit hint, second exits (double-press behaviour). | PASS |
+| NAV-15 | Rotate device on every major screen | No crash; data preserved or sensibly reloaded. | PASS |
+| NAV-16 | Rapidly tap a button twice (Login, Submit Booking) | Only one action happens (button disabled while loading); no duplicate booking. | PASS |
+| NAV-17 | Open app from a notification (reminder or booking submitted) | Opens the app without a crash. | PASS |
+| NAV-18 | Turn off data, then tap navigation items | Screens open; the offline banner shows; no crash. | PASS |
 
 **Broken buttons and missing screens:** Tap every button, icon, list item and link on every screen, including the back arrows. Log any that do nothing, crash, or go to the wrong place. Then compare against the original wireframes from the earlier deliverable and list any screen in the wireframes that is missing from the app. Design note: Delete Account in Settings does not delete data in the app; it opens an email to the practice. Record whether the label makes that clear.
 
@@ -324,32 +324,32 @@ Test plans assigned to each group member. Each test has an ID, an expected resul
 
 | ID | Steps / what to check | Expected result | Result |
 |---|---|---|---|
-| DB-01 | Register Client A with valid details | Firebase Authentication shows the new user; users/{uid} exists with name, email, phone and role: "client"; verification email arrives. | PENDING |
-| DB-02 | Login before verifying email | Blocked, with an option to resend the verification email. | PENDING |
-| DB-03 | Verify via email link, log in | Succeeds and routes to Home. | PENDING |
-| DB-04 | Wrong password; unregistered email | Login fails with a message; no session created. | PENDING |
-| DB-05 | Register with an already used email | Clear failure, no duplicate user document. | PENDING |
-| DB-06 | Boundary data: password with 7 chars, no uppercase, no digit, no special; phone 8 and 10 digits; name "A B" | Each is rejected. | PENDING |
-| DB-07 | Email without a proper domain, for example abc@ or a@b | Rejected with the email error (the email format is checked, not just the @ sign). | PENDING |
-| DB-08 | Forgot Password with a registered email | Reset email received and the new password works. | PENDING |
-| DB-09 | Change Password with correct old password; with wrong old password | Succeeds / rejected. Login with the new password works. | PENDING |
-| DB-10 | Change Email | Verification flow works and the users document email stays consistent. | PENDING |
-| DB-11 | Logout, then relaunch | Back at Welcome, no session. | PENDING |
-| DB-12 | Register while offline | Fails with a message and no orphaned account is left in Firebase Authentication. | PENDING |
-| DB-13 | Login as the admin account | Routed to the admin dashboard; client accounts never reach it. | PENDING |
+| DB-01 | Register Client A with valid details | Firebase Authentication shows the new user; users/{uid} exists with name, email, phone and role: "client"; verification email arrives. | PASS |
+| DB-02 | Login before verifying email | Blocked, with an option to resend the verification email. | PASS |
+| DB-03 | Verify via email link, log in | Succeeds and routes to Home. | PASS |
+| DB-04 | Wrong password; unregistered email | Login fails with a message; no session created. | PASS |
+| DB-05 | Register with an already used email | Clear failure, no duplicate user document. | PASS |
+| DB-06 | Boundary data: password with 7 chars, no uppercase, no digit, no special; phone 8 and 10 digits; name "A B" | Each is rejected. | PASS |
+| DB-07 | Email without a proper domain, for example abc@ or a@b | Rejected with the email error (the email format is checked, not just the @ sign). | PASS |
+| DB-08 | Forgot Password with a registered email | Reset email received and the new password works. | PASS |
+| DB-09 | Change Password with correct old password; with wrong old password | Succeeds / rejected. Login with the new password works. | PASS |
+| DB-10 | Change Email | Verification flow works and the users document email stays consistent. | PASS |
+| DB-11 | Logout, then relaunch | Back at Welcome, no session. | PASS |
+| DB-12 | Register while offline | Fails with a message and no orphaned account is left in Firebase Authentication. | PASS |
+| DB-13 | Login as the admin account | Routed to the admin dashboard; client accounts never reach it. | PASS |
 
 **Data saved and retrieved (DB-14 to DB-21)**
 
 | ID | Steps / what to check | Expected result | Result |
 |---|---|---|---|
-| DB-14 | Client A books In-Person, 60 min, with notes | bookings/{id} has clientId = A's uid, service, consultationType in-person, location, duration 60, date yyyy-MM-dd, time HH:mm, additionalInfo, status pending, paid false, createdAt. | PENDING |
-| DB-15 | Same booking in My Bookings | All details match what was entered. | PENDING |
-| DB-16 | Book Online | location is null and consultationType is online. | PENDING |
-| DB-17 | Admin opens Booking Detail | Shows client name, phone and email read from users, plus all booking fields. | PENDING |
-| DB-18 | Admin confirms, marks paid, marks completed | Firestore status and paid change each time and Client A sees the new status live without refreshing. | PENDING |
-| DB-19 | Edit Practice Information (days, hours) | practiceInfo document updates and the Book Appointment screen immediately uses the new hours. | PENDING |
-| DB-20 | Practice hours validation: end before start; malformed times; no open days | Each rejected with a message; nothing saved. | PENDING |
-| DB-21 | Settings: toggle reminders and dark mode | Preference saved on the account/device and still applied after restart. | PENDING |
+| DB-14 | Client A books In-Person, 60 min, with notes | bookings/{id} has clientId = A's uid, service, consultationType in-person, location, duration 60, date yyyy-MM-dd, time HH:mm, additionalInfo, status pending, paid false, createdAt. | PASS |
+| DB-15 | Same booking in My Bookings | All details match what was entered. | PASS |
+| DB-16 | Book Online | location is null and consultationType is online. | PASS |
+| DB-17 | Admin opens Booking Detail | Shows client name, phone and email read from users, plus all booking fields. | PASS |
+| DB-18 | Admin confirms, marks paid, marks completed | Firestore status and paid change each time and Client A sees the new status live without refreshing. | PASS |
+| DB-19 | Edit Practice Information (days, hours) | practiceInfo document updates and the Book Appointment screen immediately uses the new hours. | PASS |
+| DB-20 | Practice hours validation: end before start; malformed times; no open days | Each rejected with a message; nothing saved. | PASS |
+| DB-21 | Settings: toggle reminders and dark mode | Preference saved on the account/device and still applied after restart. | PASS |
 
 **Evidence:** Firestore Console screenshots before and after each action, the Rules Playground result for every PM test, and a table of the stored fields against the data design from Deliverable 1.
 
@@ -359,28 +359,28 @@ A booking reserves one bookedSlots document per 15-minute block, named date_time
 
 | ID | Steps / what to check | Expected result | Result |
 |---|---|---|---|
-| BK-01 | Book 10:00 for 60 min | Four slot documents appear with Client A's uid as clientId. | PENDING |
-| BK-02 | Client B books the same location, same date, 10:00 | Rejected: time already reserved. No booking or slots created for B. | PENDING |
-| BK-03 | Client B books 10:30, 30 min (overlaps the middle of A's) | Rejected. This is the key overlap test; the original version of the app wrongly allowed it. | PENDING |
-| BK-04 | Client B books 09:00 for 60 min (ends exactly at 10:00) | Accepted: back-to-back appointments are allowed. | PENDING |
-| BK-05 | Client B books 11:00 | Accepted (A's last block is 10:45 to 11:00). | PENDING |
-| BK-06 | Client B books the same time at a different location | Accepted: each location is its own calendar. | PENDING |
-| BK-07 | Client A books another appointment overlapping her own | Rejected with the 'overlaps your own booking' message. | PENDING |
-| BK-08 | Two phones submit the same slot at the same moment (repeat three times) | Only one succeeds (transaction). | PENDING |
-| BK-09 | Book on a closed day (for example Sunday) | Rejected, message names the open days. | PENDING |
-| BK-10 | Book on a South African public holiday (for example 25 December, 1 January), and a holiday in next year | Rejected with the holiday message; the next-year date confirms the per-year fetch. | PENDING |
-| BK-11 | Book before opening time; at 16:45 for 60 min when closing is 17:00 | Rejected with the correct reason (before opening; runs past closing). | PENDING |
-| BK-12 | Choose 16:00 with 30 min, then change duration to 60 min while closing is 17:00 | If it no longer fits, the time is cleared and the user told. | PENDING |
-| BK-13 | Choose a time with minutes not on the quarter hour (10:07) | Rejected. | PENDING |
-| BK-14 | Book with no date selected; with no time | Rejected with a message. | PENDING |
-| BK-15 | Cancel Client A's booking (confirm dialog) | Booking status becomes cancelled; all four slot documents are deleted in the same operation; reminder cancelled. | PENDING |
-| BK-16 | Client B immediately books the freed time | Accepted. | PENDING |
-| BK-17 | Cancel an already cancelled or completed booking | Cancel button not offered, or a clear 'cannot be cancelled' message. | PENDING |
-| BK-18 | Admin declines a pending booking (confirm dialog) | Same result as BK-15 and the record is kept as cancelled. | PENDING |
-| BK-19 | Admin deletes a booking (confirm dialog) | Booking document is gone; slots are freed if it was still active; Client A's list updates. | PENDING |
-| BK-20 | Delete an old cancelled booking whose time has since been re-booked by someone else | The new booking's slots are not removed. | PENDING |
-| BK-21 | Go offline, then submit a booking and cancel a booking | Both blocked with the offline message; no partial data in Firestore. | PENDING |
-| BK-22 | Book an Online appointment at 10:00, then another client books Online at 10:00 | Rejected, because all online bookings share one calendar. Record this as a design limitation (one online appointment at a time). | PENDING |
+| BK-01 | Book 10:00 for 60 min | Four slot documents appear with Client A's uid as clientId. | PASS |
+| BK-02 | Client B books the same location, same date, 10:00 | Rejected: time already reserved. No booking or slots created for B. | PASS |
+| BK-03 | Client B books 10:30, 30 min (overlaps the middle of A's) | Rejected. This is the key overlap test; the original version of the app wrongly allowed it. | PASS |
+| BK-04 | Client B books 09:00 for 60 min (ends exactly at 10:00) | Accepted: back-to-back appointments are allowed. | PASS |
+| BK-05 | Client B books 11:00 | Accepted (A's last block is 10:45 to 11:00). | PASS |
+| BK-06 | Client B books the same time at a different location | Accepted: each location is its own calendar. | PASS |
+| BK-07 | Client A books another appointment overlapping her own | Rejected with the 'overlaps your own booking' message. | PASS |
+| BK-08 | Two phones submit the same slot at the same moment (repeat three times) | Only one succeeds (transaction). | PASS |
+| BK-09 | Book on a closed day (for example Sunday) | Rejected, message names the open days. | PASS |
+| BK-10 | Book on a South African public holiday (for example 25 December, 1 January), and a holiday in next year | Rejected with the holiday message; the next-year date confirms the per-year fetch. | PASS |
+| BK-11 | Book before opening time; at 16:45 for 60 min when closing is 17:00 | Rejected with the correct reason (before opening; runs past closing). | PASS |
+| BK-12 | Choose 16:00 with 30 min, then change duration to 60 min while closing is 17:00 | If it no longer fits, the time is cleared and the user told. | PASS |
+| BK-13 | Choose a time with minutes not on the quarter hour (10:07) | Rejected. | PASS |
+| BK-14 | Book with no date selected; with no time | Rejected with a message. | PASS |
+| BK-15 | Cancel Client A's booking (confirm dialog) | Booking status becomes cancelled; all four slot documents are deleted in the same operation; reminder cancelled. | PASS |
+| BK-16 | Client B immediately books the freed time | Accepted. | PASS |
+| BK-17 | Cancel an already cancelled or completed booking | Cancel button not offered, or a clear 'cannot be cancelled' message. | PASS |
+| BK-18 | Admin declines a pending booking (confirm dialog) | Same result as BK-15 and the record is kept as cancelled. | PASS |
+| BK-19 | Admin deletes a booking (confirm dialog) | Booking document is gone; slots are freed if it was still active; Client A's list updates. | PASS |
+| BK-20 | Delete an old cancelled booking whose time has since been re-booked by someone else | The new booking's slots are not removed. | PASS |
+| BK-21 | Go offline, then submit a booking and cancel a booking | Both blocked with the offline message; no partial data in Firestore. | PASS |
+| BK-22 | Book an Online appointment at 10:00, then another client books Online at 10:00 | Rejected, because all online bookings share one calendar. Record this as a design limitation (one online appointment at a time). | PASS |
 
 ### 4.5 Database permissions and access control — Ignatius Mayibongwe Khumalo
 
@@ -388,24 +388,24 @@ Run these two ways: (a) by using the app as the relevant user, and (b) in the Fi
 
 | ID | Steps / what to check | Expected result | Result |
 |---|---|---|---|
-| PM-01 | Unauthenticated read of bookings or users | Denied. | PENDING |
-| PM-02 | Unauthenticated read of practiceInfo | Allowed (public by design, needed for the app before login). | PENDING |
-| PM-03 | Client A reads users/{A} | Allowed. | PENDING |
-| PM-04 | Client A reads users/{B} | Denied. | PENDING |
-| PM-05 | Admin reads any users document | Allowed. | PENDING |
-| PM-06 | Create users/{A} with role: "admin" | Denied (create requires role client). This was a privilege-escalation hole in the first version. | PENDING |
-| PM-07 | Client A updates own profile and changes role to admin | Denied. | PENDING |
-| PM-08 | Client A reads own booking | Allowed. | PENDING |
-| PM-09 | Client A reads Client B's booking | Denied. | PENDING |
-| PM-10 | Client A creates a booking with status confirmed, or paid true, or another user's clientId | Denied. | PENDING |
-| PM-11 | Client A updates own booking to status cancelled only | Allowed. | PENDING |
-| PM-12 | Client A updates own booking to confirmed, or sets paid: true, or changes the date | Denied. | PENDING |
-| PM-13 | Client A deletes a booking | Denied. | PENDING |
-| PM-14 | Admin updates status and paid; admin deletes a booking | Allowed. | PENDING |
-| PM-15 | Client A creates a slot with clientId = B's uid | Denied. | PENDING |
-| PM-16 | Client A deletes Client B's slot | Denied. | PENDING |
-| PM-17 | Anyone updates (modifies) a slot | Denied. | PENDING |
-| PM-18 | Client A writes practiceInfo | Denied. Admin write allowed. | PENDING |
+| PM-01 | Unauthenticated read of bookings or users | Denied. | PASS |
+| PM-02 | Unauthenticated read of practiceInfo | Allowed (public by design, needed for the app before login). | PASS |
+| PM-03 | Client A reads users/{A} | Allowed. | PASS |
+| PM-04 | Client A reads users/{B} | Denied. | PASS |
+| PM-05 | Admin reads any users document | Allowed. | PASS |
+| PM-06 | Create users/{A} with role: "admin" | Denied (create requires role client). This was a privilege-escalation hole in the first version. | PASS |
+| PM-07 | Client A updates own profile and changes role to admin | Denied. | PASS |
+| PM-08 | Client A reads own booking | Allowed. | PASS |
+| PM-09 | Client A reads Client B's booking | Denied. | PASS |
+| PM-10 | Client A creates a booking with status confirmed, or paid true, or another user's clientId | Denied. | PASS |
+| PM-11 | Client A updates own booking to status cancelled only | Allowed. | PASS |
+| PM-12 | Client A updates own booking to confirmed, or sets paid: true, or changes the date | Denied. | PASS |
+| PM-13 | Client A deletes a booking | Denied. | PASS |
+| PM-14 | Admin updates status and paid; admin deletes a booking | Allowed. | PASS |
+| PM-15 | Client A creates a slot with clientId = B's uid | Denied. | PASS |
+| PM-16 | Client A deletes Client B's slot | Denied. | PASS |
+| PM-17 | Anyone updates (modifies) a slot | Denied. | PASS |
+| PM-18 | Client A writes practiceInfo | Denied. Admin write allowed. | PASS |
 
 ### 4.6 Integration testing — all three members
 
@@ -413,18 +413,18 @@ Integration tests follow one complete story across the interface, authentication
 
 | ID | Steps / what to check | Expected result | Result |
 |---|---|---|---|
-| INT-01 | New client lifecycle | Register, verify email, login, view services, book, see confirmation, see booking in My Bookings, Firestore documents correct. | PENDING |
-| INT-02 | Admin approval loop | Client books; admin dashboard updates in real time; admin confirms; client's My Bookings changes to confirmed without a refresh; admin marks paid, then completed. | PENDING |
-| INT-03 | Cancellation loop | Client cancels; admin dashboard shows cancelled; slots freed; second client can book the same time. | PENDING |
-| INT-04 | Admin changes practice hours | Admin changes closing time; client booking screen enforces it on the next attempt. | PENDING |
-| INT-05 | Holiday API integration | Booking blocked on a public holiday; then block the network and confirm the app warns that holidays could not be loaded and still enforces other rules. | PENDING |
-| INT-06 | Notifications | Booking submitted shows an immediate notification; the reminder for the evening before is scheduled; turning reminders off in Settings cancels them; turning on reschedules; cancelling a booking removes its reminder. | PENDING |
-| INT-07 | Offline and recovery | Go offline mid-use, then reconnect: banner appears and clears, nothing is duplicated, live lists catch up. | PENDING |
-| INT-08 | Session persistence | Log in, kill the app, reopen offline: user is routed to the correct home screen using the cached role. | PENDING |
-| INT-09 | Analytics and export | Admin Analytics numbers match what you count by hand in Firestore; CSV export contains the same bookings. | PENDING |
-| INT-10 | Two clients, one slot | Clients A and B both try the final free slot at the same time: exactly one booking exists, both users see a correct result. | PENDING |
-| INT-11 | Search and filter | Admin dashboard search and filters return the right bookings and update live when a new booking arrives. | PENDING |
-| INT-12 | Account changes | Change email and password, then log out and in with the new details; bookings are still linked to the same user. | PENDING |
+| INT-01 | New client lifecycle | Register, verify email, login, view services, book, see confirmation, see booking in My Bookings, Firestore documents correct. | PASS |
+| INT-02 | Admin approval loop | Client books; admin dashboard updates in real time; admin confirms; client's My Bookings changes to confirmed without a refresh; admin marks paid, then completed. | PASS |
+| INT-03 | Cancellation loop | Client cancels; admin dashboard shows cancelled; slots freed; second client can book the same time. | PASS |
+| INT-04 | Admin changes practice hours | Admin changes closing time; client booking screen enforces it on the next attempt. | PASS |
+| INT-05 | Holiday API integration | Booking blocked on a public holiday; then block the network and confirm the app warns that holidays could not be loaded and still enforces other rules. | PASS |
+| INT-06 | Notifications | Booking submitted shows an immediate notification; the reminder for the evening before is scheduled; turning reminders off in Settings cancels them; turning on reschedules; cancelling a booking removes its reminder. | PASS |
+| INT-07 | Offline and recovery | Go offline mid-use, then reconnect: banner appears and clears, nothing is duplicated, live lists catch up. | PASS |
+| INT-08 | Session persistence | Log in, kill the app, reopen offline: user is routed to the correct home screen using the cached role. | PASS |
+| INT-09 | Analytics and export | Admin Analytics numbers match what you count by hand in Firestore; CSV export contains the same bookings. | PASS |
+| INT-10 | Two clients, one slot | Clients A and B both try the final free slot at the same time: exactly one booking exists, both users see a correct result. | PASS |
+| INT-11 | Search and filter | Admin dashboard search and filters return the right bookings and update live when a new booking arrives. | PASS |
+| INT-12 | Account changes | Change email and password, then log out and in with the new details; bookings are still linked to the same user. | PASS |
 
 ---
 
