@@ -224,14 +224,14 @@ Test plans assigned to each group member. Each test has an ID, an expected resul
 
 | ID | Steps / what to check | Expected result | Result |
 |---|---|---|---|
-| UX-01 | Colour palette across all 22 screens | Same primary colour, background and text colours everywhere; status colours consistent (pending, confirmed, cancelled, completed each has one colour). | PENDING |
-| UX-02 | Fonts and sizes | Titles, body text and button labels use consistent sizes; no text smaller than readable (about 12sp). | PENDING |
-| UX-03 | Buttons | Primary buttons look the same on every screen; disabled buttons look disabled (for example Submit while loading). | PENDING |
-| UX-04 | Spacing and alignment | Equal margins left and right, no overlapping or clipped text, nothing cut off at the bottom. | PENDING |
-| UX-05 | Dark mode | Switch on in Settings. Every screen stays readable: no dark text on dark background, no white blocks. Setting survives closing and reopening the app. | PENDING |
-| UX-06 | Screen sizes and rotation | Small phone and tablet both look correct. Rotate on Register, Book Appointment and Admin Dashboard: fields stay filled and nothing crashes. | PENDING |
-| UX-07 | Touch targets | Buttons and icons are easy to tap with a thumb (about 48dp). | PENDING |
-| UX-08 | Branding | App name, logo and colours match on Welcome, Login, Home and About. | PENDING |
+| UX-01 | Colour palette across all 22 screens | Same primary colour, background and text colours everywhere; status colours consistent (pending, confirmed, cancelled, completed each has one colour). | PASS |
+| UX-02 | Fonts and sizes | Titles, body text and button labels use consistent sizes; no text smaller than readable (about 12sp). | PASS |
+| UX-03 | Buttons | Primary buttons look the same on every screen; disabled buttons look disabled (for example Submit while loading). | PASS |
+| UX-04 | Spacing and alignment | Equal margins left and right, no overlapping or clipped text, nothing cut off at the bottom. | PASS |
+| UX-05 | Dark mode | Switch on in Settings. Every screen stays readable: no dark text on dark background, no white blocks. Setting survives closing and reopening the app. | PASS |
+| UX-06 | Screen sizes and rotation | Small phone and tablet both look correct. Rotate on Register, Book Appointment and Admin Dashboard: fields stay filled and nothing crashes. | PASS |
+| UX-07 | Touch targets | Buttons and icons are easy to tap with a thumb (about 48dp). | PASS |
+| UX-08 | Branding | App name, logo and colours match on Welcome, Login, Home and About. | PASS |
 
 **Clarity and ease of use**
 
