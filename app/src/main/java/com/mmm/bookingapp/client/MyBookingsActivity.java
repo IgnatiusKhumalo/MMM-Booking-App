@@ -1,6 +1,7 @@
 package com.mmm.bookingapp.client;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.adapters.BookingListAdapter;
 import com.mmm.bookingapp.models.Booking;
 import com.mmm.bookingapp.utils.BookingActions;
+import com.mmm.bookingapp.utils.CancellationPolicy;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.NetworkStatusHelper;
 import com.mmm.bookingapp.utils.NotificationHelper;
@@ -33,11 +35,15 @@ import java.util.List;
  * status change made by an admin appears without a manual refresh. The
  * listener is registered once in onCreate() and removed in onDestroy().
  *
- * Cancelling a booking goes through BookingActions.cancelBooking(),
- * which changes the booking status and frees its slot in a single
- * atomic transaction. Cancelling is the client's version of "delete":
- * the record is kept (for booking history) and only an admin can
- * permanently remove it.
+ * Cancelling follows the practice's 24-hour notice rule
+ * (CancellationPolicy). More than 24 hours before the appointment the
+ * client sees a confirmation dialog stating that cancelling is free until
+ * then, and the cancellation goes through BookingActions.cancelBooking(),
+ * which changes the status and frees the slot in one atomic transaction.
+ * Inside the 24-hour window cancelling in the app is closed: the client is
+ * told why, that a late-cancellation fee may apply, and is offered the
+ * Contact screen to phone or WhatsApp the practice. Cancelling keeps the
+ * record (for history); only an admin can permanently delete it.
  */
 public class MyBookingsActivity extends AppCompatActivity implements BookingListAdapter.OnBookingActionListener {
 
@@ -136,7 +142,26 @@ public class MyBookingsActivity extends AppCompatActivity implements BookingList
             Toast.makeText(this, R.string.error_offline_booking, Toast.LENGTH_LONG).show();
             return;
         }
-        showCancelConfirmationDialog(booking);
+
+        if (CancellationPolicy.isWithinNoticePeriod(booking.getDate(), booking.getTime())) {
+            showLateCancellationDialog();
+        } else {
+            showCancelConfirmationDialog(booking);
+        }
+    }
+
+    /** Inside the 24-hour window: explain why, and offer the Contact screen. */
+    private void showLateCancellationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_late_cancel_title)
+                .setMessage(R.string.dialog_late_cancel_message)
+                .setCancelable(true)
+                .setNegativeButton(R.string.btn_close, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(R.string.btn_contact_practice, (dialog, which) -> {
+                    dialog.dismiss();
+                    startActivity(new Intent(this, ContactActivity.class));
+                })
+                .show();
     }
 
     private void showCancelConfirmationDialog(Booking booking) {

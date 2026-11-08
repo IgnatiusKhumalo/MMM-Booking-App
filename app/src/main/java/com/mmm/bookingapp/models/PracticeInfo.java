@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Mirrors the single "practiceInfo/main" Firestore document, per the
@@ -17,6 +18,14 @@ import java.util.Locale;
  *  - operatingDays: a human-readable text (e.g. "Monday - Friday"),
  *    generated from openDays when the admin saves. This is what the
  *    Contact screen displays.
+ *
+ * Availability beyond the opening hours:
+ *  - breaks: daily breaks inside the opening hours, each a map with
+ *    "start" and "end" ("HH:mm"), e.g. lunch 13:00 - 14:00. No appointment
+ *    may overlap a break.
+ *  - blockedPeriods: dates the practice is unavailable (leave, closures),
+ *    each a map with "from" and "to" ("yyyy-MM-dd", inclusive; "to" may be
+ *    left out for a single day) and an optional "reason".
  */
 public class PracticeInfo {
 
@@ -35,6 +44,8 @@ public class PracticeInfo {
     private String operatingDays;
     private List<String> openDays;
     private OperatingHours operatingHours;
+    private List<Map<String, String>> breaks;
+    private List<Map<String, String>> blockedPeriods;
     private String crisisLineNote;
 
     // Required no-argument constructor for Firestore's automatic deserialization.
@@ -76,6 +87,12 @@ public class PracticeInfo {
     public OperatingHours getOperatingHours() { return operatingHours; }
     public void setOperatingHours(OperatingHours operatingHours) { this.operatingHours = operatingHours; }
 
+    public List<Map<String, String>> getBreaks() { return breaks; }
+    public void setBreaks(List<Map<String, String>> breaks) { this.breaks = breaks; }
+
+    public List<Map<String, String>> getBlockedPeriods() { return blockedPeriods; }
+    public void setBlockedPeriods(List<Map<String, String>> blockedPeriods) { this.blockedPeriods = blockedPeriods; }
+
     public String getCrisisLineNote() { return crisisLineNote; }
     public void setCrisisLineNote(String crisisLineNote) { this.crisisLineNote = crisisLineNote; }
 
@@ -105,6 +122,47 @@ public class PracticeInfo {
     /** Closing time in minutes after midnight; 18:00 if missing or invalid. */
     public int computeClosingMinutes() {
         return parseMinutes(operatingHours != null ? operatingHours.getEnd() : null, DEFAULT_CLOSE_MINUTES);
+    }
+
+    /**
+     * The daily breaks as [startMinutes, endMinutes] pairs. A break that is
+     * missing a time, unreadable, or does not end after it starts is skipped.
+     */
+    public List<int[]> breakRanges() {
+        List<int[]> ranges = new ArrayList<>();
+        if (breaks == null) return ranges;
+        for (Map<String, String> entry : breaks) {
+            if (entry == null) continue;
+            int start = parseMinutes(entry.get("start"), -1);
+            int end = parseMinutes(entry.get("end"), -1);
+            if (start >= 0 && end > start) ranges.add(new int[]{start, end});
+        }
+        return ranges;
+    }
+
+    /**
+     * If the date ("yyyy-MM-dd") falls inside a blocked period, returns its
+     * reason (an empty string when none was given); returns null when the
+     * date is not blocked.
+     */
+    public String blockedReasonFor(String dateIso) {
+        if (blockedPeriods == null || dateIso == null) return null;
+        for (Map<String, String> period : blockedPeriods) {
+            if (period == null) continue;
+            String from = period.get("from");
+            String to = period.get("to");
+            if (from == null || from.isEmpty()) continue;
+            if (to == null || to.isEmpty()) to = from;
+            if (dateIso.compareTo(from) >= 0 && dateIso.compareTo(to) <= 0) {
+                String reason = period.get("reason");
+                return reason == null ? "" : reason.trim();
+            }
+        }
+        return null;
+    }
+
+    public boolean isDateBlocked(String dateIso) {
+        return blockedReasonFor(dateIso) != null;
     }
 
     // ---------- Static helpers (no Android dependencies, unit-testable) ----------

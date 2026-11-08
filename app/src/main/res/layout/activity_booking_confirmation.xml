@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_background"
@@ -23,17 +24,19 @@
             android:gravity="center"
             android:layout_marginBottom="24dp" />
 
+        <!-- Summary of what was submitted -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@color/color_surface"
             android:padding="18dp"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="16dp">
 
             <TextView android:id="@+id/tvSummaryService" style="@style/SummaryLine" />
             <TextView android:id="@+id/tvSummaryType" style="@style/SummaryLine" />
             <TextView android:id="@+id/tvSummaryLocation" style="@style/SummaryLine" />
+            <TextView android:id="@+id/tvSummaryAddress" style="@style/SummaryLine" android:visibility="gone" />
             <TextView android:id="@+id/tvSummaryDuration" style="@style/SummaryLine" />
             <TextView android:id="@+id/tvSummaryDate" style="@style/SummaryLine" />
             <TextView android:id="@+id/tvSummaryTime" style="@style/SummaryLine" />
@@ -63,14 +66,69 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- What happens next -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/color_highlight"
+            android:padding="16dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/next_steps_title"
+                android:textColor="@color/color_text_heading"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_14"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/next_step_1"
+                android:textColor="@color/color_text_heading"
+                android:textSize="@dimen/text_size_13"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/next_step_2"
+                android:textColor="@color/color_text_heading"
+                android:textSize="@dimen/text_size_13"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/next_step_3"
+                android:textColor="@color/color_text_heading"
+                android:textSize="@dimen/text_size_13" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnViewMyBookings"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/btn_view_my_bookings"
+            android:textColor="@color/color_text_on_primary"
+            android:textSize="@dimen/text_size_16"
+            android:backgroundTint="@color/color_primary"
+            android:layout_marginBottom="12dp" />
+
         <Button
             android:id="@+id/btnBackToHome"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:text="@string/btn_back_to_home"
-            android:textColor="@color/color_text_on_primary"
-            android:textSize="@dimen/text_size_16"
-            android:backgroundTint="@color/color_primary" />
+            android:textColor="@color/color_primary"
+            android:textSize="@dimen/text_size_15"
+            android:backgroundTint="@color/color_background"
+            app:strokeColor="@color/color_primary"
+            app:strokeWidth="1dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
     </com.mmm.bookingapp.utils.MaxWidthLinearLayout>
 </ScrollView>

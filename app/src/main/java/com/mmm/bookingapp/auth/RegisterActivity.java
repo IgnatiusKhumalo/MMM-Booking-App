@@ -50,6 +50,12 @@ import com.mmm.bookingapp.utils.ValidationUtils;
  * failed registration never leaves a login that has no profile and could
  * never get into the app.
  *
+ * After registering, the user is told clearly to check their email: the
+ * dialog names the address the confirmation link was sent to and mentions
+ * the Spam/Junk folder. If the confirmation email could not be sent, the
+ * dialog says so honestly (instead of claiming it was sent) and points to
+ * the Resend option on the Login screen.
+ *
  * Log messages deliberately contain no email addresses.
  */
 public class RegisterActivity extends AppCompatActivity {
@@ -280,7 +286,7 @@ public class RegisterActivity extends AppCompatActivity {
                     FirebaseRefs.usersCollection().document(uid).set(newUser)
                             .addOnSuccessListener(unused -> {
                                 Log.i(TAG, "Registration successful for uid: " + uid);
-                                sendVerificationEmail(firebaseUser);
+                                sendVerificationEmail(firebaseUser, email);
                             })
                             .addOnFailureListener(e -> {
                                 Log.e(TAG, "Failed to write user document for uid: " + uid, e);
@@ -317,21 +323,34 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void sendVerificationEmail(FirebaseUser firebaseUser) {
+    /**
+     * Sends the confirmation email and tells the user the truth about the
+     * result: a "check your email" dialog naming the address (and the Spam
+     * folder) when it was sent, or an honest "email not sent" dialog when it
+     * was not.
+     */
+    private void sendVerificationEmail(FirebaseUser firebaseUser, String email) {
         firebaseUser.sendEmailVerification()
                 .addOnCompleteListener(task -> {
                     setLoading(false);
-                    Log.d(TAG, "Verification email sent: " + task.isSuccessful());
-                    showSuccessDialog();
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Verification email sent");
+                        showEmailDialog(R.string.registration_check_email_title,
+                                getString(R.string.registration_check_email_message, email));
+                    } else {
+                        Log.w(TAG, "Verification email could not be sent", task.getException());
+                        showEmailDialog(R.string.registration_email_failed_title,
+                                getString(R.string.registration_email_failed_message, email));
+                    }
                 });
     }
 
-    private void showSuccessDialog() {
+    private void showEmailDialog(int titleRes, String message) {
         new AlertDialog.Builder(this)
-                .setTitle(R.string.registration_success_title)
-                .setMessage(R.string.registration_success_message)
+                .setTitle(titleRes)
+                .setMessage(message)
                 .setCancelable(false)
-                .setPositiveButton(R.string.btn_ok, (dialog, which) -> {
+                .setPositiveButton(R.string.btn_go_to_login, (dialog, which) -> {
                     FirebaseRefs.getAuth().signOut();
                     Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

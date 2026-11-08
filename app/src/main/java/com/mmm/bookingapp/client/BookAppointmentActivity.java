@@ -1,7 +1,6 @@
 package com.mmm.bookingapp.client;
 
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,15 +14,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.mmm.bookingapp.R;
 import com.mmm.bookingapp.models.BookedSlot;
 import com.mmm.bookingapp.models.Booking;
 import com.mmm.bookingapp.models.PracticeInfo;
+import com.mmm.bookingapp.utils.AvailabilityUtils;
 import com.mmm.bookingapp.utils.FirebaseRefs;
 import com.mmm.bookingapp.utils.HolidayApiClient;
 import com.mmm.bookingapp.utils.NetworkStatusHelper;
@@ -32,6 +34,7 @@ import com.mmm.bookingapp.utils.NotificationHelper;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,18 +43,28 @@ import java.util.Set;
 /**
  * Screen 8 - Book Appointment Screen.
  *
+ * Choosing a time: after picking a date, the client taps the time field and
+ * sees a list of the FREE start times for that date, duration and location
+ * (AvailabilityUtils) - times already reserved, in the past (today), outside
+ * opening hours, or inside a break are not offered. If nothing is free the
+ * client is told to try another date, duration or location. Changing the
+ * date, duration, consultation type or location clears an already chosen
+ * time, because the free times depend on all four.
+ *
  * Booking rules enforced here:
- *  - The chosen day must be one of the practice's saved open days
- *    (PracticeInfo.isOpenOn) and must not be a South African public
- *    holiday (Nager.Date API, fetched and cached per year).
- *  - The appointment must fit completely inside operating hours:
- *    start >= opening time AND start + duration <= closing time.
+ *  - The chosen day must be one of the practice's saved open days, must not
+ *    fall in a blocked period (leave or closure set by the admin) and must
+ *    not be a South African public holiday (Nager.Date API, cached per year).
+ *  - The appointment must fit completely inside operating hours and must not
+ *    overlap a break: start >= opening AND start + duration <= closing.
  *  - Start times are on the quarter hour, matching the 15-minute slot
  *    blocks that prevent overlaps.
  *  - No overlap with ANY other booking (the client's own or anyone
  *    else's): the booking reserves one slot document per 15-minute block
  *    inside a single Firestore transaction that fails if any block
- *    already exists. Each location (and Online) is its own calendar.
+ *    already exists. Each location (and Online) is its own calendar. The
+ *    free-times list is a convenience; this transaction is the final
+ *    safeguard if two people choose the same time at the same moment.
  *
  * For In-Person bookings the full clinic address of the selected location
  * is shown beneath the location dropdown (display only - the booking
@@ -105,7 +118,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
         ensureHolidaysLoaded(Calendar.getInstance().get(Calendar.YEAR), null);
 
         tvSelectedDate.setOnClickListener(v -> showDatePicker());
-        tvSelectedTime.setOnClickListener(v -> showTimePicker());
+        tvSelectedTime.setOnClickListener(v -> showFreeTimes());
         btnSubmitBooking.setOnClickListener(v -> attemptSubmit());
     }
 
@@ -138,6 +151,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
                 boolean isInPerson = position == 1; // 0 = Online, 1 = In-Person
                 layoutLocation.setVisibility(isInPerson ? View.VISIBLE : View.GONE);
                 tvOnlineNote.setVisibility(isInPerson ? View.GONE : View.VISIBLE);
+                resetTimeSelection();
             }
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
@@ -149,17 +163,16 @@ public class BookAppointmentActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 showAddressFor(position);
+                resetTimeSelection();
             }
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
 
-        // A longer duration can push an already-chosen start time past closing,
-        // so the chosen time is re-checked whenever the duration changes.
         spinnerDuration.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                recheckSelectedTime();
+                resetTimeSelection();
             }
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
@@ -192,6 +205,17 @@ public class BookAppointmentActivity extends AppCompatActivity {
         return durationValues[spinnerDuration.getSelectedItemPosition()];
     }
 
+    /**
+     * The free times depend on the date, duration, consultation type and
+     * location, so changing any of them clears a time that was already chosen.
+     */
+    private void resetTimeSelection() {
+        if (selectedTime == null) return;
+        selectedTime = null;
+        tvSelectedTime.setText(R.string.tap_to_select_time);
+        Toast.makeText(this, R.string.time_cleared_availability, Toast.LENGTH_LONG).show();
+    }
+
     // ---------- Public holidays (cached per year) ----------
 
     /** Runs afterLoaded (may be null) once holidays for that year are cached, or once the fetch fails. */
@@ -218,7 +242,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
         });
     }
 
-    // ---------- Date and time selection ----------
+    // ---------- Date selection ----------
 
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
@@ -242,6 +266,18 @@ public class BookAppointmentActivity extends AppCompatActivity {
             return;
         }
 
+        String candidateDate = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+        String blockedReason = info.blockedReasonFor(candidateDate);
+        if (blockedReason != null) {
+            Log.d(TAG, "Date rejected - blocked period (leave or closure): " + candidateDate);
+            Toast.makeText(this,
+                    blockedReason.isEmpty()
+                            ? getString(R.string.error_blocked_date_no_reason)
+                            : getString(R.string.error_blocked_date, blockedReason),
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
         ensureHolidaysLoaded(year, () -> finishDateSelection(year, month, dayOfMonth));
     }
 
@@ -257,26 +293,96 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
         selectedDate = candidateDate;
         tvSelectedDate.setText(String.format(Locale.US, "%02d/%02d/%04d", dayOfMonth, month + 1, year));
+        resetTimeSelection();
         Log.d(TAG, "Date selected: " + selectedDate);
     }
 
-    private void showTimePicker() {
-        Calendar calendar = Calendar.getInstance();
-        TimePickerDialog dialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-            int startMinutes = hourOfDay * 60 + minute;
+    // ---------- Free times ----------
 
-            if (minute % BookedSlot.BLOCK_MINUTES != 0) {
-                Toast.makeText(this, R.string.error_time_quarter_hour, Toast.LENGTH_LONG).show();
-                return;
-            }
-            if (!timeFitsOperatingHours(startMinutes, currentDuration())) return;
+    /**
+     * Loads the 15-minute blocks already reserved on the chosen date, works
+     * out which start times are free for the chosen duration and location,
+     * and shows them in a list for the client to pick from.
+     */
+    private void showFreeTimes() {
+        if (selectedDate == null) {
+            Toast.makeText(this, R.string.error_pick_date_first, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!NetworkStatusHelper.isOnline(this)) {
+            Toast.makeText(this, R.string.error_offline_booking, Toast.LENGTH_LONG).show();
+            return;
+        }
 
-            selectedTime = PracticeInfo.formatMinutes(startMinutes);
-            tvSelectedTime.setText(selectedTime);
-            Log.d(TAG, "Time selected: " + selectedTime);
-        }, calendar.get(Calendar.HOUR_OF_DAY), 0, true);
+        boolean isInPerson = spinnerConsultationType.getSelectedItemPosition() == 1;
+        final String locationKey = isInPerson ? spinnerLocation.getSelectedItem().toString() : "online";
+        final int duration = currentDuration();
+        final String date = selectedDate;
 
-        dialog.show();
+        setLoading(true);
+        FirebaseRefs.bookedSlotsCollection().whereEqualTo("date", date).get()
+                .addOnSuccessListener(snapshot -> {
+                    setLoading(false);
+                    if (isFinishing() || isDestroyed()) return;
+
+                    Set<String> taken = new HashSet<>();
+                    for (QueryDocumentSnapshot doc : snapshot) {
+                        String slotLocation = doc.getString("location");
+                        String slotKey = slotLocation != null ? slotLocation : "online";
+                        String slotTime = doc.getString("time");
+                        if (locationKey.equals(slotKey) && slotTime != null) taken.add(slotTime);
+                    }
+
+                    PracticeInfo info = currentPracticeInfo();
+                    List<String> free = AvailabilityUtils.freeStartTimes(
+                            info.computeOpeningMinutes(), info.computeClosingMinutes(), duration,
+                            taken, info.breakRanges(), earliestStartFor(date));
+                    presentFreeTimes(date, duration, free);
+                })
+                .addOnFailureListener(e -> {
+                    setLoading(false);
+                    Log.e(TAG, "Could not load booked slots", e);
+                    Toast.makeText(this, R.string.error_availability_failed, Toast.LENGTH_LONG).show();
+                });
+    }
+
+    /** For today, no time before now may be offered; for a future date there is no limit. */
+    private int earliestStartFor(String date) {
+        Calendar now = Calendar.getInstance();
+        String today = String.format(Locale.US, "%04d-%02d-%02d",
+                now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH));
+        if (!today.equals(date)) return 0;
+        return now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE) + 1;
+    }
+
+    private void presentFreeTimes(String date, int duration, List<String> free) {
+        String dateDisplay = date.substring(8, 10) + "/" + date.substring(5, 7) + "/" + date.substring(0, 4);
+        String title = getString(R.string.dialog_free_times_title, dateDisplay);
+
+        if (free.isEmpty()) {
+            new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setMessage(R.string.dialog_no_free_times)
+                    .setPositiveButton(R.string.btn_ok, null)
+                    .show();
+            return;
+        }
+
+        String[] labels = new String[free.size()];
+        for (int i = 0; i < free.size(); i++) {
+            int start = PracticeInfo.parseMinutes(free.get(i), 0);
+            labels[i] = free.get(i) + "  \u2013  " + PracticeInfo.formatMinutes(start + duration);
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setItems(labels, (dialog, which) -> {
+                    selectedTime = free.get(which);
+                    tvSelectedTime.setText(selectedTime);
+                    Log.d(TAG, "Time selected: " + selectedTime);
+                })
+                .setNegativeButton(R.string.btn_cancel, null)
+                .show();
     }
 
     /**
@@ -302,20 +408,6 @@ public class BookAppointmentActivity extends AppCompatActivity {
         return true;
     }
 
-    /** If the chosen time no longer fits (duration changed), clears it so it must be chosen again. */
-    private void recheckSelectedTime() {
-        if (selectedTime == null) return;
-        int startMinutes = PracticeInfo.parseMinutes(selectedTime, -1);
-        PracticeInfo info = currentPracticeInfo();
-        boolean stillFits = startMinutes >= info.computeOpeningMinutes()
-                && startMinutes + currentDuration() <= info.computeClosingMinutes();
-        if (!stillFits) {
-            selectedTime = null;
-            tvSelectedTime.setText(R.string.tap_to_select_time);
-            Toast.makeText(this, R.string.error_time_cleared_by_duration, Toast.LENGTH_LONG).show();
-        }
-    }
-
     // ---------- Submission ----------
 
     private void attemptSubmit() {
@@ -336,9 +428,19 @@ public class BookAppointmentActivity extends AppCompatActivity {
 
         int duration = currentDuration();
         int startMinutes = PracticeInfo.parseMinutes(selectedTime, -1);
+        PracticeInfo info = currentPracticeInfo();
+
         // Authoritative re-check using the fully loaded practice settings.
         if (startMinutes < 0 || startMinutes % BookedSlot.BLOCK_MINUTES != 0
                 || !timeFitsOperatingHours(startMinutes, duration)) {
+            return;
+        }
+        if (info.isDateBlocked(selectedDate)) {
+            Toast.makeText(this, R.string.error_blocked_date_no_reason, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (AvailabilityUtils.overlapsBreak(startMinutes, startMinutes + duration, info.breakRanges())) {
+            Toast.makeText(this, R.string.error_time_in_break, Toast.LENGTH_LONG).show();
             return;
         }
 

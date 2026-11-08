@@ -37,7 +37,7 @@
     <string name="btn_login_submit">Log In</string>
     <string name="link_forgot_password">Forgot Password?</string>
     <string name="error_login_failed">Login failed: %1$s</string>
-    <string name="error_email_not_verified">Please verify your email before logging in. Check your inbox, or tap below to resend the verification email.</string>
+    <string name="error_email_not_verified">Please verify your email before logging in. Check your inbox (and your Spam or Junk folder), or tap below to resend the verification email.</string>
     <string name="btn_resend_verification">Resend Verification Email</string>
     <string name="verification_email_resent">Verification email sent</string>
     <string name="error_user_record_missing">Account error: your profile could not be found. Please contact support.</string>
@@ -93,7 +93,7 @@
     <string name="online_note">Location is not required — this appointment will be conducted online, so no physical address applies.</string>
     <string name="btn_submit_booking">Submit Booking Request</string>
     <string name="tap_to_select_date">Tap to select a date</string>
-    <string name="tap_to_select_time">Tap to select a time</string>
+    <string name="tap_to_select_time">Tap to see the free times</string>
     <string-array name="consultation_types">
         <item>Online</item>
         <item>In-Person</item>
@@ -130,7 +130,7 @@
     <string name="status_cancelled">CANCELLED</string>
     <string name="status_completed">COMPLETED</string>
     <string name="btn_cancel_booking">Cancel</string>
-    <string name="cancellation_policy_note">You may cancel this booking at any time. If you need to reschedule instead, please contact the practice directly.</string>
+    <string name="cancellation_policy_note">Free cancellation until 24 hours before your appointment. After that, please phone or WhatsApp the practice — late-cancellation fees may apply (see the Terms and Conditions).</string>
     <string name="empty_bookings_message">You have no bookings yet.</string>
     <string name="dialog_cancel_title">Cancel this booking?</string>
     <string name="dialog_cancel_message">This action is permanent. If you change your mind, you will need to make a brand new booking from the start - this appointment cannot be restored or reactivated.</string>
@@ -188,7 +188,7 @@
 
     <!-- Screen 16 - Terms and Conditions Screen -->
     <string name="terms_title">Terms and Conditions</string>
-    <string name="terms_body">By using this application, you agree to provide accurate information when registering and booking appointments.\n\nBookings submitted through this app are requests and are subject to confirmation by MMM Social Workers &amp; Associates. Session fees will be confirmed by our team before your appointment is finalised.\n\nCancellations made through the app are permanent. To reschedule, please contact the practice directly.\n\nThis application does not process payments and does not generate video consultation links; both are arranged directly with the practice.</string>
+    <string name="terms_body">These Terms and Conditions apply to your use of the MMM Social Workers &amp; Associates booking app. By registering or making a booking you agree to them.\n\n1. ACCEPTANCE AND USE OF THE APP\nYou must give accurate information when you register and book. You are responsible for keeping your login details private and for everything done on your account. The app is a booking tool only. It is not an emergency or crisis service: in a crisis, use the emergency contact details on the Contact screen.\n\n2. BOOKINGS\nA booking made in the app is a request. It is only confirmed once MMM Social Workers &amp; Associates confirms it, and you can follow its status in My Bookings. Appointments can only be requested on the practice\'s open days, within opening hours, and for times the app shows as free. The practice may decline or reschedule a request if necessary.\n\n3. CANCELLATION\nYou may cancel a booking in the app up to 24 hours before the appointment, free of charge. Within 24 hours of the appointment, cancelling in the app is closed: please phone or WhatsApp the practice as early as possible. A late cancellation (less than 24 hours\' notice) may be charged as a full or partial session fee at the practice\'s discretion. Cancelling in the app is permanent. To change your appointment time, cancel with enough notice and make a new booking.\n\n4. NO-SHOWS AND LATE ARRIVAL\nIf you do not attend an appointment and have not cancelled it, it is treated as a no-show and may be charged as a full session fee. If you arrive late, your session still ends at the scheduled time and the full fee may apply. Repeated no-shows may lead to the practice declining future bookings.\n\n5. FEES AND PAYMENT ARRANGEMENTS\nSession fees vary by service. The practice sends you a fee quotation before your appointment is confirmed. Payment is arranged directly with the practice. The app does not process payments, and it does not create video-consultation links: online sessions are arranged directly with the practice. The Paid status in the app is recorded by the practice. Any late-cancellation or no-show fee is the amount quoted or agreed with the practice.\n\n6. ACCEPTABLE USE\nYou may not use another person\'s account or details, give false information, make bookings you do not intend to keep, try to access other users\' information or interfere with the app or its security, or use the app in any unlawful way or to abuse staff or other clients. The practice may suspend or remove an account that breaks these terms.\n\n7. PRIVACY\nYour personal information is handled as described in the Privacy Policy, in line with the Protection of Personal Information Act (POPIA).\n\n8. CHANGES TO THESE TERMS\nThe practice may update these terms. The version shown in the app is the current one.\n\n9. CONTACT\nFor questions about these terms, bookings or fees, use the Contact screen to phone, email or WhatsApp the practice.</string>
 
     <!-- Screen 17 - FAQ Screen -->
     <string name="faq_title">Frequently Asked Questions</string>
@@ -385,6 +385,59 @@
         <item>19 Ameshoff Street, Braamfontein, Johannesburg, 2001, South Africa</item>
         <item>162 Panorama Road, Rooihuiskraal, Centurion, 0154, South Africa</item>
     </string-array>
+
+    <!-- registration: check-your-email messages -->
+    <string name="registration_check_email_title">Check your email</string>
+    <string name="registration_check_email_message">We\'ve sent a confirmation link to:\n\n%1$s\n\nOpen that email and tap the link to confirm your account, then come back and log in.\n\nCan\'t find it? Check your Spam or Junk folder.</string>
+    <string name="registration_email_failed_title">Account created — email not sent</string>
+    <string name="registration_email_failed_message">Your account was created, but we could not send the confirmation email to:\n\n%1$s\n\nPlease tap Log In and then Resend Verification Email to try again. If it keeps failing, check that the address is correct and that you have a connection.</string>
+    <string name="btn_go_to_login">Go to Login</string>
+
+    <!-- booking confirmation: what happens next -->
+    <string name="next_steps_title">What happens next</string>
+    <string name="next_step_1">1.  The practice reviews your request and contacts you with a fee quotation.</string>
+    <string name="next_step_2">2.  Once the practice confirms it, the status changes from Pending to Confirmed in My Bookings. You will see it update live.</string>
+    <string name="next_step_3">3.  Free cancellation is available until 24 hours before your appointment (see the Terms).</string>
+    <string name="label_summary_address">Address: %1$s</string>
+    <string name="btn_view_my_bookings">View My Bookings</string>
+
+    <!-- cancellation notice period (24 hours) -->
+    <string name="dialog_cancel_message_notice">You can cancel free of charge until 24 hours before your appointment. Cancelling is permanent: if you change your mind you will need to make a brand new booking, and this appointment cannot be restored.</string>
+    <string name="dialog_late_cancel_title">Cancellation closed</string>
+    <string name="dialog_late_cancel_message">Your appointment is less than 24 hours away, so it can no longer be cancelled in the app.\n\nPlease phone or WhatsApp the practice as soon as possible. A late-cancellation fee may apply (see the Terms and Conditions).</string>
+    <string name="btn_contact_practice">Contact the practice</string>
+    <string name="btn_close">Close</string>
+
+    <!-- availability: free times, blocked dates and breaks -->
+    <string name="dialog_free_times_title">Free times on %1$s</string>
+    <string name="dialog_no_free_times">There are no free times on this date for your chosen duration and location. Please try another date, a shorter duration, or a different location.</string>
+    <string name="error_pick_date_first">Please choose a date first.</string>
+    <string name="error_availability_failed">Could not load the free times. Please check your connection and try again.</string>
+    <string name="time_cleared_availability">Free times depend on your date, duration and location, so please choose the time again.</string>
+    <string name="error_blocked_date">The practice is unavailable on that date (%1$s). Please choose another date.</string>
+    <string name="error_blocked_date_no_reason">The practice is unavailable on that date. Please choose another date.</string>
+    <string name="error_time_in_break">That time falls in a break. Please choose one of the free times.</string>
+
+    <!-- admin: breaks, blocked dates and leave -->
+    <string name="label_breaks">Daily Breaks</string>
+    <string name="hint_breaks">No appointments can be booked during a break (for example lunch). Breaks apply on every open day. Tap Save Changes to apply.</string>
+    <string name="empty_breaks">No breaks set</string>
+    <string name="btn_add_break">Add Break</string>
+    <string name="title_break_start">Break starts at</string>
+    <string name="title_break_end">Break ends at</string>
+    <string name="error_break_order">A break must end after it starts.</string>
+    <string name="error_break_outside_hours">A break must be inside the opening hours (%1$s – %2$s).</string>
+    <string name="error_break_overlap">This break overlaps another break.</string>
+    <string name="label_blocked_periods">Blocked Dates and Leave</string>
+    <string name="hint_blocked_periods">Clients cannot book on these dates (for example leave or a closure). Choose the same date twice for a single day. Tap Save Changes to apply.</string>
+    <string name="empty_blocked">No blocked dates</string>
+    <string name="btn_add_blocked">Add Blocked Dates / Leave</string>
+    <string name="title_blocked_from">First blocked date</string>
+    <string name="title_blocked_to">Last blocked date</string>
+    <string name="dialog_reason_title">Reason (optional)</string>
+    <string name="hint_reason">For example: Annual leave</string>
+    <string name="btn_add">Add</string>
+    <string name="btn_remove">Remove</string>
 
     <!-- Offline indicator - Innovation Feature -->
     <string name="offline_banner_text">You\'re offline — changes will sync once you\'re back online</string>

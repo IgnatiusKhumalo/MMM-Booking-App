@@ -100,6 +100,78 @@
                 <TextView style="@style/DetailLabel" android:text="@string/label_hours_end" />
                 <EditText android:id="@+id/etHoursEnd" style="@style/SettingsInput" />
 
+                <!-- Daily breaks (for example lunch). No appointment may overlap one. -->
+                <TextView style="@style/DetailLabel" android:text="@string/label_breaks" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_breaks"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="@dimen/text_size_12"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:id="@+id/layoutBreaks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/tvBreaksEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/empty_breaks"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="@dimen/text_size_13"
+                    android:textStyle="italic"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnAddBreak"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/btn_add_break"
+                    android:textColor="@color/color_primary"
+                    android:backgroundTint="@color/color_background"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Blocked dates and leave. Clients cannot book on these dates. -->
+                <TextView style="@style/DetailLabel" android:text="@string/label_blocked_periods" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_blocked_periods"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="@dimen/text_size_12"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:id="@+id/layoutBlocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/tvBlockedEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/empty_blocked"
+                    android:textColor="@color/color_text_primary"
+                    android:textSize="@dimen/text_size_13"
+                    android:textStyle="italic"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnAddBlocked"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/btn_add_blocked"
+                    android:textColor="@color/color_primary"
+                    android:backgroundTint="@color/color_background"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginBottom="16dp" />
+
                 <TextView style="@style/DetailLabel" android:text="@string/label_crisis_note" />
                 <EditText android:id="@+id/etCrisisNote"
                     android:layout_width="match_parent"
